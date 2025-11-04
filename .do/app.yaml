@@ -1,0 +1,60 @@
+name: sw-website
+region: nyc
+
+# Static site (Frontend)
+static_sites:
+  - name: frontend
+    git:
+      repo_clone_url: https://github.com/AntonyNeal/sw_website.git
+      branch: main
+    build_command: npm run build
+    output_dir: dist
+    environment_slug: node-js
+    envs:
+      - key: VITE_GA_MEASUREMENT_ID
+        value: ${GA_MEASUREMENT_ID}
+      - key: VITE_API_BASE_URL
+        value: ${API_BASE_URL}
+      - key: VITE_FUNCTIONS_URL
+        value: ${FUNCTIONS_URL}
+    routes:
+      - path: /
+
+# API Service (Backend)
+services:
+  - name: api
+    git:
+      repo_clone_url: https://github.com/AntonyNeal/sw_website.git
+      branch: main
+    source_dir: /api
+    run_command: npm start
+    environment_slug: node-js
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    http_port: 3001
+    envs:
+      - key: DATABASE_URL
+        value: ${DATABASE_URL}
+        scope: RUN_TIME
+        type: SECRET
+      - key: ALLOWED_ORIGINS
+        value: https://sw-website.ondigitalocean.app,https://www.yourdomain.com
+      - key: NODE_ENV
+        value: production
+    routes:
+      - path: /api
+
+# Managed Database (optional - uncomment to enable)
+# databases:
+#   - name: db
+#     engine: PG
+#     version: '15'
+#     size: db-s-1vcpu-1gb
+#     num_nodes: 1
+
+# Domain configuration (optional - uncomment and configure)
+# domains:
+#   - domain: yourdomain.com
+#     type: PRIMARY
+#   - domain: www.yourdomain.com
+#     type: ALIAS

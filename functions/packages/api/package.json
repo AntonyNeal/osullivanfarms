@@ -1,0 +1,6 @@
+{
+  "name": "api-functions",
+  "version": "1.0.0",
+  "description": "DigitalOcean Functions for SW Website",
+  "main": "index.js"
+}
