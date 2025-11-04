@@ -1,7 +1,26 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+
+const heroImages = [
+  'https://pbs.twimg.com/media/G3hgK2hX0AAB8RL.jpg:large',
+  'https://pbs.twimg.com/media/G3Gh-hdbUAAQTDo.jpg:large',
+  'https://pbs.twimg.com/media/G3qlG5VWwAAkv0w.jpg:large',
+  'https://pbs.twimg.com/media/G4OoP7-WoAA4YbX.jpg:large',
+  'https://pbs.twimg.com/media/G22stVEaYAAuqaG.jpg:large',
+];
 
 export default function Home() {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+    }, 9000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
       <Helmet>
@@ -13,21 +32,30 @@ export default function Home() {
       </Helmet>
 
       <div className="min-h-screen bg-white">
-        {/* Full-Screen Hero Section with Photo */}
+        {/* Full-Screen Hero Section with Photo Carousel */}
         <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
-          {/* Background Image */}
-          <img
-            src="https://pbs.twimg.com/media/G3hgK2hX0AAB8RL.jpg:large"
-            alt="Claire Hamilton"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          {/* Carousel Container */}
+          <div className="absolute inset-0 w-full h-full">
+            {heroImages.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt="Claire Hamilton"
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+                  index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+            ))}
+          </div>
 
           {/* Dark Overlay */}
           <div className="absolute inset-0 bg-black/20" />
 
           {/* Content Overlay */}
           <div className="relative z-10 text-center text-white px-4">
-            <h1 className="text-7xl md:text-8xl font-bold mb-4 drop-shadow-lg">Claire Hamilton</h1>
+            <h1 className="text-7xl md:text-8xl font-bold mb-4 drop-shadow-lg">
+              Claire Hamilton
+            </h1>
             <p className="text-xl md:text-3xl italic drop-shadow-lg mb-12">
               A sophisticated companion, a free-spirited sweetheart
             </p>
@@ -42,6 +70,18 @@ export default function Home() {
                 View Gallery
               </Link>
             </div>
+          </div>
+
+          {/* Carousel Indicators */}
+          <div className="absolute bottom-8 z-20 flex gap-2 justify-center w-full">
+            {heroImages.map((_, index) => (
+              <div
+                key={index}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  index === currentImageIndex ? 'bg-white w-8' : 'bg-white/50 w-2'
+                }`}
+              />
+            ))}
           </div>
         </section>
 
