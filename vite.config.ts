@@ -33,14 +33,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          if (
-            id.includes('node_modules/react/') ||
-            id.includes('node_modules/react-dom/') ||
-            id.includes('node_modules/react-router-dom')
-          ) {
-            return 'vendor';
-          }
-          if (id.includes('react-ga4')) {
+          if (id.includes('node_modules/react-ga4')) {
             return 'analytics';
           }
           if (
@@ -54,7 +47,7 @@ export default defineConfig({
             return 'query';
           }
           if (id.includes('node_modules')) {
-            return 'vendor-misc';
+            return 'vendor';
           }
         },
         entryFileNames: 'assets/[name]-[hash].js',
