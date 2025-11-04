@@ -41,7 +41,7 @@ export default function Home() {
                 key={index}
                 src={image}
                 alt="Claire Hamilton"
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-2000 ${
                   index === currentImageIndex ? 'opacity-100' : 'opacity-0'
                 }`}
               />
@@ -53,9 +53,7 @@ export default function Home() {
 
           {/* Content Overlay */}
           <div className="relative z-10 text-center text-white px-4">
-            <h1 className="text-7xl md:text-8xl font-bold mb-4 drop-shadow-lg">
-              Claire Hamilton
-            </h1>
+            <h1 className="text-7xl md:text-8xl font-bold mb-4 drop-shadow-lg">Claire Hamilton</h1>
             <p className="text-xl md:text-3xl italic drop-shadow-lg mb-12">
               A sophisticated companion, a free-spirited sweetheart
             </p>
