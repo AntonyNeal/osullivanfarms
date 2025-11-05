@@ -1,6 +1,11 @@
 {
   "name": "api-functions",
   "version": "1.0.0",
-  "description": "DigitalOcean Functions for SW Website",
-  "main": "index.js"
+  "description": "DigitalOcean Functions for Claire Hamilton booking system",
+  "main": "index.js",
+  "dependencies": {
+    "pg": "^8.11.0",
+    "joi": "^17.11.0",
+    "@sendgrid/mail": "^8.1.0"
+  }
 }

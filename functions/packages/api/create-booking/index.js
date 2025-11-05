@@ -1,7 +1,7 @@
 /**
  * DigitalOcean Function: Create Booking
  * Endpoint: POST /api/bookings
- * 
+ *
  * Receives booking submission from frontend, validates data,
  * creates booking record with UTM attribution, and triggers email notifications
  */
@@ -26,12 +26,16 @@ const bookingSchema = Joi.object({
   firstName: Joi.string().min(2).max(255).required().trim(),
   lastName: Joi.string().min(2).max(255).required().trim(),
   email: Joi.string().email().required().lowercase(),
-  phone: Joi.string().regex(/^\+?[0-9\s\-()]{10,}$/).required(),
+  phone: Joi.string()
+    .regex(/^\+?[0-9\s\-()]{10,}$/)
+    .required(),
   dateOfBirth: Joi.date().iso().required(),
   gender: Joi.string().max(50),
   appointmentType: Joi.string().max(255).required(),
   appointmentDate: Joi.date().iso().required(),
-  appointmentTime: Joi.string().regex(/^\d{2}:\d{2}$/).required(),
+  appointmentTime: Joi.string()
+    .regex(/^\d{2}:\d{2}$/)
+    .required(),
   notes: Joi.string().max(2000),
   userId: Joi.string().required(),
   utmSource: Joi.string().max(255),
@@ -108,7 +112,10 @@ function getClientIp(req) {
  */
 async function booking(req, res) {
   // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || 'https://clairehamilton.com.au');
+  res.setHeader(
+    'Access-Control-Allow-Origin',
+    process.env.ALLOWED_ORIGIN || 'https://clairehamilton.com.au'
+  );
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -150,7 +157,12 @@ async function booking(req, res) {
     client = await pool.connect();
 
     // Check for duplicates
-    const isDuplicate = await checkDuplicate(client, value.email, value.appointmentDate, value.appointmentTime);
+    const isDuplicate = await checkDuplicate(
+      client,
+      value.email,
+      value.appointmentDate,
+      value.appointmentTime
+    );
     if (isDuplicate) {
       res.statusCode = 409;
       res.json({
@@ -210,7 +222,7 @@ async function booking(req, res) {
           ipHash,
           value.userAgent || null,
           'pending',
-          'unpaid'
+          'unpaid',
         ]
       );
 
@@ -236,7 +248,13 @@ async function booking(req, res) {
       await client.query(
         `INSERT INTO email_logs (recipient_email, email_type, subject, booking_id, status)
          VALUES ($1, $2, $3, $4, $5)`,
-        [value.email, 'booking_confirmation', `Booking Confirmed - ${confirmationNumber}`, bookingId, 'pending']
+        [
+          value.email,
+          'booking_confirmation',
+          `Booking Confirmed - ${confirmationNumber}`,
+          bookingId,
+          'pending',
+        ]
       );
 
       if (process.env.CLAIRE_NOTIFICATION_EMAIL) {
@@ -339,8 +357,18 @@ async function sendBookingEmails(bookingId, bookingData) {
       to: bookingData.email,
       from: process.env.SENDGRID_FROM_EMAIL || 'bookings@clairehamilton.com.au',
       subject: `Booking Confirmed - ${confirmationNumber}`,
-      html: generateCustomerEmailHTML(customerName, confirmationNumber, appointmentDate, appointmentTime),
-      text: generateCustomerEmailText(customerName, confirmationNumber, appointmentDate, appointmentTime),
+      html: generateCustomerEmailHTML(
+        customerName,
+        confirmationNumber,
+        appointmentDate,
+        appointmentTime
+      ),
+      text: generateCustomerEmailText(
+        customerName,
+        confirmationNumber,
+        appointmentDate,
+        appointmentTime
+      ),
     });
 
     // Email 2: Claire's notification

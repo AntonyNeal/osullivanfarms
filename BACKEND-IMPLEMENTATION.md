@@ -8,6 +8,7 @@
 ## COMPLETED ✅
 
 ### 1. Database Schema (db/schema.sql)
+
 - ✅ `user_sessions` table - UTM tracking and session attribution
 - ✅ `bookings` table - Complete booking records with status tracking
 - ✅ `conversions` table - Event tracking and funnel analysis
@@ -19,6 +20,7 @@
 - ✅ Indexes optimized for analytics queries
 
 **How to deploy:**
+
 ```bash
 # Connect to DigitalOcean PostgreSQL
 psql -h your-db-host -U doadmin -d defaultdb < db/schema.sql
@@ -28,6 +30,7 @@ psql -h your-db-host -U doadmin -d defaultdb < db/schema.sql
 ```
 
 ### 2. UTM Capture Service (src/utils/utm.service.ts)
+
 - ✅ Extract UTM params from URL (utm_source, utm_medium, utm_campaign, utm_content, utm_term)
 - ✅ Generate persistent user_id from browser fingerprint
 - ✅ Store session data in sessionStorage (persists across navigation)
@@ -36,6 +39,7 @@ psql -h your-db-host -U doadmin -d defaultdb < db/schema.sql
 - ✅ Track conversion events
 
 **How to use:**
+
 ```typescript
 // In App.tsx or main component
 import { initializeSession, getUTMParams, trackConversion } from './utils/utm.service';
@@ -53,6 +57,7 @@ const userId = getUserId();
 ```
 
 ### 3. Booking API Endpoint (functions/packages/api/create-booking/index.js)
+
 - ✅ POST /api/bookings endpoint
 - ✅ Input validation using Joi schema
 - ✅ Duplicate booking detection
@@ -65,6 +70,7 @@ const userId = getUserId();
 - ✅ Email sending via SendGrid
 
 **Request format:**
+
 ```json
 {
   "firstName": "Jane",
@@ -87,6 +93,7 @@ const userId = getUserId();
 ```
 
 **Response (Success - HTTP 201):**
+
 ```json
 {
   "success": true,
@@ -101,6 +108,7 @@ const userId = getUserId();
 ## IN PROGRESS ⏳
 
 ### App.tsx Updates
+
 - ✅ Import UTM service
 - ✅ Initialize session on app load
 - ✅ Track page views
@@ -111,9 +119,11 @@ const userId = getUserId();
 ## STILL TODO ❌
 
 ### 2. Frontend Integration (BookingForm.tsx)
+
 **File to update:** `src/components/BookingForm.tsx`
 
 **Changes needed:**
+
 ```typescript
 // Add at top
 import { getUTMParams, getUserId, trackConversion } from '../utils/utm.service';
@@ -154,10 +164,14 @@ const handleConfirmSubmit = async () => {
     });
 
     const data = await response.json();
-    
+
     if (data.success) {
       setCurrentStep('success');
-      trackConversion('booking_confirmed', { confirmationNumber: data.confirmationNumber }, apiBaseUrl);
+      trackConversion(
+        'booking_confirmed',
+        { confirmationNumber: data.confirmationNumber },
+        apiBaseUrl
+      );
     } else {
       setError(data.error || 'Booking failed');
     }
@@ -170,6 +184,7 @@ const handleConfirmSubmit = async () => {
 ```
 
 ### 3. Session Registration Endpoint (NEW FUNCTION)
+
 **Create:** `functions/packages/api/register-session/index.js`
 
 ```javascript
@@ -211,7 +226,17 @@ async function registerSession(req, res) {
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       ON CONFLICT (user_id) DO UPDATE SET session_end = NULL, updated_at = NOW()
       RETURNING id`,
-      [userId, utmSource, utmMedium, utmCampaign, utmContent, utmTerm, referrer, deviceType, userAgent]
+      [
+        userId,
+        utmSource,
+        utmMedium,
+        utmCampaign,
+        utmContent,
+        utmTerm,
+        referrer,
+        deviceType,
+        userAgent,
+      ]
     );
 
     res.json({ sessionId: result.rows[0].id });
@@ -227,6 +252,7 @@ module.exports = registerSession;
 ```
 
 ### 4. Analytics Endpoint (NEW FUNCTION)
+
 **Create:** `functions/packages/api/get-analytics/index.js`
 
 Purpose: Return aggregated booking data by platform, campaign, time period
@@ -237,7 +263,8 @@ Purpose: Return aggregated booking data by platform, campaign, time period
 async function getAnalytics(req, res) {
   const { startDate, endDate, groupBy = 'utm_source' } = req.query;
 
-  const start = startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  const start =
+    startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   const end = endDate || new Date().toISOString().split('T')[0];
 
   const client = await pool.connect();
@@ -265,6 +292,7 @@ async function getAnalytics(req, res) {
 ```
 
 ### 5. Environment Variables (.env)
+
 Add these variables to your `.do/app.yaml` and `.env` files:
 
 ```yaml
@@ -282,6 +310,7 @@ DATABASE_URL: (already in .do/app.yaml)
 ```
 
 ### 6. Update project.yml
+
 ```yaml
 packages:
   - name: api
@@ -319,6 +348,7 @@ packages:
 ```
 
 ### 7. Update functions/packages/api/package.json
+
 ```json
 {
   "name": "api",
@@ -336,6 +366,7 @@ packages:
 ## DEPLOYMENT CHECKLIST
 
 ### Step 1: Deploy Database Schema
+
 ```bash
 # Run SQL from db/schema.sql against your DigitalOcean PostgreSQL database
 do -Command "databases get [your-db-id]"
@@ -344,12 +375,15 @@ psql -h host -U doadmin -d defaultdb < db/schema.sql
 ```
 
 ### Step 2: Add Environment Variables
+
 In DigitalOcean App Platform Console:
+
 1. Go to Settings
 2. Add new environment variables for SendGrid
 3. Redeploy
 
 ### Step 3: Deploy Functions
+
 ```bash
 # Using DigitalOcean CLI wrapper (PowerShell):
 # functions/ are deployed automatically when you push to GitHub
@@ -359,6 +393,7 @@ git push origin main
 ```
 
 ### Step 4: Test Booking Flow
+
 1. Visit: `clairehamilton.com.au?utm_source=test&utm_medium=direct`
 2. Open browser console to see session initialized
 3. Click "Book Now"
@@ -368,6 +403,7 @@ git push origin main
 7. Check DigitalOcean PostgreSQL for booking record
 
 ### Step 5: Verify Analytics
+
 ```bash
 # Query analytics endpoint (after first booking):
 curl https://clairehamilton.com.au/api/analytics/bookings
@@ -378,6 +414,7 @@ curl https://clairehamilton.com.au/api/analytics/bookings
 ## WHAT'S NOT YET IMPLEMENTED
 
 ### Phase 2 Features (Planned)
+
 - ❌ Payment processing (PayID/Eway integration)
 - ❌ A/B testing allocation and result tracking
 - ❌ Advanced analytics dashboard
@@ -385,6 +422,7 @@ curl https://clairehamilton.com.au/api/analytics/bookings
 - ❌ SMS/WhatsApp notifications
 
 ### Known Limitations
+
 - SendGrid emails sent inline (no background queue yet)
 - No retry logic for failed email sends (currently logs error)
 - Analytics endpoint doesn't support complex filtering
@@ -395,6 +433,7 @@ curl https://clairehamilton.com.au/api/analytics/bookings
 ## SECURITY NOTES
 
 ✅ **Already implemented:**
+
 - SQL parameterized queries (prevents injection)
 - Input validation with Joi
 - IP address hashing (privacy protection)
@@ -403,6 +442,7 @@ curl https://clairehamilton.com.au/api/analytics/bookings
 - CORS whitelisting
 
 ⚠️ **Still to add:**
+
 - Rate limiting on booking endpoint (10 req/min per IP)
 - CSRF token validation
 - Request signing for internal functions

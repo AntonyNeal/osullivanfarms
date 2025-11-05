@@ -1,7 +1,7 @@
 /**
  * UTM Parameter Capture Service
  * Extracts UTM parameters from URL, generates session ID, and manages session storage
- * 
+ *
  * Flow:
  * 1. On app load: Extract UTM params → Generate user_id → Create session
  * 2. Store in sessionStorage (persists across navigation)
