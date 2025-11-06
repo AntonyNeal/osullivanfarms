@@ -8,11 +8,24 @@ import Services from './pages/Services';
 import Prices from './pages/Prices';
 import FlyMeToYou from './pages/FlyMeToYou';
 import BookingModal from './components/BookingModal';
+import MobileCTABar from './components/MobileCTABar';
 import { initializeSession, registerSession, trackConversion } from './utils/utm.service';
 
 function App() {
   const location = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+
+  // Handle booking modal open
+  const handleBookingOpen = () => {
+    setIsBookingOpen(true);
+    window.dispatchEvent(new CustomEvent('modalOpened'));
+  };
+
+  // Handle booking modal close
+  const handleBookingClose = () => {
+    setIsBookingOpen(false);
+    window.dispatchEvent(new CustomEvent('modalClosed'));
+  };
 
   useEffect(() => {
     // Initialize UTM tracking and session on app load
@@ -112,7 +125,7 @@ function App() {
                   Fly Me To You
                 </Link>
                 <button
-                  onClick={() => setIsBookingOpen(true)}
+                  onClick={handleBookingOpen}
                   className="px-4 sm:px-5 lg:px-6 py-2 sm:py-2.5 lg:py-3 bg-gradient-to-r from-rose-600 to-rose-700 text-white rounded-lg font-semibold hover:from-rose-700 hover:to-rose-800 transition-all duration-300 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 whitespace-nowrap text-xs sm:text-sm lg:text-base"
                   aria-label="Book an appointment now"
                 >
@@ -196,7 +209,8 @@ function App() {
         )}
       </div>
 
-      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
+      <BookingModal isOpen={isBookingOpen} onClose={handleBookingClose} />
+      <MobileCTABar ctaText="Book Now" ctaAction={handleBookingOpen} />
     </>
   );
 }

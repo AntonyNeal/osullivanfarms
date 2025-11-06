@@ -1,0 +1,111 @@
+/**
+ * Mobile CTA Bar - Fixed bottom bar
+ * Customize these styles to match your brand
+ */
+
+.mobile-cta-bar {
+  /* Fixed positioning at bottom */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+
+  /* Layout */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+
+  /* Basic styling */
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Hide on desktop - adjust breakpoint as needed */
+@media (min-width: 768px) {
+  .mobile-cta-bar {
+    display: none;
+  }
+}
+
+/* Availability section */
+.availability-info {
+  flex: 1;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.availability-text,
+.availability-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.availability-icon,
+.loading-icon {
+  font-size: 1rem;
+}
+
+/* CTA Button */
+.cta-button {
+  /* Sizing */
+  padding: 0.75rem 1.5rem;
+  min-width: 120px;
+
+  /* Typography */
+  font-size: 1rem;
+  font-weight: 600;
+
+  /* Styling - customize colors for your brand */
+  background: #be123c;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+
+  /* Interaction */
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cta-button:hover {
+  background: #9d0e2a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.cta-button:active {
+  transform: translateY(0);
+}
+
+/* Loading state */
+.availability-loading {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Accessibility: Focus states */
+.cta-button:focus {
+  outline: 2px solid #be123c;
+  outline-offset: 2px;
+}
+
+/* Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .cta-button,
+  .availability-loading {
+    animation: none;
+    transition: none;
+  }
+}
