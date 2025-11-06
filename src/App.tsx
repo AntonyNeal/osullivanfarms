@@ -96,6 +96,13 @@ function App() {
             <nav className="flex justify-between items-center max-w-7xl mx-auto">
               <div
                 onClick={() => {
+                  // If on admin page, go home on any click
+                  if (location.pathname === '/admin') {
+                    window.location.href = '/';
+                    return;
+                  }
+
+                  // Otherwise, use triple-click to access admin
                   const newCount = clickCount + 1;
                   setClickCount(newCount);
 
@@ -113,7 +120,11 @@ function App() {
                   }, 500);
                 }}
                 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-light text-gray-900 tracking-tight hover:text-rose-600 transition-colors whitespace-nowrap cursor-pointer"
-                title="Triple-click for surprise!"
+                title={
+                  location.pathname === '/admin'
+                    ? 'Click to return home'
+                    : 'Triple-click for surprise!'
+                }
               >
                 Claire Hamilton
               </div>
