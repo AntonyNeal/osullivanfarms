@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Home from './pages/Home';
@@ -7,10 +7,12 @@ import Gallery from './pages/Gallery';
 import Services from './pages/Services';
 import Prices from './pages/Prices';
 import FlyMeToYou from './pages/FlyMeToYou';
+import BookingModal from './components/BookingModal';
 import { initializeSession, registerSession, trackConversion } from './utils/utm.service';
 
 function App() {
   const location = useLocation();
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   useEffect(() => {
     // Initialize UTM tracking and session on app load
@@ -109,6 +111,13 @@ function App() {
                 >
                   Fly Me To You
                 </Link>
+                <button
+                  onClick={() => setIsBookingOpen(true)}
+                  className="px-4 sm:px-5 lg:px-6 py-2 sm:py-2.5 lg:py-3 bg-gradient-to-r from-rose-600 to-rose-700 text-white rounded-lg font-semibold hover:from-rose-700 hover:to-rose-800 transition-all duration-300 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 whitespace-nowrap text-xs sm:text-sm lg:text-base"
+                  aria-label="Book an appointment now"
+                >
+                  Book Now
+                </button>
               </div>
             </nav>
           </div>
@@ -186,6 +195,8 @@ function App() {
           </footer>
         )}
       </div>
+
+      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
     </>
   );
 }
