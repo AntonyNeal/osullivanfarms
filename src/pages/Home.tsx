@@ -48,11 +48,13 @@ export default function Home() {
               50% { opacity: 0.95; transform: scale(1.02); }
             }
 
-            /* Hide scroll bar on home page only */
-            .home-page {
+            /* Hide scroll bar globally when on home page */
+            html, body {
               overflow: hidden;
               height: 100vh;
               width: 100vw;
+              margin: 0;
+              padding: 0;
             }
 
             /* Ensure images cover the full area properly */
@@ -60,11 +62,12 @@ export default function Home() {
               object-position: center top;
             }
 
-            /* Hide scroll bars globally for home page */
-            .home-page::-webkit-scrollbar {
+            /* Additional scroll bar hiding */
+            html::-webkit-scrollbar,
+            body::-webkit-scrollbar {
               display: none;
             }
-            .home-page {
+            html {
               -ms-overflow-style: none;
               scrollbar-width: none;
             }
@@ -74,7 +77,7 @@ export default function Home() {
 
       <div className="home-page bg-white">
         {/* Full-Screen Hero Section with Photo Carousel */}
-        <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
+        <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center">
           {/* Carousel Container */}
           <div className="absolute inset-0 w-full h-full overflow-hidden">
             {heroImages.map((image, index) => {
@@ -120,7 +123,7 @@ export default function Home() {
               Claire Hamilton
             </h1>
             <p
-              className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl italic drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] mb-8 sm:mb-10 md:mb-12 max-w-4xl mx-auto leading-relaxed font-light"
+              className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl italic drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] mb-6 sm:mb-8 md:mb-10 max-w-4xl mx-auto leading-relaxed font-light"
               style={{
                 textShadow: '1px 1px 6px rgba(0,0,0,0.8), 0 0 15px rgba(0,0,0,0.5)',
                 fontFamily: '"Crimson Text", serif',
@@ -128,7 +131,7 @@ export default function Home() {
             >
               Real curves. Real connection. Ultimate GFE.
             </p>
-            <div className="flex gap-3 sm:gap-4 md:gap-6 justify-center flex-wrap px-4">
+            <div className="flex gap-3 sm:gap-4 md:gap-6 justify-center flex-wrap px-4 mb-8 sm:mb-12">
               <button
                 onClick={() => setIsBookingOpen(true)}
                 className="group relative px-6 sm:px-8 md:px-10 lg:px-12 py-3 sm:py-4 md:py-5 bg-gradient-to-r from-red-800/60 to-red-900/70 text-white rounded-lg text-base sm:text-lg md:text-xl font-bold tracking-wide hover:shadow-2xl hover:from-red-800/80 hover:to-red-900/90 transition-all duration-500 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-offset-2 backdrop-blur-sm border border-red-700/50"
