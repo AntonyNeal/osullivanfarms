@@ -2,30 +2,29 @@ import { useState } from 'react';
 
 interface BookingFormProps {
   onCancel?: () => void;
-  onSuccess?: (appointmentId: string) => void;
+  onSuccess?: () => void;
 }
 
 export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
-  const [step, setStep] = useState<'details' | 'datetime' | 'confirm' | 'success' | 'error'>(
+  const [step, setStep] = useState<'details' | 'preferences' | 'confirm' | 'success' | 'error'>(
     'details'
   );
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Patient details
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  // Contact details
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [gender, setGender] = useState<'male' | 'female' | 'other' | 'unknown'>('unknown');
 
-  // Appointment details
-  const [appointmentType, setAppointmentType] = useState('');
-  const [appointmentDate, setAppointmentDate] = useState('');
-  const [appointmentTime, setAppointmentTime] = useState('');
-  const [notes, setNotes] = useState('');
-  const [appointmentId, setAppointmentId] = useState('');
+  // Booking preferences
+  const [preferredDate, setPreferredDate] = useState('');
+  const [preferredTime, setPreferredTime] = useState('');
+  const [bookingLength, setBookingLength] = useState('');
+  const [locationType, setLocationType] = useState<'incall' | 'outcall'>('incall');
+  const [experienceType, setExperienceType] = useState<'GFE' | 'PSE'>('GFE');
+  const [specialRequests, setSpecialRequests] = useState('');
+  const [foundVia, setFoundVia] = useState('');
 
   // Validation
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -34,8 +33,7 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
   const handleDetailsNext = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!firstName.trim()) newErrors.firstName = 'First name required';
-    if (!lastName.trim()) newErrors.lastName = 'Last name required';
+    if (!name.trim()) newErrors.name = 'Name required';
     if (!email.trim()) {
       newErrors.email = 'Email required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -44,17 +42,17 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
-      setStep('datetime');
+      setStep('preferences');
     }
   };
 
   // Step 2: Validate and proceed
-  const handleDatetimeNext = () => {
+  const handlePreferencesNext = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!appointmentType) newErrors.appointmentType = 'Please select a service';
-    if (!appointmentDate) newErrors.appointmentDate = 'Please select a date';
-    if (!appointmentTime) newErrors.appointmentTime = 'Please select a time';
+    if (!preferredDate) newErrors.preferredDate = 'Please select a preferred date';
+    if (!preferredTime) newErrors.preferredTime = 'Please select a preferred time';
+    if (!bookingLength) newErrors.bookingLength = 'Please select booking length';
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
@@ -62,52 +60,16 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
     }
   };
 
-  // Step 3: Submit booking
+  // Step 3: Submit inquiry
   const handleConfirm = async () => {
     setLoading(true);
     try {
-      // Construct ISO datetime
-      const startDateTime = new Date(`${appointmentDate}T${appointmentTime}`);
-      const endDateTime = new Date(startDateTime);
-      endDateTime.setHours(endDateTime.getHours() + 1);
+      // For now, just simulate success since we don't have the backend
+      // In production, this would send to Claire's contact system
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
 
-      const payload = {
-        patient: {
-          firstName,
-          lastName,
-          email,
-          phone: phone || undefined,
-          dateOfBirth: dateOfBirth || undefined,
-          gender,
-        },
-        appointmentDetails: {
-          startTime: startDateTime.toISOString(),
-          endTime: endDateTime.toISOString(),
-          minutesDuration: 60,
-          notes: notes || undefined,
-        },
-      };
-
-      // Call booking API
-      const response = await fetch(
-        import.meta.env.VITE_HALAXY_BOOKING_FUNCTION_URL || '/api/create-halaxy-booking',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      const result = await response.json();
-
-      if (result.success && result.appointmentId) {
-        setAppointmentId(result.appointmentId);
-        setStep('success');
-        onSuccess?.(result.appointmentId);
-      } else {
-        setErrorMessage(result.error || 'Booking failed. Please try again.');
-        setStep('error');
-      }
+      setStep('success');
+      onSuccess?.();
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'An error occurred');
       setStep('error');
@@ -119,7 +81,7 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
   // Progress bar
   const progressSteps = {
     details: 33,
-    datetime: 66,
+    preferences: 66,
     confirm: 100,
   };
 
@@ -128,11 +90,11 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
   return (
     <div>
       {/* Step Indicator */}
-      {(step === 'details' || step === 'datetime' || step === 'confirm') && (
+      {(step === 'details' || step === 'preferences' || step === 'confirm') && (
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4 text-sm font-light text-gray-600">
             <span>1. Your Details</span>
-            <span>2. Date & Time</span>
+            <span>2. Preferences</span>
             <span>3. Confirm</span>
           </div>
           <div className="h-1 bg-gray-200 rounded-full">
@@ -144,39 +106,23 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
         </div>
       )}
 
-      {/* Step 1: Patient Details */}
+      {/* Step 1: Contact Details */}
       {step === 'details' && (
         <div>
           <h2 className="text-2xl font-light mb-6 text-gray-900">Your Information</h2>
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-light text-gray-700 mb-2">First Name *</label>
-              <input
-                type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                placeholder="John"
-                className={`w-full px-4 py-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400 ${
-                  errors.firstName ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-light text-gray-700 mb-2">Last Name *</label>
-              <input
-                type="text"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                placeholder="Smith"
-                className={`w-full px-4 py-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400 ${
-                  errors.lastName ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
-            </div>
+          <div className="mb-4">
+            <label className="block text-sm font-light text-gray-700 mb-2">Name *</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your full name"
+              className={`w-full px-4 py-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400 ${
+                errors.name ? 'border-red-500' : 'border-gray-300'
+              }`}
+            />
+            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
           </div>
 
           <div className="mb-4">
@@ -185,7 +131,7 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="john.smith@example.com"
+              placeholder="your.email@example.com"
               className={`w-full px-4 py-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400 ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               }`}
@@ -193,7 +139,7 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
 
-          <div className="mb-4">
+          <div className="mb-6">
             <label className="block text-sm font-light text-gray-700 mb-2">Phone</label>
             <input
               type="tel"
@@ -202,34 +148,6 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
               placeholder="0400 000 000"
               className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400"
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="block text-sm font-light text-gray-700 mb-2">Date of Birth</label>
-              <input
-                type="date"
-                value={dateOfBirth}
-                onChange={(e) => setDateOfBirth(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-light text-gray-700 mb-2">Gender</label>
-              <select
-                value={gender}
-                onChange={(e) =>
-                  setGender(e.target.value as 'male' | 'female' | 'other' | 'unknown')
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400"
-              >
-                <option value="unknown">Prefer not to say</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
           </div>
 
           <div className="flex gap-3">
@@ -251,71 +169,117 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
         </div>
       )}
 
-      {/* Step 2: Date & Time */}
-      {step === 'datetime' && (
+      {/* Step 2: Booking Preferences */}
+      {step === 'preferences' && (
         <div>
-          <h2 className="text-2xl font-light mb-6 text-gray-900">Select Date & Time</h2>
+          <h2 className="text-2xl font-light mb-6 text-gray-900">Booking Preferences</h2>
+
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-light text-gray-700 mb-2">
+                Preferred Date *
+              </label>
+              <input
+                type="date"
+                value={preferredDate}
+                onChange={(e) => setPreferredDate(e.target.value)}
+                className={`w-full px-4 py-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400 ${
+                  errors.preferredDate ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.preferredDate && (
+                <p className="text-red-500 text-xs mt-1">{errors.preferredDate}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-light text-gray-700 mb-2">
+                Preferred Time *
+              </label>
+              <input
+                type="time"
+                value={preferredTime}
+                onChange={(e) => setPreferredTime(e.target.value)}
+                className={`w-full px-4 py-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400 ${
+                  errors.preferredTime ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.preferredTime && (
+                <p className="text-red-500 text-xs mt-1">{errors.preferredTime}</p>
+              )}
+            </div>
+          </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-light text-gray-700 mb-2">Service *</label>
+            <label className="block text-sm font-light text-gray-700 mb-2">Booking Length *</label>
             <select
-              value={appointmentType}
-              onChange={(e) => setAppointmentType(e.target.value)}
+              value={bookingLength}
+              onChange={(e) => setBookingLength(e.target.value)}
               className={`w-full px-4 py-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400 ${
-                errors.appointmentType ? 'border-red-500' : 'border-gray-300'
+                errors.bookingLength ? 'border-red-500' : 'border-gray-300'
               }`}
             >
-              <option value="">Select a service</option>
-              <option value="dinner-date">Dinner Date - $300</option>
-              <option value="social-event">Social Event - $400</option>
-              <option value="travel-companion">Travel Companion - $500</option>
-              <option value="private-moment">Private Moment - $500</option>
+              <option value="">Select duration</option>
+              <option value="60min">60 minutes</option>
+              <option value="90min">90 minutes</option>
+              <option value="2hr">2 hours</option>
+              <option value="3hr">3 hours</option>
+              <option value="dinner">Dinner Date (2hrs food + 2hrs intimacy)</option>
+              <option value="overnight">Overnight (10 hours)</option>
+              <option value="social">Social only (1 hour)</option>
             </select>
-            {errors.appointmentType && (
-              <p className="text-red-500 text-xs mt-1">{errors.appointmentType}</p>
+            {errors.bookingLength && (
+              <p className="text-red-500 text-xs mt-1">{errors.bookingLength}</p>
             )}
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-light text-gray-700 mb-2">Date *</label>
-              <input
-                type="date"
-                value={appointmentDate}
-                onChange={(e) => setAppointmentDate(e.target.value)}
-                className={`w-full px-4 py-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400 ${
-                  errors.appointmentDate ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {errors.appointmentDate && (
-                <p className="text-red-500 text-xs mt-1">{errors.appointmentDate}</p>
-              )}
+              <label className="block text-sm font-light text-gray-700 mb-2">Location Type</label>
+              <select
+                value={locationType}
+                onChange={(e) => setLocationType(e.target.value as 'incall' | 'outcall')}
+                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400"
+              >
+                <option value="incall">Incall</option>
+                <option value="outcall">Outcall</option>
+              </select>
             </div>
 
             <div>
-              <label className="block text-sm font-light text-gray-700 mb-2">Time *</label>
-              <input
-                type="time"
-                value={appointmentTime}
-                onChange={(e) => setAppointmentTime(e.target.value)}
-                className={`w-full px-4 py-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400 ${
-                  errors.appointmentTime ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {errors.appointmentTime && (
-                <p className="text-red-500 text-xs mt-1">{errors.appointmentTime}</p>
-              )}
+              <label className="block text-sm font-light text-gray-700 mb-2">Experience Type</label>
+              <select
+                value={experienceType}
+                onChange={(e) => setExperienceType(e.target.value as 'GFE' | 'PSE')}
+                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400"
+              >
+                <option value="GFE">Girlfriend Experience (GFE)</option>
+                <option value="PSE">Pornstar Experience (PSE)</option>
+              </select>
             </div>
           </div>
 
-          <div className="mb-6">
-            <label className="block text-sm font-light text-gray-700 mb-2">Notes</label>
+          <div className="mb-4">
+            <label className="block text-sm font-light text-gray-700 mb-2">Special Requests</label>
             <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Any special requests or details..."
+              value={specialRequests}
+              onChange={(e) => setSpecialRequests(e.target.value)}
+              placeholder="Any upgrade requests, preferences, or special notes..."
               rows={3}
               className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400 resize-none"
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-light text-gray-700 mb-2">
+              How did you find me?
+            </label>
+            <input
+              type="text"
+              value={foundVia}
+              onChange={(e) => setFoundVia(e.target.value)}
+              placeholder="Scarlet Blue, website, etc."
+              className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-rose-400"
             />
           </div>
 
@@ -327,7 +291,7 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
               Back
             </button>
             <button
-              onClick={handleDatetimeNext}
+              onClick={handlePreferencesNext}
               className="flex-1 px-6 py-2 bg-gradient-to-r from-rose-400 to-pink-500 text-white font-light rounded-sm hover:shadow-lg transition-all"
             >
               Next
@@ -339,15 +303,15 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
       {/* Step 3: Confirmation */}
       {step === 'confirm' && (
         <div>
-          <h2 className="text-2xl font-light mb-6 text-gray-900">Confirm Your Booking</h2>
+          <h2 className="text-2xl font-light mb-6 text-gray-900">Confirm Your Inquiry</h2>
 
           <div className="bg-blue-50 border border-blue-200 rounded-sm p-6 mb-6">
             <p className="text-sm font-light text-gray-600 mb-4">
-              Please review your booking details:
+              Please review your inquiry details:
             </p>
             <div className="space-y-2 text-sm text-gray-700 font-light">
               <p>
-                <span className="font-medium">Name:</span> {firstName} {lastName}
+                <span className="font-medium">Name:</span> {name}
               </p>
               <p>
                 <span className="font-medium">Email:</span> {email}
@@ -358,23 +322,42 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
                 </p>
               )}
               <p>
-                <span className="font-medium">Service:</span> {appointmentType}
+                <span className="font-medium">Preferred Date & Time:</span> {preferredDate} at{' '}
+                {preferredTime}
               </p>
               <p>
-                <span className="font-medium">Date & Time:</span> {appointmentDate} at{' '}
-                {appointmentTime}
+                <span className="font-medium">Booking Length:</span> {bookingLength}
               </p>
-              {notes && (
+              <p>
+                <span className="font-medium">Location:</span> {locationType}
+              </p>
+              <p>
+                <span className="font-medium">Experience:</span> {experienceType}
+              </p>
+              {specialRequests && (
                 <p>
-                  <span className="font-medium">Notes:</span> {notes}
+                  <span className="font-medium">Special Requests:</span> {specialRequests}
+                </p>
+              )}
+              {foundVia && (
+                <p>
+                  <span className="font-medium">Found via:</span> {foundVia}
                 </p>
               )}
             </div>
           </div>
 
+          <div className="bg-yellow-50 border border-yellow-200 rounded-sm p-4 mb-6">
+            <p className="text-sm text-yellow-800 font-light">
+              <strong>Important:</strong> Screening is always required for safety. A deposit via
+              Beem confirms your booking. The remaining balance is settled in cash at the start of
+              our time together.
+            </p>
+          </div>
+
           <div className="flex gap-3">
             <button
-              onClick={() => setStep('datetime')}
+              onClick={() => setStep('preferences')}
               className="flex-1 px-6 py-2 border border-gray-300 text-gray-700 font-light rounded-sm hover:bg-gray-50 transition-colors"
             >
               Back
@@ -384,7 +367,7 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
               disabled={loading}
               className="flex-1 px-6 py-2 bg-gradient-to-r from-rose-400 to-pink-500 text-white font-light rounded-sm hover:shadow-lg transition-all disabled:opacity-50"
             >
-              {loading ? 'Processing...' : 'Confirm Booking'}
+              {loading ? 'Sending...' : 'Send Inquiry'}
             </button>
           </div>
         </div>
@@ -408,9 +391,10 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
               />
             </svg>
           </div>
-          <h3 className="text-2xl font-light text-gray-900 mb-2">Booking Confirmed!</h3>
+          <h3 className="text-2xl font-light text-gray-900 mb-2">Inquiry Sent!</h3>
           <p className="text-gray-600 font-light mb-6">
-            Your appointment has been successfully booked.
+            Your booking inquiry has been sent successfully. Claire will review your request and
+            contact you within 24 hours to confirm availability and complete the screening process.
           </p>
 
           <div className="bg-blue-50 border border-blue-200 rounded-sm p-4 mb-6 text-left">
@@ -418,7 +402,7 @@ export function BookingForm({ onCancel, onSuccess }: BookingFormProps) {
               Confirmation has been sent to <span className="font-medium">{email}</span>
             </p>
             <p className="text-sm text-gray-600 font-light mt-2">
-              <span className="font-medium">Appointment ID:</span> {appointmentId}
+              Please check your email for next steps and screening requirements.
             </p>
           </div>
 

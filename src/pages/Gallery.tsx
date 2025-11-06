@@ -21,6 +21,12 @@ export default function Gallery() {
       <Helmet>
         <title>Gallery - Claire Hamilton</title>
         <meta name="description" content="Claire Hamilton's photo gallery" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap"
+          rel="stylesheet"
+        />
       </Helmet>
 
       <div className="min-h-screen bg-white">
@@ -28,7 +34,10 @@ export default function Gallery() {
         <header className="bg-gradient-to-b from-rose-50 to-white">
           <div className="container mx-auto px-4 py-16">
             <div className="text-center">
-              <h1 className="text-5xl font-light text-gray-900 mb-2 tracking-tight">
+              <h1
+                className="text-5xl font-light text-gray-900 mb-2 tracking-tight"
+                style={{ fontFamily: '"Playfair Display", serif' }}
+              >
                 Claire Hamilton
               </h1>
               <div className="h-1 w-16 bg-gradient-to-r from-rose-300 via-pink-400 to-rose-300 mx-auto mb-6" />
@@ -67,9 +76,9 @@ export default function Gallery() {
             <div className="text-center">
               <a
                 href="/"
-                className="group inline-flex items-center px-10 py-4 bg-gradient-to-r from-rose-400 to-pink-500 text-white rounded-sm font-light tracking-wide hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                className="inline-flex items-center px-10 py-4 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-medium rounded-sm hover:from-rose-600 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
               >
-                <span>← Back to Home</span>
+                ← Back to Home
               </a>
             </div>
           </div>

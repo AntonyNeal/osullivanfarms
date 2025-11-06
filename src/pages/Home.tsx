@@ -18,214 +18,138 @@ export default function Home() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
-    }, 9000);
+    }, 15000); // Slowed down from 9000ms to 15000ms for better photo impact
 
     return () => clearInterval(interval);
   }, []);
 
+  const goToImage = (index: number) => {
+    setCurrentImageIndex(index);
+  };
+
   return (
     <>
       <Helmet>
-        <title>Claire Hamilton - Melbourne Companion</title>
+        <title>Claire Hamilton - Canberra Companion</title>
         <meta
           name="description"
-          content="Claire Hamilton - A sophisticated companion in Melbourne"
+          content="Claire Hamilton - Real curves. Real connection. Ultimate GFE. Independent escort based in Canberra, Australia."
         />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap"
+          rel="stylesheet"
+        />
+        <style>
+          {`
+            @keyframes gentle-pulse {
+              0%, 100% { opacity: 1; transform: scale(1); }
+              50% { opacity: 0.95; transform: scale(1.02); }
+            }
+          `}
+        </style>
       </Helmet>
 
       <div className="min-h-screen bg-white">
         {/* Full-Screen Hero Section with Photo Carousel */}
         <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
           {/* Carousel Container */}
-          <div className="absolute inset-0 w-full h-full">
-            {heroImages.map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt="Claire Hamilton"
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-2000 ${
-                  index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-                }`}
-              />
-            ))}
+          <div className="absolute inset-0 w-full h-full overflow-hidden">
+            {heroImages.map((image, index) => {
+              let transformClass = '';
+              let zIndex = 0;
+
+              if (index === currentImageIndex) {
+                transformClass = 'translate-x-0';
+                zIndex = 10;
+              } else if (index < currentImageIndex) {
+                transformClass = '-translate-x-full';
+                zIndex = 5;
+              } else {
+                transformClass = 'translate-x-full';
+                zIndex = 5;
+              }
+
+              return (
+                <img
+                  key={index}
+                  src={image}
+                  alt="Claire Hamilton"
+                  className={`absolute inset-0 w-full h-full object-cover transition-transform duration-1000 ease-in-out ${transformClass}`}
+                  style={{ zIndex }}
+                />
+              );
+            })}
           </div>
 
-          {/* Dark Overlay */}
-          <div className="absolute inset-0 bg-black/20" />
+          {/* Dark Overlay - Subtle for photo impact */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-rose-900/20 to-black/40" />
 
-          {/* Content Overlay */}
-          <div className="relative z-10 text-center text-white px-4">
-            <h1 className="text-7xl md:text-8xl font-bold mb-4 drop-shadow-lg">Claire Hamilton</h1>
-            <p className="text-xl md:text-3xl italic drop-shadow-lg mb-12">
-              A sophisticated companion, a free-spirited sweetheart
+          {/* Content Overlay - Elegant and readable */}
+          <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8">
+            <h1
+              className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-light mb-6 sm:mb-8 drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)] leading-none tracking-tight animate-pulse"
+              style={{
+                textShadow: '2px 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)',
+                fontFamily: '"Playfair Display", serif',
+                animation: 'gentle-pulse 4s ease-in-out infinite',
+              }}
+            >
+              Claire Hamilton
+            </h1>
+            <p
+              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl italic drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] mb-10 sm:mb-12 md:mb-16 max-w-4xl mx-auto leading-relaxed font-light"
+              style={{
+                textShadow: '1px 1px 6px rgba(0,0,0,0.8), 0 0 15px rgba(0,0,0,0.5)',
+                fontFamily: '"Crimson Text", serif',
+              }}
+            >
+              Real curves. Real connection. Ultimate GFE.
             </p>
-            <div className="flex gap-4 justify-center flex-wrap">
-              <button className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors drop-shadow-lg">
+            <div className="flex gap-4 sm:gap-6 justify-center flex-wrap">
+              <button
+                onClick={() => setIsBookingOpen(true)}
+                className="group relative px-10 sm:px-12 py-4 sm:py-5 bg-gradient-to-r from-red-800/60 to-red-900/70 text-white rounded-lg text-lg sm:text-xl font-bold tracking-wide hover:shadow-2xl hover:from-red-800/80 hover:to-red-900/90 transition-all duration-500 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-offset-2 backdrop-blur-sm border border-red-700/50"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                  boxShadow:
+                    '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                }}
+                aria-label="Book an appointment now"
+              >
                 Book Now
+                <span className="ml-2 inline-block group-hover:translate-x-1 transition-transform duration-300">
+                  →
+                </span>
               </button>
               <Link
                 to="/gallery"
-                className="bg-white/20 hover:bg-white/30 text-white px-8 py-3 rounded-lg font-semibold transition-colors border border-white backdrop-blur-sm"
+                className="group px-10 sm:px-12 py-4 sm:py-5 border-2 border-rose-300 text-rose-100 rounded-lg text-lg sm:text-xl font-semibold tracking-wide hover:bg-rose-50/20 hover:border-rose-200 transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-rose-400 focus:ring-offset-2 backdrop-blur-sm"
+                aria-label="View photo gallery"
               >
                 View Gallery
+                <span className="ml-2 inline-block group-hover:translate-x-1 transition-transform">
+                  →
+                </span>
               </Link>
             </div>
           </div>
 
-          {/* Carousel Indicators */}
-          <div className="absolute bottom-8 z-20 flex gap-2 justify-center w-full">
+          {/* Carousel Indicators - Now Clickable */}
+          <div className="absolute bottom-6 z-20 flex gap-3 justify-center w-full">
             {heroImages.map((_, index) => (
-              <div
+              <button
                 key={index}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  index === currentImageIndex ? 'bg-white w-8' : 'bg-white/50 w-2'
+                onClick={() => goToImage(index)}
+                className={`h-2 rounded-full transition-all duration-300 cursor-pointer hover:scale-125 focus:outline-none focus:ring-2 focus:ring-white/50 border-2 ${
+                  index === currentImageIndex
+                    ? 'bg-white/20 border-white w-6'
+                    : 'bg-transparent border-white/60 w-2 hover:bg-white/10 hover:border-white'
                 }`}
+                aria-label={`Go to image ${index + 1}`}
               />
             ))}
-          </div>
-        </section>
-
-        {/* About Section */}
-        <section id="about" className="py-24 bg-gradient-to-b from-white via-rose-50/30 to-white">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto">
-              <h2 className="text-5xl font-light text-gray-900 text-center mb-2 tracking-tight">
-                About Claire
-              </h2>
-              <div className="h-1 w-16 bg-gradient-to-r from-rose-300 via-pink-400 to-rose-300 mx-auto mb-12" />
-              <p className="text-lg text-gray-700 leading-relaxed text-center font-light">
-                Claire Hamilton is a sophisticated and elegant companion, crafted for discerning
-                individuals who appreciate the finer things in life. With an innate understanding of
-                genuine connection, she brings warmth, intelligence, and an irresistible free spirit
-                to every encounter.
-              </p>
-              <p className="text-lg text-gray-600 leading-relaxed text-center font-light mt-8 italic">
-                Every moment is an invitation to experience luxury through presence, conversation,
-                and the art of being truly seen.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Services Section */}
-        <section id="services" className="py-24 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="max-w-5xl mx-auto">
-              <div className="text-center mb-16">
-                <h2 className="text-5xl font-light text-gray-900 mb-2 tracking-tight">Services</h2>
-                <div className="h-1 w-16 bg-gradient-to-r from-rose-300 via-pink-400 to-rose-300 mx-auto" />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div className="group relative bg-white border border-rose-100 p-10 rounded-sm hover:shadow-2xl transition-all duration-500 hover:border-rose-300">
-                  <div className="absolute top-0 left-0 w-1 h-12 bg-gradient-to-b from-rose-400 to-transparent" />
-                  <h3 className="text-2xl font-light text-gray-900 mb-4 tracking-tight">
-                    Dinner Dates
-                  </h3>
-                  <p className="text-gray-700 leading-relaxed font-light">
-                    Exquisite dining at Melbourne&apos;s most coveted establishments. Share
-                    meaningful conversation over exceptional cuisine, creating memories of refined
-                    elegance and genuine connection.
-                  </p>
-                  <div className="mt-6 flex items-center text-rose-400 text-sm font-light tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <span>Inquire about availability</span>
-                    <span className="ml-2">→</span>
-                  </div>
-                </div>
-
-                <div className="group relative bg-white border border-rose-100 p-10 rounded-sm hover:shadow-2xl transition-all duration-500 hover:border-rose-300">
-                  <div className="absolute top-0 left-0 w-1 h-12 bg-gradient-to-b from-rose-400 to-transparent" />
-                  <h3 className="text-2xl font-light text-gray-900 mb-4 tracking-tight">
-                    Social Events
-                  </h3>
-                  <p className="text-gray-700 leading-relaxed font-light">
-                    Radiant presence at galas, exclusive soirées, and intimate gatherings. Be the
-                    center of attention with a companion who brings elegance, wit, and undivided
-                    attention to every social occasion.
-                  </p>
-                  <div className="mt-6 flex items-center text-rose-400 text-sm font-light tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <span>Inquire about availability</span>
-                    <span className="ml-2">→</span>
-                  </div>
-                </div>
-
-                <div className="group relative bg-white border border-rose-100 p-10 rounded-sm hover:shadow-2xl transition-all duration-500 hover:border-rose-300">
-                  <div className="absolute top-0 left-0 w-1 h-12 bg-gradient-to-b from-rose-400 to-transparent" />
-                  <h3 className="text-2xl font-light text-gray-900 mb-4 tracking-tight">
-                    Travel Companion
-                  </h3>
-                  <p className="text-gray-700 leading-relaxed font-light">
-                    Explore the world with a sophisticated traveler. From serene escapes to
-                    adventurous journeys, every destination becomes more meaningful shared with
-                    someone who truly understands the value of presence.
-                  </p>
-                  <div className="mt-6 flex items-center text-rose-400 text-sm font-light tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <span>Inquire about availability</span>
-                    <span className="ml-2">→</span>
-                  </div>
-                </div>
-
-                <div className="group relative bg-white border border-rose-100 p-10 rounded-sm hover:shadow-2xl transition-all duration-500 hover:border-rose-300">
-                  <div className="absolute top-0 left-0 w-1 h-12 bg-gradient-to-b from-rose-400 to-transparent" />
-                  <h3 className="text-2xl font-light text-gray-900 mb-4 tracking-tight">
-                    Private Moments
-                  </h3>
-                  <p className="text-gray-700 leading-relaxed font-light">
-                    Intimate, discreet experiences tailored entirely to your desires. In a sanctuary
-                    of trust and luxury, discover connection that transcends the ordinary and
-                    celebrates sensuality with sophistication.
-                  </p>
-                  <div className="mt-6 flex items-center text-rose-400 text-sm font-light tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <span>Inquire about availability</span>
-                    <span className="ml-2">→</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Contact Section */}
-        <section id="contact" className="py-24 bg-gradient-to-b from-rose-50 to-white">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-5xl font-light text-gray-900 mb-2 tracking-tight">
-                  Let&apos;s Connect
-                </h2>
-                <div className="h-1 w-16 bg-gradient-to-r from-rose-300 via-pink-400 to-rose-300 mx-auto" />
-              </div>
-              <p className="text-center text-gray-700 text-lg font-light leading-relaxed mb-12 tracking-wide">
-                Every meaningful connection begins with a genuine conversation. Reach out to discuss
-                your expectations, desires, and the kind of experience you seek. Discretion,
-                elegance, and authentic presence are my promise to you.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <button
-                  onClick={() => setIsBookingOpen(true)}
-                  className="group px-10 py-4 bg-gradient-to-r from-rose-400 to-pink-500 text-white rounded-sm font-light tracking-wide hover:shadow-2xl transition-all duration-300 hover:scale-105"
-                >
-                  Send Inquiry
-                  <span className="ml-2 inline-block group-hover:translate-x-1 transition-transform">
-                    →
-                  </span>
-                </button>
-                <button
-                  onClick={() => setIsBookingOpen(true)}
-                  className="group px-10 py-4 border-2 border-rose-300 text-rose-400 rounded-sm font-light tracking-wide hover:bg-rose-50 hover:border-rose-400 transition-all duration-300"
-                >
-                  Schedule Call
-                  <span className="ml-2 inline-block group-hover:translate-x-1 transition-transform">
-                    →
-                  </span>
-                </button>
-              </div>
-              <div className="mt-16 pt-12 border-t border-rose-200">
-                <p className="text-center text-gray-600 text-sm font-light tracking-wide">
-                  Response within 24 hours • Absolute discretion guaranteed • Available for
-                  engagements across Australia
-                </p>
-              </div>
-            </div>
           </div>
         </section>
       </div>
