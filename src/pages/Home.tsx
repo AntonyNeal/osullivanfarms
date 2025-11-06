@@ -16,6 +16,20 @@ export default function Home() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState(0);
+  const [clickLog, setClickLog] = useState<string[]>([]);
+
+  // Add diagnostic info to window for debugging
+  useEffect(() => {
+    const diag = {
+      showClickLogs: () => {
+        console.log('[DIAG] Click logs:', clickLog);
+      },
+      clearClickLogs: () => {
+        setClickLog([]);
+      },
+    };
+    Object.assign(window, diag);
+  }, [clickLog]);
 
   useEffect(() => {
     const interval = setInterval(() => {
