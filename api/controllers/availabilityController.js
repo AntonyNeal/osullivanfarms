@@ -268,8 +268,197 @@ const getTenantLocations = async (req, res) => {
   }
 };
 
+/**
+ * GET /api/availability/:tenantId/touring-schedule
+ * Get touring schedule (upcoming locations)
+ */
+const getTouringSchedule = async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+    const { daysAhead = 90 } = req.query;
+
+    if (!tenantId) {
+      return res.status(400).json({
+        error: 'Bad Request',
+        message: 'Tenant ID is required',
+      });
+    }
+
+    const result = await db.query(`SELECT * FROM get_touring_schedule($1::uuid, $2::int)`, [
+      tenantId,
+      parseInt(daysAhead),
+    ]);
+
+    res.json({
+      success: true,
+      data: result.rows.map((row) => ({
+        locationId: row.location_id,
+        locationType: row.location_type,
+        city: row.city,
+        stateProvince: row.state_province,
+        country: row.country,
+        availableFrom: row.available_from,
+        availableUntil: row.available_until,
+        daysAvailable: row.days_available ? parseInt(row.days_available) : null,
+      })),
+      count: result.rows.length,
+    });
+  } catch (error) {
+    console.error('Error in getTouringSchedule:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve touring schedule',
+      details: error.message,
+    });
+  }
+};
+
+/**
+ * GET /api/availability/:tenantId/current-location
+ * Get current location
+ */
+const getCurrentLocation = async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+
+    if (!tenantId) {
+      return res.status(400).json({
+        error: 'Bad Request',
+        message: 'Tenant ID is required',
+      });
+    }
+
+    const result = await db.query(`SELECT * FROM get_current_location($1::uuid)`, [tenantId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        error: 'Not Found',
+        message: 'No current location found',
+      });
+    }
+
+    const location = result.rows[0];
+    res.json({
+      success: true,
+      data: {
+        locationId: location.location_id,
+        city: location.city,
+        stateProvince: location.state_province,
+        country: location.country,
+        availableFrom: location.available_from,
+        availableUntil: location.available_until,
+      },
+    });
+  } catch (error) {
+    console.error('Error in getCurrentLocation:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve current location',
+      details: error.message,
+    });
+  }
+};
+
+/**
+ * GET /api/availability/:tenantId/check/:date
+ * Check availability for a specific date
+ */
+const checkAvailabilityForDate = async (req, res) => {
+  try {
+    const { tenantId, date } = req.params;
+    const { durationHours } = req.query;
+
+    if (!tenantId || !date) {
+      return res.status(400).json({
+        error: 'Bad Request',
+        message: 'Tenant ID and date are required',
+      });
+    }
+
+    const params = [tenantId, date];
+    if (durationHours) {
+      params.push(parseInt(durationHours));
+    } else {
+      params.push(null);
+    }
+
+    const result = await db.query(
+      `SELECT * FROM check_availability($1::uuid, $2::date, $3::int)`,
+      params
+    );
+
+    res.json({
+      success: true,
+      data: result.rows.map((row) => ({
+        isAvailable: row.is_available,
+        availabilityId: row.availability_id,
+        status: row.status,
+        timeSlotStart: row.time_slot_start,
+        timeSlotEnd: row.time_slot_end,
+        locationCity: row.location_city,
+      })),
+      count: result.rows.length,
+    });
+  } catch (error) {
+    console.error('Error in checkAvailabilityForDate:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to check availability',
+      details: error.message,
+    });
+  }
+};
+
+/**
+ * GET /api/availability/:tenantId/dates
+ * Get available dates in a date range
+ */
+const getAvailableDates = async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+    const { startDate, endDate } = req.query;
+
+    if (!tenantId || !startDate || !endDate) {
+      return res.status(400).json({
+        error: 'Bad Request',
+        message: 'Tenant ID, startDate, and endDate are required',
+      });
+    }
+
+    const result = await db.query(
+      `SELECT * FROM get_available_dates($1::uuid, $2::date, $3::date)`,
+      [tenantId, startDate, endDate]
+    );
+
+    res.json({
+      success: true,
+      data: result.rows.map((row) => ({
+        date: row.date,
+        availabilityCount: parseInt(row.availability_count),
+        city: row.city,
+      })),
+      count: result.rows.length,
+      dateRange: {
+        startDate,
+        endDate,
+      },
+    });
+  } catch (error) {
+    console.error('Error in getAvailableDates:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve available dates',
+      details: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAvailability,
   checkDateAvailability,
   getTenantLocations,
+  getTouringSchedule,
+  getCurrentLocation,
+  checkAvailabilityForDate,
+  getAvailableDates,
 };

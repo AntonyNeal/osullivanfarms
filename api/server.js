@@ -63,6 +63,8 @@ const locationRoutes = require('./routes/locations');
 const bookingRoutes = require('./routes/bookings');
 const paymentRoutes = require('./routes/payments');
 const analyticsRoutes = require('./routes/analytics');
+const tenantAnalyticsRoutes = require('./routes/tenantAnalytics');
+const socialAnalyticsRoutes = require('./routes/socialAnalytics');
 const healthRoutes = require('./routes/health');
 
 // API routes - All routes deployed
@@ -73,6 +75,8 @@ app.use('/locations', locationRoutes);
 app.use('/bookings', bookingRoutes);
 app.use('/payments', paymentRoutes);
 app.use('/analytics', analyticsRoutes);
+app.use('/tenant-analytics', tenantAnalyticsRoutes);
+app.use('/social-analytics', socialAnalyticsRoutes);
 app.use('/health', healthRoutes);
 
 // Legacy endpoints (keep for backward compatibility)
