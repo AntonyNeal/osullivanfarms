@@ -85,15 +85,15 @@ Once PostgreSQL is ready:
 3. Go to **Settings** → **Environment & Variables**
 4. Add the following environment variables:
 
-| Variable                    | Value                                                                   | Source                         |
-| --------------------------- | ----------------------------------------------------------------------- | ------------------------------ |
-| `DATABASE_URL`              | `postgresql://doadmin:...@db-host:25060/defaultdb?sslmode=require`      | From Step 1.2 above            |
-| `SENDGRID_API_KEY`          | Your SendGrid API key (starts with SG.)                                 | From SendGrid API Keys page ✅ |
-| `SENDGRID_FROM_EMAIL`       | `bookings@avaliable.pro`                                                | Authenticated domain sender ✅ |
-| `CLAIRE_NOTIFICATION_EMAIL` | `claire@avaliable.pro`                                                  | Notification recipient ✅      |
-| `ALLOWED_ORIGIN`            | `https://clairehamilton.com.au`                                         | Your production domain         |
-| `VITE_API_BASE_URL`         | `https://clairehamilton.com.au`                                         | Your production domain         |
-| `NODE_ENV`                  | `production`                                                            | Fixed value                    |
+| Variable                    | Value                                                              | Source                         |
+| --------------------------- | ------------------------------------------------------------------ | ------------------------------ |
+| `DATABASE_URL`              | `postgresql://doadmin:...@db-host:25060/defaultdb?sslmode=require` | From Step 1.2 above            |
+| `SENDGRID_API_KEY`          | Your SendGrid API key (starts with SG.)                            | From SendGrid API Keys page ✅ |
+| `SENDGRID_FROM_EMAIL`       | `bookings@avaliable.pro`                                           | Authenticated domain sender ✅ |
+| `CLAIRE_NOTIFICATION_EMAIL` | `claire@avaliable.pro`                                             | Notification recipient ✅      |
+| `ALLOWED_ORIGIN`            | `https://clairehamilton.com.au`                                    | Your production domain         |
+| `VITE_API_BASE_URL`         | `https://clairehamilton.com.au`                                    | Your production domain         |
+| `NODE_ENV`                  | `production`                                                       | Fixed value                    |
 
 5. Click **Save** - DigitalOcean will redeploy your functions with new variables
 

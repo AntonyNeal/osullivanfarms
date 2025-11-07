@@ -78,15 +78,15 @@ Complete deployment checklist for getting the booking system live in production.
 - [x] **Step 3**: Go to **Settings** → **Environment & Variables**
 - [x] **Step 4**: Add these environment variables:
 
-| Variable                    | Value                                                                 | Status |
-| --------------------------- | --------------------------------------------------------------------- | ------ |
-| `DATABASE_URL`              | Paste connection string from above                                    | ✅     |
-| `SENDGRID_API_KEY`          | Your SendGrid API key from dashboard                                  | ✅     |
-| `SENDGRID_FROM_EMAIL`       | bookings@avaliable.pro                                                | ✅     |
-| `CLAIRE_NOTIFICATION_EMAIL` | claire@avaliable.pro                                                  | ✅     |
-| `ALLOWED_ORIGIN`            | https://clairehamilton.com.au                                         | ✅     |
-| `VITE_API_BASE_URL`         | https://clairehamilton.com.au                                         | ✅     |
-| `NODE_ENV`                  | production                                                            | ✅     |
+| Variable                    | Value                                | Status |
+| --------------------------- | ------------------------------------ | ------ |
+| `DATABASE_URL`              | Paste connection string from above   | ✅     |
+| `SENDGRID_API_KEY`          | Your SendGrid API key from dashboard | ✅     |
+| `SENDGRID_FROM_EMAIL`       | bookings@avaliable.pro               | ✅     |
+| `CLAIRE_NOTIFICATION_EMAIL` | claire@avaliable.pro                 | ✅     |
+| `ALLOWED_ORIGIN`            | https://clairehamilton.com.au        | ✅     |
+| `VITE_API_BASE_URL`         | https://clairehamilton.com.au        | ✅     |
+| `NODE_ENV`                  | production                           | ✅     |
 
 - [x] **Step 5**: Click **Save** (App Platform will auto-redeploy)
 
