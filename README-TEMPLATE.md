@@ -5,12 +5,14 @@ A comprehensive, multi-tenant service booking platform built with React, TypeScr
 ## 🚀 Features
 
 ### Multi-Tenant Architecture
+
 - **Subdomain-based routing** for tenant isolation
 - **Dynamic theme and content configuration** per tenant
 - **Scalable tenant management** system
 - **A/B testing support** for photos and content
 
 ### Booking System
+
 - **Real-time availability** management
 - **Service catalog** with pricing options
 - **Customer booking** interface
@@ -18,6 +20,7 @@ A comprehensive, multi-tenant service booking platform built with React, TypeScr
 - **Email notifications** and reminders
 
 ### Professional Features
+
 - **Payment integration** (Stripe, PayPal ready)
 - **Analytics dashboard** with booking insights
 - **Photo gallery** with category management
@@ -26,6 +29,7 @@ A comprehensive, multi-tenant service booking platform built with React, TypeScr
 - **Responsive design** for all devices
 
 ### Technical Stack
+
 - **Frontend**: React 18, TypeScript, Vite
 - **Styling**: Tailwind CSS with custom theming
 - **State Management**: TanStack Query (React Query)
@@ -36,13 +40,16 @@ A comprehensive, multi-tenant service booking platform built with React, TypeScr
 ## 🏗️ Architecture
 
 ### Tenant System
+
 Each tenant has isolated configurations for:
+
 - **Content**: Services, pricing, contact info, bio
 - **Theme**: Colors, fonts, layout preferences
 - **Photos**: Hero images, galleries, testimonials
 - **Features**: Enabled/disabled functionality per tenant
 
 ### File Structure
+
 ```
 src/
 ├── core/                 # Core platform functionality
@@ -62,24 +69,28 @@ src/
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - npm or yarn
 - Git
 
 ### Installation
 
 1. **Clone the template**:
+
    ```bash
    git clone https://github.com/AntonyNeal/service-booking-platform-template.git
    cd service-booking-platform-template
    ```
 
 2. **Install dependencies**:
+
    ```bash
    npm install
    ```
 
 3. **Start development server**:
+
    ```bash
    npm run dev
    ```
@@ -93,11 +104,13 @@ src/
 ### Creating Your First Tenant
 
 1. **Copy the demo tenant**:
+
    ```bash
    cp -r src/tenants/demo src/tenants/yourbusiness
    ```
 
 2. **Update content configuration**:
+
    ```typescript
    // src/tenants/yourbusiness/content.config.ts
    export const content: TenantContent = {
@@ -111,14 +124,15 @@ src/
          description: 'What you offer...',
          duration: '60 minutes',
          price: 150,
-         featured: true
-       }
+         featured: true,
+       },
      ],
      // ... rest of configuration
    };
    ```
 
 3. **Customize theme**:
+
    ```typescript
    // src/tenants/yourbusiness/theme.config.ts
    export const theme: TenantTheme = {
@@ -129,9 +143,9 @@ src/
      },
      fonts: {
        heading: 'Your-Font, sans-serif',
-       body: 'Your-Body-Font, sans-serif'
+       body: 'Your-Body-Font, sans-serif',
      },
-     layout: 'modern' // or 'elegant', 'minimal'
+     layout: 'modern', // or 'elegant', 'minimal'
    };
    ```
 
@@ -143,25 +157,28 @@ src/
        control: {
          id: 'hero-main',
          url: 'https://your-image-url.com/hero.jpg',
-         alt: 'Your hero image description'
-       }
+         alt: 'Your hero image description',
+       },
      },
      gallery: [
        // Your gallery photos
-     ]
+     ],
    };
    ```
 
 ### Deployment Options
 
 #### DigitalOcean App Platform (Recommended)
+
 The platform is optimized for DigitalOcean deployment with:
+
 - **Automatic scaling** based on traffic
 - **Built-in CDN** for global performance
 - **Database integration** for bookings and tenant data
 - **Environment variable management**
 
 #### Other Platforms
+
 - **Vercel**: Perfect for frontend deployment
 - **Netlify**: Great for static hosting with serverless functions
 - **AWS**: Complete control with S3, CloudFront, and Lambda
@@ -169,6 +186,7 @@ The platform is optimized for DigitalOcean deployment with:
 ## 🛠️ Environment Configuration
 
 ### Required Environment Variables
+
 ```bash
 # API Configuration
 VITE_API_BASE_URL=https://your-api-domain.com
@@ -186,19 +204,23 @@ VITE_ENABLE_PAYMENTS=true
 ```
 
 ### Development vs Production
+
 The template includes environment-specific configurations:
+
 - **Development**: Hot reloading, detailed error messages
 - **Production**: Optimized bundles, error tracking, analytics
 
 ## 📊 Analytics & Monitoring
 
 ### Built-in Analytics
+
 - **Booking conversion rates**
 - **Service popularity metrics**
 - **Revenue tracking**
 - **Customer behavior insights**
 
 ### Supported Platforms
+
 - Google Analytics 4
 - Plausible Analytics
 - Custom analytics endpoints
@@ -214,6 +236,7 @@ The template includes environment-specific configurations:
 ## 🌍 Multi-Language Support
 
 The template is ready for internationalization:
+
 - **Content translation** system
 - **Date/time localization**
 - **Currency formatting**
@@ -266,6 +289,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ## 🚀 Roadmap
 
 ### Upcoming Features
+
 - [ ] Advanced calendar integration (Google Calendar, Outlook)
 - [ ] Multi-language content management
 - [ ] Advanced analytics dashboard
@@ -274,6 +298,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 - [ ] Integration marketplace
 
 ### Recent Updates
+
 - ✅ Multi-tenant architecture
 - ✅ Payment system integration
 - ✅ Real-time availability
@@ -282,7 +307,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ---
 
-**Ready to launch your service booking platform?** 
+**Ready to launch your service booking platform?**
 
 This template provides everything you need to get started. Customize the demo tenant, deploy to your preferred platform, and start accepting bookings today!
 

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 
 // SDK Tests Component
@@ -10,13 +12,46 @@ interface TestResult {
 interface Location {
   city: string;
   country: string;
+  availableFrom: string;
+  availableUntil?: string;
 }
 
 interface Slot {
   status: string;
+  isAvailable?: boolean;
+  locationCity?: string;
 }
 
-export function SDKTests() {
+interface DateAvailability {
+  date: string;
+  availabilityCount: number;
+}
+
+// Generic interface for API responses
+interface GenericObject {
+  [key: string]: unknown;
+  utilizationRate?: number;
+  stage?: string;
+  count?: number;
+  percentage?: string;
+  hashtag?: string;
+  postCount?: number;
+  totalBookings?: number;
+  date?: string;
+  followers?: number;
+  engagement?: number;
+}
+
+// Additional interfaces for type safety
+interface Service {
+  id: string;
+  name: string;
+  description: string;
+  duration: number;
+  price: number;
+}
+
+export default function SDKTests() {
   const [results, setResults] = useState<TestResult[]>([
     // Core APIs
     { name: 'Tenant API - Fetch Claire', status: 'idle', message: '' },
@@ -223,7 +258,7 @@ export function SDKTests() {
         `✅ ${schedule.length} upcoming location(s)\n${schedule
           .slice(0, 3)
           .map(
-            (loc: any) =>
+            (loc: Location) =>
               `  • ${loc.city}, ${loc.country} (${loc.availableFrom} to ${loc.availableUntil || 'ongoing'})`
           )
           .join('\n')}`
@@ -273,7 +308,7 @@ export function SDKTests() {
 
       const json = await res.json();
       const slots = json.data || [];
-      const available = slots.filter((s: any) => s.isAvailable);
+      const available = slots.filter((s: Slot) => s.isAvailable);
 
       updateTestStatus(
         testName,
@@ -305,7 +340,7 @@ export function SDKTests() {
       updateTestStatus(
         testName,
         'success',
-        `✅ ${dates.length} available dates in December\nTotal slots: ${dates.reduce((sum: number, d: any) => sum + d.availabilityCount, 0)}`
+        `✅ ${dates.length} available dates in December\nTotal slots: ${dates.reduce((sum: number, d: DateAvailability) => sum + d.availabilityCount, 0)}`
       );
     } catch (error) {
       updateTestStatus(
@@ -359,7 +394,7 @@ export function SDKTests() {
         `✅ ${sources.length} traffic source(s)\n${sources
           .slice(0, 3)
           .map(
-            (s: any) =>
+            (s: GenericObject) =>
               `  • ${s.source}/${s.medium}: ${s.sessions} sessions, ${s.conversions} conversions`
           )
           .join('\n')}`
@@ -390,7 +425,7 @@ export function SDKTests() {
         `✅ ${locations.length} location(s) tracked\n${locations
           .slice(0, 2)
           .map(
-            (l: any) =>
+            (l: GenericObject) =>
               `  • ${l.city}: ${l.totalBookings} bookings (${l.completedBookings} completed)`
           )
           .join('\n')}`
@@ -419,7 +454,10 @@ export function SDKTests() {
       const avgUtil =
         data.length > 0
           ? (
-              data.reduce((sum: number, d: any) => sum + d.utilizationRate, 0) / data.length
+              data.reduce(
+                (sum: number, d: GenericObject) => sum + (d.utilizationRate as number),
+                0
+              ) / data.length
             ).toFixed(1)
           : 0;
 
@@ -454,7 +492,7 @@ export function SDKTests() {
         testName,
         'success',
         `✅ Conversion Funnel:\n${stages
-          .map((s: any) => `  ${s.stage}: ${s.count} (${s.percentage}%)`)
+          .map((s: GenericObject) => `  ${s.stage}: ${s.count} (${s.percentage}%)`)
           .join('\n')}`
       );
     } catch (error) {
@@ -484,8 +522,8 @@ export function SDKTests() {
         `✅ ${posts.length} posts analyzed\n${posts
           .slice(0, 2)
           .map(
-            (p: any) =>
-              `  • ${p.platform}: ${p.engagement.likes} likes, ${p.conversions.bookings} bookings`
+            (p: GenericObject) =>
+              `  • ${p.platform}: ${p.engagement?.likes} likes, ${p.conversions?.bookings} bookings`
           )
           .join('\n')}`
       );
