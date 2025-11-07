@@ -28,9 +28,7 @@ export function SDKTests() {
   const API_BASE = 'https://avaliable.pro/api';
 
   const updateTestStatus = (testName: string, status: TestResult['status'], message: string) => {
-    setResults((prev) =>
-      prev.map((r) => (r.name === testName ? { ...r, status, message } : r))
-    );
+    setResults((prev) => prev.map((r) => (r.name === testName ? { ...r, status, message } : r)));
   };
 
   const runAllTests = async () => {
@@ -81,7 +79,7 @@ export function SDKTests() {
     updateTestStatus(testName, 'running', 'Fetching locations...');
 
     try {
-      const res = await fetch(`${API_BASE}/locations/tenant/${id}`);
+      const res = await fetch(`${API_BASE}/locations/${id}`);
 
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}: ${res.statusText}`);
