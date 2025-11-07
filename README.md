@@ -11,7 +11,7 @@ A modern, elegant companion website built with React, TypeScript, and DigitalOce
 
 ### ✅ Currently Deployed (Production)
 
-**Live Site**: https://clairehamilton.vip
+**Live Site**: https://avaliable.pro
 
 **Architecture**:
 

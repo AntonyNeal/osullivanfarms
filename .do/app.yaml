@@ -54,16 +54,12 @@ services:
     instance_size_slug: basic-xxs
     envs:
       - key: VITE_API_BASE_URL
-        value: https://clairehamilton.vip/api
+        value: https://avaliable.pro/api
     routes:
       - path: /
 
 # Domain configuration
 domains:
-  - domain: clairehamilton.vip
-    type: PRIMARY
-  - domain: www.clairehamilton.vip
-    type: ALIAS
   - domain: avaliable.pro
-    type: ALIAS
+    type: PRIMARY
     wildcard: true

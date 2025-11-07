@@ -12,7 +12,7 @@ import type { TenantConfig } from '../../core/types/tenant.types';
 export const claireConfig: TenantConfig = {
   id: 'claire',
   subdomain: 'claire',
-  customDomain: 'clairehamilton.vip', // Legacy domain
+  customDomain: undefined, // Removed clairehamilton.vip domain
   name: 'Claire Hamilton',
   status: 'active',
   theme,

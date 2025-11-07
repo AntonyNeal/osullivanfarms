@@ -39,7 +39,7 @@ async function seedClaire() {
     // Step 1: Create/Update Tenant
     const claireTenant = {
       subdomain: 'claire',
-      custom_domain: 'clairehamilton.vip',
+      custom_domain: null, // Removed clairehamilton.vip domain
       name: 'Claire Hamilton',
       email: 'info@clairehamilton.vip',
       status: 'active',

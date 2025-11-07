@@ -207,7 +207,7 @@ ${booking.specialRequests ? `SPECIAL REQUESTS:\n━━━━━━━━━━�
 BOOKING REFERENCE: ${booking.id}
 
 View full details in your admin dashboard:
-https://clairehamilton.vip/admin
+https://avaliable.pro/admin
 
 Best regards,
 Avaliable.pro Team
@@ -317,7 +317,7 @@ Avaliable.pro Team
     </div>
     
     <div style="text-align: center;">
-      <a href="https://clairehamilton.vip/admin" class="button">View in Admin Dashboard →</a>
+      <a href="https://avaliable.pro/admin" class="button">View in Admin Dashboard →</a>
     </div>
     
     <p style="margin-top: 30px;">Please confirm receipt of this booking notification.</p>
