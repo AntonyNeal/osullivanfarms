@@ -61,6 +61,7 @@ const locationRoutes = require('./routes/locations');
 const bookingRoutes = require('./routes/bookings');
 const paymentRoutes = require('./routes/payments');
 const analyticsRoutes = require('./routes/analytics');
+const healthRoutes = require('./routes/health');
 
 // API routes - All routes deployed
 // Note: /api prefix is handled by ingress routing
@@ -70,6 +71,7 @@ app.use('/locations', locationRoutes);
 app.use('/bookings', bookingRoutes);
 app.use('/payments', paymentRoutes);
 app.use('/analytics', analyticsRoutes);
+app.use('/health', healthRoutes);
 
 // Legacy endpoints (keep for backward compatibility)
 app.get('/api/get-data', async (req, res) => {
