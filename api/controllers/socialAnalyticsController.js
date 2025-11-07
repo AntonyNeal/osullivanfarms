@@ -22,6 +22,24 @@ const getPostPerformance = async (req, res) => {
       });
     }
 
+    // First, check if view exists and tenant has data
+    const checkQuery = `
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.views 
+        WHERE table_name = 'v_social_post_performance'
+      ) AS view_exists
+    `;
+
+    const checkResult = await db.query(checkQuery);
+
+    if (!checkResult.rows[0].view_exists) {
+      console.error('View v_social_post_performance does not exist');
+      return res.status(500).json({
+        error: 'Internal Server Error',
+        message: 'Social analytics view not found in database',
+      });
+    }
+
     let query = `
       SELECT 
         post_id,
@@ -55,7 +73,7 @@ const getPostPerformance = async (req, res) => {
       query += ` AND platform = $${params.length}`;
     }
 
-    query += ` ORDER BY performance_score DESC, posted_at DESC LIMIT $${params.length + 1}`;
+    query += ` ORDER BY posted_at DESC LIMIT $${params.length + 1}`;
     params.push(parseInt(limit));
 
     const result = await db.query(query, params);
@@ -96,10 +114,14 @@ const getPostPerformance = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in getPostPerformance:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      code: error.code,
+    });
     res.status(500).json({
       error: 'Internal Server Error',
-      message: 'Failed to retrieve post performance',
-      details: error.message,
+      message: error.message || 'Failed to fetch post performance data',
     });
   }
 };
