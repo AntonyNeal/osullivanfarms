@@ -11,7 +11,7 @@ export class LocationDataSource {
   /**
    * Get all locations for a tenant
    */
-  static async getByTenant(tenantId: number): Promise<Location[]> {
+  static async getByTenant(tenantId: string | number): Promise<Location[]> {
     const response = await this.client.get<ListResponse<Location>>(`/locations/${tenantId}`);
     return response.data;
   }
@@ -19,7 +19,7 @@ export class LocationDataSource {
   /**
    * Get locations grouped by country
    */
-  static async getGroupedByCountry(tenantId: number): Promise<Record<string, Location[]>> {
+  static async getGroupedByCountry(tenantId: string | number): Promise<Record<string, Location[]>> {
     const locations = await this.getByTenant(tenantId);
 
     return locations.reduce(
@@ -38,7 +38,7 @@ export class LocationDataSource {
   /**
    * Get locations with availability
    */
-  static async getAvailable(tenantId: number): Promise<Location[]> {
+  static async getAvailable(tenantId: string | number): Promise<Location[]> {
     const locations = await this.getByTenant(tenantId);
     return locations.filter(
       (loc) => loc.availableDatesCount !== undefined && loc.availableDatesCount > 0

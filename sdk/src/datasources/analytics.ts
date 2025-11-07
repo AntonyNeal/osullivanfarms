@@ -6,7 +6,7 @@ import { ApiClient } from '../client';
 import { AnalyticsSummary, ApiResponse } from '../types';
 
 interface CreateSessionRequest {
-  tenantId: number;
+  tenantId: string | number;
   userAgent?: string;
   ipAddress?: string;
   referrer?: string;
@@ -96,7 +96,7 @@ export class AnalyticsDataSource {
    * Get analytics summary for a tenant
    */
   static async getSummary(
-    tenantId: number,
+    tenantId: string | number,
     startDate?: string,
     endDate?: string
   ): Promise<AnalyticsSummary> {
@@ -114,7 +114,7 @@ export class AnalyticsDataSource {
   /**
    * Initialize session tracking automatically
    */
-  static async initialize(tenantId: number, utmParams?: Record<string, string>): Promise<string> {
+  static async initialize(tenantId: string | number, utmParams?: Record<string, string>): Promise<string> {
     const session = await this.createSession({
       tenantId,
       userAgent: navigator.userAgent,

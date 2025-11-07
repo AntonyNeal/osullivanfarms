@@ -6,7 +6,7 @@ import { ApiClient } from '../client';
 import { Booking, ApiResponse, ListResponse } from '../types';
 
 interface CreateBookingRequest {
-  tenantId: number;
+  tenantId: string | number;
   locationId: number;
   clientName: string;
   clientEmail: string;
@@ -42,7 +42,7 @@ export class BookingDataSource {
   /**
    * Get a booking by ID
    */
-  static async getById(bookingId: number): Promise<Booking> {
+  static async getById(bookingId: string | number): Promise<Booking> {
     const response = await this.client.get<ApiResponse<Booking>>(`/bookings/${bookingId}`);
     return response.data;
   }
@@ -50,7 +50,7 @@ export class BookingDataSource {
   /**
    * Update booking status
    */
-  static async updateStatus(bookingId: number, update: UpdateStatusRequest): Promise<Booking> {
+  static async updateStatus(bookingId: string | number, update: UpdateStatusRequest): Promise<Booking> {
     const response = await this.client.patch<ApiResponse<Booking>>(
       `/bookings/${bookingId}/status`,
       update
@@ -62,7 +62,7 @@ export class BookingDataSource {
    * Get all bookings for a tenant
    */
   static async getByTenant(
-    tenantId: number,
+    tenantId: string | number,
     status?: string,
     page: number = 1,
     limit: number = 20
@@ -76,7 +76,7 @@ export class BookingDataSource {
   /**
    * Cancel a booking
    */
-  static async cancel(bookingId: number, reason?: string): Promise<Booking> {
+  static async cancel(bookingId: string | number, reason?: string): Promise<Booking> {
     return this.updateStatus(bookingId, {
       status: 'cancelled',
       notes: reason,
@@ -86,7 +86,7 @@ export class BookingDataSource {
   /**
    * Confirm a booking
    */
-  static async confirm(bookingId: number): Promise<Booking> {
+  static async confirm(bookingId: string | number): Promise<Booking> {
     return this.updateStatus(bookingId, { status: 'confirmed' });
   }
 }

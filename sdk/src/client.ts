@@ -15,7 +15,12 @@ export class ApiClient {
   }
 
   private buildURL(endpoint: string, params?: Record<string, string | number>): string {
-    const url = new URL(endpoint, this.baseURL);
+    // Remove leading slash from endpoint to avoid replacing baseURL path
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+    const url = new URL(
+      cleanEndpoint,
+      this.baseURL.endsWith('/') ? this.baseURL : this.baseURL + '/'
+    );
 
     if (params) {
       Object.entries(params).forEach(([key, value]) => {

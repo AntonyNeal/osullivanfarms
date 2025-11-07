@@ -12,7 +12,7 @@ export class AvailabilityDataSource {
    * Get availability calendar for a tenant
    */
   static async getCalendar(
-    tenantId: number,
+    tenantId: string | number,
     startDate?: string,
     endDate?: string
   ): Promise<AvailabilitySlot[]> {
@@ -31,7 +31,7 @@ export class AvailabilityDataSource {
    * Check availability for a specific date
    */
   static async checkDate(
-    tenantId: number,
+    tenantId: string | number,
     date: string
   ): Promise<{ available: boolean; slot?: AvailabilitySlot }> {
     const response = await this.client.get<
@@ -44,7 +44,7 @@ export class AvailabilityDataSource {
    * Get available dates within a range
    */
   static async getAvailableDates(
-    tenantId: number,
+    tenantId: string | number,
     startDate: string,
     endDate: string
   ): Promise<string[]> {
