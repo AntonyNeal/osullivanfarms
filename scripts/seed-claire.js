@@ -39,7 +39,7 @@ async function seedClaire() {
     // Step 1: Create/Update Tenant
     const claireTenant = {
       subdomain: 'claire',
-      custom_domain: null, // Removed clairehamilton.vip domain
+      custom_domain: 'clairehamilton.com.au', // Updated to new domain
       name: 'Claire Hamilton',
       email: 'info@clairehamilton.vip',
       status: 'active',
@@ -183,7 +183,7 @@ async function seedClaire() {
     console.log('Tenant Details:');
     console.log('  ID:', tenantId);
     console.log('  Subdomain: claire');
-    console.log('  Custom Domain: clairehamilton.vip');
+    console.log('  Custom Domain: clairehamilton.com.au');
     console.log('  Status: active');
     console.log('\n📍 Locations:');
     console.log('  ✓ Sydney (home base)');
