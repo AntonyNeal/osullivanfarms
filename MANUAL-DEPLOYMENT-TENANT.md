@@ -4,7 +4,7 @@
 
 1. **Go to DigitalOcean Console:**
    - Navigate to: https://cloud.digitalocean.com/apps
-   - Find and click on your app: `octopus-app` (or `claire-hamilton-website`)
+   - Find and click on your app: `octopus-app` (ID: d1c88e97-20a1-4b99-a582-11828f840b64)
 
 2. **Update the App Spec:**
    - Click "Settings" tab
@@ -115,7 +115,7 @@ Once deployment completes, test the endpoints:
 ### Test 1: Health Check
 
 ```powershell
-Invoke-RestMethod -Uri "https://octopus-app-s8m2n.ondigitalocean.app/api/health" -Method GET
+Invoke-RestMethod -Uri "https://octopus-app-tw5wu.ondigitalocean.app/api/health" -Method GET
 ```
 
 **Expected output:**
@@ -131,7 +131,7 @@ Invoke-RestMethod -Uri "https://octopus-app-s8m2n.ondigitalocean.app/api/health"
 ### Test 2: Get Tenant by Subdomain
 
 ```powershell
-Invoke-RestMethod -Uri "https://octopus-app-s8m2n.ondigitalocean.app/api/tenants/claire" -Method GET
+Invoke-RestMethod -Uri "https://octopus-app-tw5wu.ondigitalocean.app/api/tenants/claire" -Method GET
 ```
 
 **Expected output:**
@@ -151,13 +151,13 @@ Invoke-RestMethod -Uri "https://octopus-app-s8m2n.ondigitalocean.app/api/tenants
 ### Test 3: Get Tenant by Domain
 
 ```powershell
-Invoke-RestMethod -Uri "https://octopus-app-s8m2n.ondigitalocean.app/api/tenants/domain/clairehamilton.vip" -Method GET
+Invoke-RestMethod -Uri "https://octopus-app-tw5wu.ondigitalocean.app/api/tenants/domain/clairehamilton.vip" -Method GET
 ```
 
 ### Test 4: List All Tenants
 
 ```powershell
-Invoke-RestMethod -Uri "https://octopus-app-s8m2n.ondigitalocean.app/api/tenants" -Method GET
+Invoke-RestMethod -Uri "https://octopus-app-tw5wu.ondigitalocean.app/api/tenants" -Method GET
 ```
 
 ## Troubleshooting

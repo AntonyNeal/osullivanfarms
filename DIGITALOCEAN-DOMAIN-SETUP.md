@@ -1,8 +1,19 @@
-# Add prebooking.pro Domain to DigitalOcean App Platform
+# Domain Management for DigitalOcean App Platform
 
-## Your App: octopus-app
+## Your Current App: octopus-app
 
-Based on your screenshot, here's how to add `prebooking.pro` to your existing DigitalOcean app.
+**Live URL:** https://octopus-app-tw5wu.ondigitalocean.app
+**App ID:** d1c88e97-20a1-4b99-a582-11828f840b64
+
+## Current Domains Configured
+
+✅ **Live domains in DigitalOcean:**
+1. **avaliable.pro** (Primary production domain)
+2. **clairehamilton.com.au** (Client domain)
+3. **clairehamilton.vip** (Alternative domain)
+4. **prebooking.pro** (Booking subdomain)
+
+## Add Additional Domain to octopus-app
 
 ## Step 1: Add Domain in DigitalOcean Console
 
@@ -46,7 +57,7 @@ For `prebooking.pro`:
 ```
 Type: CNAME
 Name: @
-Value: octopus-app-xxxxx.ondigitalocean.app
+Value: octopus-app-tw5wu.ondigitalocean.app
 ```
 
 For `*.prebooking.pro`:

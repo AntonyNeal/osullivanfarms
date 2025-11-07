@@ -10,7 +10,7 @@
 
 Your infrastructure has **two distinct environments**:
 
-1. **✅ PRODUCTION (avaliable.pro)**: Likely healthy but needs verification
+1. **✅ PRODUCTION (avaliable.pro)**: Live on octopus-app (https://octopus-app-tw5wu.ondigitalocean.app)
 2. **⚠️ LOCAL DEVELOPMENT**: Database connection issues
 
 **Good News:** The SDK is production-ready and the analytics API code fix has been applied.  
@@ -78,25 +78,29 @@ DATABASE_URL=postgresql://doadmin:AVNS_H3XXhq2JNNl...@companion-platform-db-do-u
 
 **Database Details:**
 
-- Provider: DigitalOcean Managed PostgreSQL
+- Provider: DigitalOcean Managed PostgreSQL 16 (not 15)
 - Host: `companion-platform-db-do-user-28631775-0.j.db.ondigitalocean.com`
 - Port: 25060
 - Database: defaultdb
 - SSL: Required
+- Size: db-s-1vcpu-1gb (1GB RAM, 1 vCPU)
+- Region: syd1 (Sydney)
 
 ---
 
 ## 🎯 What's Actually Broken?
 
-### Production (avaliable.pro): ❓ UNKNOWN
+### Production (octopus-app): ✅ DEPLOYED
 
-**Cannot verify from local machine due to SSL issues**
+**Live URLs:**
+- App Platform: `https://octopus-app-tw5wu.ondigitalocean.app`
+- Production domain: `https://avaliable.pro` (if DNS configured)
 
 **Needs Testing:**
 
-1. Open browser and visit: `https://avaliable.pro/api/health`
+1. Open browser and visit: `https://octopus-app-tw5wu.ondigitalocean.app/api/health`
 2. Check if it returns: `{"status": "healthy", "timestamp": "..."}`
-3. Test analytics endpoint: `https://avaliable.pro/api/analytics/{tenantId}?startDate=2025-01-01&endDate=2025-12-31`
+3. Test analytics endpoint: `https://octopus-app-tw5wu.ondigitalocean.app/api/analytics/{tenantId}?startDate=2025-01-01&endDate=2025-12-31`
 
 **If production is working:** ✅ No immediate action needed  
 **If production is broken:** 🔴 Critical - follow deployment section below

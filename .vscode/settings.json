@@ -17,7 +17,7 @@
   "github.copilot.chat.mcp.servers": {
     "digitalocean": {
       "command": "node",
-      "args": ["c:\\Users\\julia\\sw_website\\mcp-server\\index.js"],
+      "args": ["C:\\Users\\Julian\\sw-web\\mcp-server\\index.js"],
       "env": {
         "DO_API_TOKEN": "${env:DO_API_TOKEN}"
       }

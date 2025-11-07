@@ -22,12 +22,12 @@ Complete step-by-step guide to deploy the booking system backend to DigitalOcean
 2. Click **Databases** in the left sidebar
 3. Click **Create Database**
 4. Configuration:
-   - **Engine**: PostgreSQL 15
-   - **Version**: Latest 15.x
+   - **Engine**: PostgreSQL 16 (current actual version)
+   - **Version**: 16.x
    - **Region**: Choose your nearest region (e.g., Sydney for Australia)
-   - **Cluster Name**: `claire-booking-db`
+   - **Cluster Name**: `companion-platform-db` (actual deployed name)
    - **Number of nodes**: 1 (single node is fine for startup)
-   - **DB Size**: Basic ($15/month - sufficient for startup)
+   - **DB Size**: Basic ($12/month - db-s-1vcpu-1gb, sufficient for startup)
 
 5. Wait for the cluster to initialize (5-10 minutes)
 
