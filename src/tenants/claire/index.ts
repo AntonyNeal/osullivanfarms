@@ -12,7 +12,7 @@ import type { TenantConfig } from '../../core/types/tenant.types';
 export const claireConfig: TenantConfig = {
   id: 'claire',
   subdomain: 'claire',
-  customDomain: undefined, // Removed clairehamilton.vip domain
+  customDomain: 'clairehamilton.com.au', // Updated to new custom domain
   name: 'Claire Hamilton',
   status: 'active',
   theme,

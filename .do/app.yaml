@@ -43,10 +43,10 @@ services:
         type: SECRET
       - key: SENDGRID_FROM_EMAIL
         scope: RUN_TIME
-        value: bookings@avaliable.pro
+        value: bookings@clairehamilton.com.au
       - key: CLAIRE_NOTIFICATION_EMAIL
         scope: RUN_TIME
-        value: claire@avaliable.pro
+        value: claire@clairehamilton.com.au
     routes:
       - path: /api
 

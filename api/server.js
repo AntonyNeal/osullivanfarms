@@ -19,7 +19,8 @@ app.use(
         /^https?:\/\/([a-z0-9-]+\.)?avaliable\.pro$/, // *.avaliable.pro
         /^https?:\/\/([a-z0-9-]+\.)?prebooking\.pro$/, // *.prebooking.pro (legacy)
         /^https?:\/\/([a-z0-9-]+\.)?companionconnect\.app$/, // *.companionconnect.app (legacy)
-        /^https?:\/\/clairehamilton\.vip$/, // clairehamilton.vip (custom domain)
+        /^https?:\/\/clairehamilton\.vip$/, // clairehamilton.vip (legacy custom domain)
+        /^https?:\/\/([a-z0-9-]+\.)?clairehamilton\.com\.au$/, // clairehamilton.com.au and subdomains
         /^http:\/\/localhost(:\d+)?$/, // localhost:*
         /^http:\/\/127\.0\.0\.1(:\d+)?$/, // 127.0.0.1:*
       ];

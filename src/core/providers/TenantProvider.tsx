@@ -124,6 +124,11 @@ function getSubdomain(hostname: string): string {
     return parts[0];
   }
 
+  // For clairehamilton.com.au or www.clairehamilton.com.au, return 'claire'
+  if (host === 'clairehamilton.com.au' || host === 'www.clairehamilton.com.au') {
+    return 'claire';
+  }
+
   // For xxx.companionconnect.app, return 'xxx' (legacy)
   // For companionconnect.app, return ''
   if (parts.length >= 3) {

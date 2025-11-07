@@ -30,12 +30,17 @@ export class TenantDataSource {
   static async getCurrent(): Promise<Tenant> {
     const hostname = window.location.hostname;
 
-    // Check if custom domain
-    if (!hostname.includes('clairehamilton.vip')) {
-      return this.getByDomain(hostname);
+    // Check for custom domains
+    if (hostname === 'clairehamilton.com.au' || hostname === 'www.clairehamilton.com.au') {
+      return this.getBySubdomain('claire');
     }
 
-    // Extract subdomain
+    // Check if clairehamilton.vip (legacy)
+    if (hostname === 'clairehamilton.vip' || hostname === 'www.clairehamilton.vip') {
+      return this.getBySubdomain('claire');
+    }
+
+    // Extract subdomain from platform domains (e.g., claire.avaliable.pro)
     const subdomain = hostname.split('.')[0];
     if (subdomain && subdomain !== 'www') {
       return this.getBySubdomain(subdomain);
