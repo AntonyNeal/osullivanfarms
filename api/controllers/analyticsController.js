@@ -266,7 +266,7 @@ const getAnalytics = async (req, res) => {
 
     res.json({
       success: true,
-      data: analyticsData,
+      data: analyticsData.summary, // Flatten response for SDK compatibility
     });
   } catch (error) {
     console.error('Error in getAnalytics:', error);
