@@ -56,6 +56,21 @@ export interface ConversionFunnelStage {
   percentage: number;
 }
 
+export interface ABTestVariant {
+  variantId: string;
+  variantName: string;
+  assignments: number;
+  views: number;
+  conversions: number;
+  conversionRate: number;
+}
+
+export interface ABTestResult {
+  testName: string;
+  elementType: string;
+  variants: ABTestVariant[];
+}
+
 export class TenantAnalyticsDataSource {
   private static client = new ApiClient();
 
@@ -123,6 +138,16 @@ export class TenantAnalyticsDataSource {
     const response = await this.client.get<{ success: boolean; data: ConversionFunnelStage[] }>(
       `/tenant-analytics/${tenantId}/conversion-funnel`,
       params
+    );
+    return response.data;
+  }
+
+  /**
+   * Get A/B test results
+   */
+  static async getABTestResults(tenantId: string | number): Promise<ABTestResult[]> {
+    const response = await this.client.get<{ success: boolean; data: ABTestResult[] }>(
+      `/tenant-analytics/${tenantId}/ab-test-results`
     );
     return response.data;
   }

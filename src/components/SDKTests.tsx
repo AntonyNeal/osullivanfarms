@@ -36,12 +36,15 @@ export function SDKTests() {
     { name: 'Analytics - Location Bookings', status: 'idle', message: '' },
     { name: 'Analytics - Utilization Rate', status: 'idle', message: '' },
     { name: 'Analytics - Conversion Funnel', status: 'idle', message: '' },
+    { name: 'Analytics - A/B Test Results', status: 'idle', message: '' },
 
     // Social Media Analytics
     { name: 'Social - Post Performance', status: 'idle', message: '' },
     { name: 'Social - Platform Comparison', status: 'idle', message: '' },
     { name: 'Social - Top Posts', status: 'idle', message: '' },
     { name: 'Social - Top Hashtags', status: 'idle', message: '' },
+    { name: 'Social - Daily Metrics', status: 'idle', message: '' },
+    { name: 'Social - Follower Growth', status: 'idle', message: '' },
   ]);
 
   // Force the API base URL to avaliable.pro
@@ -74,12 +77,15 @@ export function SDKTests() {
       await testLocationBookings(id);
       await testUtilizationRate(id);
       await testConversionFunnel(id);
+      await testABTestResults(id);
 
       // Social Media Analytics
       await testPostPerformance(id);
       await testPlatformComparison(id);
       await testTopPosts(id);
       await testTopHashtags(id);
+      await testDailyMetrics(id);
+      await testFollowerGrowth(id);
     }
   };
 
@@ -579,6 +585,90 @@ export function SDKTests() {
     }
   };
 
+  const testABTestResults = async (id: string) => {
+    const testName = 'Analytics - A/B Test Results';
+    updateTestStatus(testName, 'running', 'Fetching A/B test data...');
+
+    try {
+      const res = await fetch(`${API_BASE}/tenant-analytics/${id}/ab-test-results`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+
+      const json = await res.json();
+      const tests = json.data || [];
+
+      updateTestStatus(
+        testName,
+        'success',
+        `✅ ${tests.length} A/B tests:\n${tests
+          .slice(0, 2)
+          .map(
+            (t: any) =>
+              `  • ${t.testName}: ${t.variants.length} variants (best: ${(t.variants[0]?.conversionRate * 100 || 0).toFixed(1)}%)`
+          )
+          .join('\n')}`
+      );
+    } catch (error) {
+      updateTestStatus(
+        testName,
+        'error',
+        `❌ ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  };
+
+  const testDailyMetrics = async (id: string) => {
+    const testName = 'Social - Daily Metrics';
+    updateTestStatus(testName, 'running', 'Fetching daily metrics...');
+
+    try {
+      const res = await fetch(`${API_BASE}/social-analytics/${id}/daily-metrics?days=7`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+
+      const json = await res.json();
+      const metrics = json.data || [];
+
+      updateTestStatus(
+        testName,
+        'success',
+        `✅ ${metrics.length} days of data:\n${metrics
+          .slice(0, 2)
+          .map((m: any) => `  • ${m.date}: ${m.followers} followers, ${m.engagement} engagements`)
+          .join('\n')}`
+      );
+    } catch (error) {
+      updateTestStatus(
+        testName,
+        'error',
+        `❌ ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  };
+
+  const testFollowerGrowth = async (id: string) => {
+    const testName = 'Social - Follower Growth';
+    updateTestStatus(testName, 'running', 'Analyzing follower growth...');
+
+    try {
+      const res = await fetch(`${API_BASE}/social-analytics/${id}/follower-growth?days=30`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+
+      const json = await res.json();
+      const summary = json.summary || {};
+
+      updateTestStatus(
+        testName,
+        'success',
+        `✅ Growth summary:\n  • Total gain: ${summary.totalGrowth || 0}\n  • Avg rate: ${(summary.avgGrowthRate || 0).toFixed(2)}%/day\n  • Peak day: ${summary.peakGrowthDate || 'N/A'} (+${summary.peakGrowth || 0})`
+      );
+    } catch (error) {
+      updateTestStatus(
+        testName,
+        'error',
+        `❌ ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  };
+
   const successCount = results.filter((r) => r.status === 'success').length;
   const failedCount = results.filter((r) => r.status === 'error').length;
   const runningCount = results.filter((r) => r.status === 'running').length;
@@ -586,25 +676,29 @@ export function SDKTests() {
 
   // Group tests by category
   const categories = [
-    { 
-      name: 'Core APIs', 
+    {
+      name: 'Core APIs',
       icon: '🔌',
-      tests: results.filter(r => ['Tenant API', 'Locations API', 'Availability API', 'Analytics API'].some(prefix => r.name.startsWith(prefix)))
+      tests: results.filter((r) =>
+        ['Tenant API', 'Locations API', 'Availability API', 'Analytics API'].some((prefix) =>
+          r.name.startsWith(prefix)
+        )
+      ),
     },
-    { 
-      name: 'Advanced Availability', 
+    {
+      name: 'Advanced Availability',
       icon: '📅',
-      tests: results.filter(r => r.name.startsWith('Availability - '))
+      tests: results.filter((r) => r.name.startsWith('Availability - ')),
     },
-    { 
-      name: 'Tenant Analytics', 
+    {
+      name: 'Tenant Analytics',
       icon: '📊',
-      tests: results.filter(r => r.name.startsWith('Analytics - '))
+      tests: results.filter((r) => r.name.startsWith('Analytics - ')),
     },
-    { 
-      name: 'Social Media', 
+    {
+      name: 'Social Media',
       icon: '📱',
-      tests: results.filter(r => r.name.startsWith('Social - '))
+      tests: results.filter((r) => r.name.startsWith('Social - ')),
     },
   ];
 
@@ -650,7 +744,8 @@ export function SDKTests() {
               <span>{category.icon}</span>
               <span>{category.name}</span>
               <span className="text-sm font-normal text-slate-400">
-                ({category.tests.filter(t => t.status === 'success').length}/{category.tests.length} passed)
+                ({category.tests.filter((t) => t.status === 'success').length}/
+                {category.tests.length} passed)
               </span>
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -672,7 +767,9 @@ export function SDKTests() {
                     {result.status === 'running' && (
                       <span className="animate-spin text-yellow-400">⏳</span>
                     )}
-                    {result.status === 'success' && <span className="text-green-400 text-xl">✓</span>}
+                    {result.status === 'success' && (
+                      <span className="text-green-400 text-xl">✓</span>
+                    )}
                     {result.status === 'error' && <span className="text-red-400 text-xl">✗</span>}
                   </div>
                   {result.message && (
@@ -689,4 +786,3 @@ export function SDKTests() {
     </div>
   );
 }
-

@@ -294,9 +294,182 @@ const getTopHashtags = async (req, res) => {
   }
 };
 
+/**
+ * GET /api/social-analytics/:tenantId/daily-metrics
+ * Get daily social media account metrics
+ */
+const getDailyMetrics = async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+    const { platform, startDate, endDate, limit = 90 } = req.query;
+
+    if (!tenantId) {
+      return res.status(400).json({
+        error: 'Bad Request',
+        message: 'Tenant ID is required',
+      });
+    }
+
+    let query = `
+      SELECT 
+        platform,
+        metric_date,
+        followers,
+        following,
+        engagement_rate,
+        posts_count,
+        reach,
+        impressions,
+        profile_views,
+        website_clicks
+      FROM social_media_metrics
+      WHERE tenant_id = $1
+    `;
+
+    const params = [tenantId];
+
+    if (platform) {
+      params.push(platform);
+      query += ` AND platform = $${params.length}`;
+    }
+
+    if (startDate) {
+      params.push(startDate);
+      query += ` AND metric_date >= $${params.length}`;
+    }
+
+    if (endDate) {
+      params.push(endDate);
+      query += ` AND metric_date <= $${params.length}`;
+    }
+
+    query += ` ORDER BY metric_date DESC LIMIT $${params.length + 1}`;
+    params.push(parseInt(limit));
+
+    const result = await db.query(query, params);
+
+    res.json({
+      success: true,
+      data: result.rows.map((row) => ({
+        platform: row.platform,
+        date: row.metric_date,
+        followers: parseInt(row.followers) || 0,
+        following: parseInt(row.following) || 0,
+        engagementRate: row.engagement_rate ? parseFloat(row.engagement_rate) : 0,
+        postsCount: parseInt(row.posts_count) || 0,
+        reach: parseInt(row.reach) || 0,
+        impressions: parseInt(row.impressions) || 0,
+        profileViews: parseInt(row.profile_views) || 0,
+        websiteClicks: parseInt(row.website_clicks) || 0,
+      })),
+      count: result.rows.length,
+    });
+  } catch (error) {
+    console.error('Error in getDailyMetrics:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve daily metrics',
+      details: error.message,
+    });
+  }
+};
+
+/**
+ * GET /api/social-analytics/:tenantId/follower-growth
+ * Get follower growth over time (aggregated view)
+ */
+const getFollowerGrowth = async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+    const { platform, days = 90 } = req.query;
+
+    if (!tenantId) {
+      return res.status(400).json({
+        error: 'Bad Request',
+        message: 'Tenant ID is required',
+      });
+    }
+
+    let query = `
+      SELECT 
+        platform,
+        metric_date,
+        followers,
+        LAG(followers) OVER (PARTITION BY platform ORDER BY metric_date) as prev_followers
+      FROM social_media_metrics
+      WHERE tenant_id = $1
+        AND metric_date >= CURRENT_DATE - $2::int
+    `;
+
+    const params = [tenantId, parseInt(days)];
+
+    if (platform) {
+      params.push(platform);
+      query += ` AND platform = $${params.length}`;
+    }
+
+    query += ` ORDER BY platform, metric_date DESC`;
+
+    const result = await db.query(query, params);
+
+    const growth = result.rows.map((row) => ({
+      platform: row.platform,
+      date: row.metric_date,
+      followers: parseInt(row.followers) || 0,
+      growth: row.prev_followers ? parseInt(row.followers) - parseInt(row.prev_followers) : 0,
+      growthRate: row.prev_followers
+        ? ((parseInt(row.followers) - parseInt(row.prev_followers)) /
+            parseInt(row.prev_followers)) *
+          100
+        : 0,
+    }));
+
+    // Calculate summary stats per platform
+    const summary = {};
+    growth.forEach((g) => {
+      if (!summary[g.platform]) {
+        summary[g.platform] = {
+          platform: g.platform,
+          currentFollowers: 0,
+          totalGrowth: 0,
+          avgDailyGrowth: 0,
+          dataPoints: 0,
+        };
+      }
+      if (g.date && summary[g.platform].dataPoints === 0) {
+        summary[g.platform].currentFollowers = g.followers;
+      }
+      summary[g.platform].totalGrowth += g.growth;
+      summary[g.platform].dataPoints++;
+    });
+
+    Object.values(summary).forEach((s) => {
+      s.avgDailyGrowth = s.dataPoints > 0 ? s.totalGrowth / s.dataPoints : 0;
+    });
+
+    res.json({
+      success: true,
+      data: growth,
+      summary: Object.values(summary),
+      timeframe: {
+        days: parseInt(days),
+      },
+    });
+  } catch (error) {
+    console.error('Error in getFollowerGrowth:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve follower growth',
+      details: error.message,
+    });
+  }
+};
+
 module.exports = {
   getPostPerformance,
   getPlatformPerformance,
   getTopPosts,
   getTopHashtags,
+  getDailyMetrics,
+  getFollowerGrowth,
 };

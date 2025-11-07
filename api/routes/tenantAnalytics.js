@@ -26,4 +26,7 @@ router.get(
 // GET /api/tenant-analytics/:tenantId/conversion-funnel
 router.get('/:tenantId/conversion-funnel', tenantAnalyticsController.getConversionFunnel);
 
+// GET /api/tenant-analytics/:tenantId/ab-test-results
+router.get('/:tenantId/ab-test-results', tenantAnalyticsController.getABTestResults);
+
 module.exports = router;

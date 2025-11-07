@@ -25,6 +25,8 @@ export type {
   LocationBooking,
   AvailabilityUtilization,
   ConversionFunnelStage,
+  ABTestVariant,
+  ABTestResult,
 } from './datasources/tenantAnalytics';
 
 export type {
@@ -35,6 +37,9 @@ export type {
   PlatformPerformance,
   TopPost,
   TopHashtag,
+  DailyMetric,
+  FollowerGrowthPoint,
+  FollowerGrowthSummary,
 } from './datasources/socialAnalytics';
 
 export type {

@@ -295,10 +295,77 @@ const getConversionFunnel = async (req, res) => {
   }
 };
 
+/**
+ * GET /api/tenant-analytics/:tenantId/ab-test-results
+ * Get A/B test results and performance
+ */
+const getABTestResults = async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+
+    if (!tenantId) {
+      return res.status(400).json({
+        error: 'Bad Request',
+        message: 'Tenant ID is required',
+      });
+    }
+
+    const result = await db.query(
+      `SELECT 
+        test_name,
+        element_type,
+        variant_id,
+        variant_name,
+        assignments,
+        views,
+        conversions,
+        conversion_rate
+      FROM v_ab_test_results
+      WHERE tenant_id = $1
+      ORDER BY test_name, variant_id`,
+      [tenantId]
+    );
+
+    // Group by test name
+    const tests = {};
+    result.rows.forEach((row) => {
+      if (!tests[row.test_name]) {
+        tests[row.test_name] = {
+          testName: row.test_name,
+          elementType: row.element_type,
+          variants: [],
+        };
+      }
+      tests[row.test_name].variants.push({
+        variantId: row.variant_id,
+        variantName: row.variant_name,
+        assignments: parseInt(row.assignments),
+        views: parseInt(row.views),
+        conversions: parseInt(row.conversions),
+        conversionRate: parseFloat(row.conversion_rate),
+      });
+    });
+
+    res.json({
+      success: true,
+      data: Object.values(tests),
+      count: Object.keys(tests).length,
+    });
+  } catch (error) {
+    console.error('Error in getABTestResults:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve A/B test results',
+      details: error.message,
+    });
+  }
+};
+
 module.exports = {
   getPerformance,
   getTrafficSources,
   getLocationBookings,
   getAvailabilityUtilization,
   getConversionFunnel,
+  getABTestResults,
 };

@@ -101,6 +101,35 @@ export interface TopHashtag {
   totalBookings: number;
 }
 
+export interface DailyMetric {
+  platform: string;
+  date: string;
+  followers: number;
+  following: number;
+  engagementRate: number;
+  postsCount: number;
+  reach: number;
+  impressions: number;
+  profileViews: number;
+  websiteClicks: number;
+}
+
+export interface FollowerGrowthPoint {
+  platform: string;
+  date: string;
+  followers: number;
+  growth: number;
+  growthRate: number;
+}
+
+export interface FollowerGrowthSummary {
+  platform: string;
+  currentFollowers: number;
+  totalGrowth: number;
+  avgDailyGrowth: number;
+  dataPoints: number;
+}
+
 export class SocialAnalyticsDataSource {
   private static client = new ApiClient();
 
@@ -156,5 +185,50 @@ export class SocialAnalyticsDataSource {
       { days, limit }
     );
     return response.data;
+  }
+
+  /**
+   * Get daily social media metrics
+   */
+  static async getDailyMetrics(
+    tenantId: string | number,
+    platform?: string,
+    startDate?: string,
+    endDate?: string,
+    limit: number = 90
+  ): Promise<DailyMetric[]> {
+    const params: Record<string, string | number> = { limit };
+    if (platform) params.platform = platform;
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+
+    const response = await this.client.get<{ success: boolean; data: DailyMetric[] }>(
+      `/social-analytics/${tenantId}/daily-metrics`,
+      params
+    );
+    return response.data;
+  }
+
+  /**
+   * Get follower growth over time
+   */
+  static async getFollowerGrowth(
+    tenantId: string | number,
+    platform?: string,
+    days: number = 90
+  ): Promise<{ data: FollowerGrowthPoint[]; summary: FollowerGrowthSummary[] }> {
+    const params: Record<string, string | number> = { days };
+    if (platform) params.platform = platform;
+
+    const response = await this.client.get<{
+      success: boolean;
+      data: FollowerGrowthPoint[];
+      summary: FollowerGrowthSummary[];
+    }>(`/social-analytics/${tenantId}/follower-growth`, params);
+
+    return {
+      data: response.data,
+      summary: response.summary,
+    };
   }
 }
