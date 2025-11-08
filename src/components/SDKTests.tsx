@@ -43,12 +43,17 @@ interface GenericObject {
 }
 
 // Additional interfaces for type safety
-interface Service {
-  id: string;
-  name: string;
-  description: string;
-  duration: number;
-  price: number;
+interface SocialMetrics {
+  platform: string;
+  engagement: {
+    likes: number;
+    comments: number;
+    shares: number;
+  };
+  conversions: {
+    bookings: number;
+    inquiries: number;
+  };
 }
 
 export default function SDKTests() {
@@ -82,6 +87,9 @@ export default function SDKTests() {
     { name: 'Social - Follower Growth', status: 'idle', message: '' },
   ]);
 
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [hasStartedTesting, setHasStartedTesting] = useState(false);
+
   // Force the API base URL to avaliable.pro
   const API_BASE = 'https://avaliable.pro/api';
 
@@ -92,6 +100,8 @@ export default function SDKTests() {
   const runAllTests = async () => {
     // Reset all tests to idle first
     setResults((prev) => prev.map((r) => ({ ...r, status: 'idle' as const, message: '' })));
+    setHasStartedTesting(true);
+    setIsExpanded(true);
 
     const id = await testTenant();
     if (id) {
@@ -522,8 +532,8 @@ export default function SDKTests() {
         `✅ ${posts.length} posts analyzed\n${posts
           .slice(0, 2)
           .map(
-            (p: GenericObject) =>
-              `  • ${p.platform}: ${p.engagement?.likes} likes, ${p.conversions?.bookings} bookings`
+              (p: any) =>
+                `  • ${p.platform}: ${p.engagement?.likes || 0} likes, ${p.conversions?.bookings || 0} bookings`
           )
           .join('\n')}`
       );
@@ -712,6 +722,9 @@ export default function SDKTests() {
   const runningCount = results.filter((r) => r.status === 'running').length;
   const totalTests = results.length;
 
+  // Auto-expand when tests start running
+  const shouldShowExpanded = isExpanded || runningCount > 0 || successCount > 0 || failedCount > 0;
+
   // Group tests by category
   const categories = [
     {
@@ -740,6 +753,69 @@ export default function SDKTests() {
     },
   ];
 
+  // Compact button view
+  if (!shouldShowExpanded && !hasStartedTesting) {
+    return (
+      <div className="fixed top-4 right-4 z-50">
+        <button
+          onClick={runAllTests}
+          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-blue-600/50 flex items-center gap-2"
+        >
+          <span>🧪</span>
+          <span>Run API Tests</span>
+        </button>
+      </div>
+    );
+  }
+
+  // Compact progress view
+  if (shouldShowExpanded && !isExpanded) {
+    return (
+      <div className="fixed top-4 right-4 z-50">
+        <div className="bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-lg p-4 min-w-[280px]">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span>🧪</span>
+              <span className="text-white font-semibold">API Tests</span>
+            </div>
+            <button
+              onClick={() => setIsExpanded(true)}
+              className="text-slate-400 hover:text-white transition-colors"
+            >
+              ⬇️
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-4 gap-2 mb-3">
+            <div className="text-center">
+              <div className="text-lg font-bold text-green-400">{successCount}</div>
+              <div className="text-xs text-slate-400">Pass</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-red-400">{failedCount}</div>
+              <div className="text-xs text-slate-400">Fail</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-yellow-400">{runningCount}</div>
+              <div className="text-xs text-slate-400">Run</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-blue-400">{totalTests}</div>
+              <div className="text-xs text-slate-400">Total</div>
+            </div>
+          </div>
+          
+          {runningCount > 0 && (
+            <div className="text-sm text-yellow-400 animate-pulse">
+              ⏳ Running tests...
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Full expanded view
   return (
     <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
       <div className="mb-6 flex items-center justify-between">
@@ -747,13 +823,21 @@ export default function SDKTests() {
           <h3 className="text-xl font-bold text-white mb-2">🧪 Comprehensive API Tests</h3>
           <p className="text-slate-400 text-sm">Testing: {API_BASE}</p>
         </div>
-        <button
-          onClick={runAllTests}
-          disabled={runningCount > 0}
-          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-slate-600 disabled:to-slate-700 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-blue-600/50 disabled:cursor-not-allowed"
-        >
-          {runningCount > 0 ? '⏳ Running Tests...' : '▶️ Run All Tests'}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsExpanded(false)}
+            className="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+          >
+            ⬆️ Minimize
+          </button>
+          <button
+            onClick={runAllTests}
+            disabled={runningCount > 0}
+            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-slate-600 disabled:to-slate-700 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-blue-600/50 disabled:cursor-not-allowed"
+          >
+            {runningCount > 0 ? '⏳ Running Tests...' : '▶️ Run All Tests'}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-4 gap-4 mb-6">
