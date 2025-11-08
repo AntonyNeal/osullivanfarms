@@ -2,6 +2,30 @@
 
 A comprehensive, multi-tenant service booking platform built with React, TypeScript, and Vite. This template provides a complete foundation for building booking systems across various industries including consulting, coaching, professional services, and more.
 
+## 🎯 Quick Start for New Users
+
+**Want to create your own booking app?** 
+
+👉 **[READ THE FORK & CUSTOMIZE GUIDE](./FORK-AND-CUSTOMIZE.md)** 👈
+
+This guide walks you through:
+1. Forking this repository
+2. Using the SDK generators to create your theme
+3. Customizing content for your business
+4. Creating required assets
+5. Deploying to Azure
+
+**Built-in SDK Generators:**
+- 🎨 **Theme Generator** - Create complete themes from prompts like "fitness studio with modern blue theme"
+- 🚀 **App Generator** - Generate entire app configurations from natural language
+- 📊 **SEO Generator** - Auto-generate Open Graph and Twitter Card meta tags
+- 🖼️ **Asset Generator** - Get detailed specs for all images you need
+- 🔍 **Content Auditor** - Scan files for template content that needs updating
+
+[See SDK Documentation →](./sdk/GENERATORS-GUIDE.md)
+
+---
+
 ## 🚀 Features
 
 ### Multi-Tenant Architecture
