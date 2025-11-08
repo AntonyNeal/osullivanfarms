@@ -21,8 +21,11 @@ This guide walks you through:
 - 📊 **SEO Generator** - Auto-generate Open Graph and Twitter Card meta tags
 - 🖼️ **Asset Generator** - Get detailed specs for all images you need
 - 🔍 **Content Auditor** - Scan files for template content that needs updating
+- ☁️ **Infrastructure Module** - Deploy to Azure, DigitalOcean, or any cloud provider
 
 [See SDK Documentation →](./sdk/GENERATORS-GUIDE.md)
+
+[See Infrastructure Guide →](./sdk/INFRASTRUCTURE-GUIDE.md)
 
 ---
 
