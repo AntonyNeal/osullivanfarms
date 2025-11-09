@@ -59,7 +59,7 @@ interface SocialMetrics {
 export default function SDKTests() {
   const [results, setResults] = useState<TestResult[]>([
     // Core APIs
-    { name: 'Tenant API - Fetch Claire', status: 'idle', message: '' },
+    { name: "Tenant API - Fetch O'Sullivan Farms", status: 'idle', message: '' },
     { name: 'Locations API - List Locations', status: 'idle', message: '' },
     { name: 'Availability API - Check Calendar', status: 'idle', message: '' },
     { name: 'Analytics API - Get Summary', status: 'idle', message: '' },
@@ -135,11 +135,11 @@ export default function SDKTests() {
   };
 
   const testTenant = async (): Promise<string | null> => {
-    const testName = 'Tenant API - Fetch Claire';
+    const testName = "Tenant API - Fetch O'Sullivan Farms";
     updateTestStatus(testName, 'running', 'Fetching tenant data...');
 
     try {
-      const res = await fetch(`${API_BASE}/tenants/claire`);
+      const res = await fetch(`${API_BASE}/tenants/osullivan`);
 
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}: ${res.statusText}`);

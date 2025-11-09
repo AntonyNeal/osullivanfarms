@@ -1,7 +1,7 @@
 {
-  "name": "sw-website-api",
+  "name": "osullivanfarms-api",
   "version": "1.0.0",
-  "description": "Backend API for SW Website",
+  "description": "Backend API for O'Sullivan Farms booking platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

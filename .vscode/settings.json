@@ -13,6 +13,13 @@
     ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
     ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ],
+  "tailwindCSS.files.exclude": [
+    "**/.git/**",
+    "**/node_modules/**",
+    "**/.hg/**",
+    "**/.svn/**",
+    "**/sdk/**"
+  ],
   "github.copilot.chat.mcp.enabled": true,
   "github.copilot.chat.mcp.servers": {
     "digitalocean": {

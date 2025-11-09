@@ -1,322 +1,353 @@
 import { Helmet } from 'react-helmet-async';
-import { useState } from 'react';
-import { Calendar } from 'lucide-react';
-import BookingModal from '../components/BookingModal';
+import { useTenant } from '../core/hooks/useTenant';
+import '../styles/neo-australian.css';
 
 export default function Prices() {
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const { content } = useTenant();
 
   return (
     <>
       <Helmet>
-        <title>Prices - Claire Hamilton</title>
+        <title>Pricing - O'Sullivan Farms | Australian Agricultural Products</title>
         <meta
           name="description"
-          content="Investment in unforgettable experiences with Claire Hamilton - transparent pricing for discerning individuals."
-        />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap"
-          rel="stylesheet"
+          content="Competitive pricing on premium Australian hay, straw, and agricultural transport services. Fair dinkum value for Aussie farmers."
         />
       </Helmet>
 
-      <div className="min-h-screen bg-white">
-        {/* Hero Section */}
-        <section className="relative py-20 sm:py-24 md:py-32 bg-gradient-to-b from-rose-50 via-white to-rose-50/30">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto text-center">
-              <h1
-                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light text-gray-900 mb-6 sm:mb-8 tracking-tight"
-                style={{ fontFamily: '"Playfair Display", serif' }}
-              >
-                Investment
-              </h1>
-              <div className="h-1 w-24 sm:w-32 bg-gradient-to-r from-rose-300 via-pink-400 to-rose-300 mx-auto mb-8 sm:mb-12" />
-              <p className="text-xl sm:text-2xl md:text-3xl text-gray-800 leading-relaxed font-normal">
-                Quality time deserves genuine investment. Every experience is crafted with care,
-                attention, and absolute discretion.
-              </p>
-            </div>
+      <div className="py-12 bg-gray-900 text-white min-h-screen relative overflow-hidden">
+        {/* Topographical Grid Overlay */}
+        <div
+          className="absolute inset-0 opacity-5 pointer-events-none"
+          style={{
+            backgroundImage: `
+                 linear-gradient(var(--digital-matrix) 1px, transparent 1px),
+                 linear-gradient(90deg, var(--digital-matrix) 1px, transparent 1px)
+               `,
+            backgroundSize: '50px 50px',
+          }}
+        ></div>
+
+        {/* Scan Line Effect */}
+        <div className="scan-line"></div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          {/* Hero Header */}
+          <div className="text-center mb-12 aussie-pride">
+            <h1 className="text-5xl md:text-7xl font-bebas mb-4 text-wattle-gold glitch">
+              🇦🇺 PRICING 🇦🇺
+            </h1>
+            <p className="text-xl md:text-2xl font-space-mono text-digital-matrix mb-2">
+              36°08'39.6"S 144°45'36.0"E | ECHUCA, VICTORIA
+            </p>
+            <p className="text-lg text-eucalyptus font-playfair italic">
+              Fair Dinkum Value | Aussie Quality | No Hidden Costs
+            </p>
           </div>
-        </section>
 
-        {/* Pricing Section */}
-        <section className="py-16 sm:py-20 md:py-24 bg-white">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
-              {/* GFE Rates */}
-              <div className="mb-12">
-                <h2
-                  className="text-3xl sm:text-4xl md:text-5xl font-light text-gray-900 mb-8 text-center"
-                  style={{ fontFamily: '"Playfair Display", serif' }}
-                >
-                  Girlfriend Experience (GFE) Rates
+          {/* HAY PRODUCTION PRICING */}
+          <section className="mb-16">
+            <h2 className="text-4xl font-bebas mb-8 text-center text-wattle-gold">
+              🌾 HAY PRODUCTION PRICING
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* Lucerne Hay */}
+              <div className="service-card-neo pulse-border">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl font-bebas text-wattle-gold">LUCERNE HAY</h3>
+                  <span className="text-3xl">🍃</span>
+                </div>
+                <div className="border-t border-eucalyptus pt-4 mb-4">
+                  <p className="text-4xl font-bebas text-digital-matrix mb-2">$420</p>
+                  <p className="text-gray-400 font-space-mono text-sm">PER TONNE</p>
+                </div>
+                <ul className="space-y-2 text-gray-300 font-playfair mb-6">
+                  <li>✓ Premium protein-rich feed</li>
+                  <li>✓ Horse & cattle quality</li>
+                  <li>✓ Small square bales (8-wire)</li>
+                  <li>✓ Dust extracted & tested</li>
+                  <li>✓ Minimum 5 tonne order</li>
+                </ul>
+                <div className="digital-coords text-xs">MURRAY VALLEY GROWN | SEASON 2024/25</div>
+              </div>
+
+              {/* Oaten Hay */}
+              <div className="service-card-neo pulse-border">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl font-bebas text-wattle-gold">OATEN HAY</h3>
+                  <span className="text-3xl">🌾</span>
+                </div>
+                <div className="border-t border-eucalyptus pt-4 mb-4">
+                  <p className="text-4xl font-bebas text-digital-matrix mb-2">$340</p>
+                  <p className="text-gray-400 font-space-mono text-sm">PER TONNE</p>
+                </div>
+                <ul className="space-y-2 text-gray-300 font-playfair mb-6">
+                  <li>✓ All-purpose feed solution</li>
+                  <li>✓ Dairy & sheep ideal</li>
+                  <li>✓ 8x4x3 large squares</li>
+                  <li>✓ Consistent quality grade</li>
+                  <li>✓ Minimum 10 tonne order</li>
+                </ul>
+                <div className="digital-coords text-xs">VICTORIAN HARVEST | CERTIFIED AUSSIE</div>
+              </div>
+
+              {/* Wheaten Hay */}
+              <div className="service-card-neo pulse-border">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl font-bebas text-wattle-gold">WHEATEN HAY</h3>
+                  <span className="text-3xl">🌻</span>
+                </div>
+                <div className="border-t border-eucalyptus pt-4 mb-4">
+                  <p className="text-4xl font-bebas text-digital-matrix mb-2">$320</p>
+                  <p className="text-gray-400 font-space-mono text-sm">PER TONNE</p>
+                </div>
+                <ul className="space-y-2 text-gray-300 font-playfair mb-6">
+                  <li>✓ Cost-effective roughage</li>
+                  <li>✓ Beef cattle favourite</li>
+                  <li>✓ Round or square bales</li>
+                  <li>✓ Weather-protected storage</li>
+                  <li>✓ Minimum 15 tonne order</li>
+                </ul>
+                <div className="digital-coords text-xs">
+                  BULK PRICING AVAILABLE | CALL FOR QUOTE
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* TRANSPORT SERVICES */}
+          <section className="mb-16">
+            <h2 className="text-4xl font-bebas mb-8 text-center text-wattle-gold">
+              🚛 TRANSPORT SERVICES
+            </h2>
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Local Delivery */}
+              <div className="service-card-neo pulse-border">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl font-bebas text-wattle-gold">LOCAL DELIVERY</h3>
+                  <span className="text-3xl">🦘</span>
+                </div>
+                <div className="border-t border-eucalyptus pt-4 mb-4">
+                  <p className="text-4xl font-bebas text-digital-matrix mb-2">$180</p>
+                  <p className="text-gray-400 font-space-mono text-sm">UP TO 100KM RADIUS</p>
+                </div>
+                <ul className="space-y-2 text-gray-300 font-playfair mb-6">
+                  <li>✓ Same-day delivery available</li>
+                  <li>✓ GPS-tracked B-doubles</li>
+                  <li>✓ Load weight up to 30 tonnes</li>
+                  <li>✓ Unloading assistance included</li>
+                  <li>✓ Echuca | Shepparton | Bendigo region</li>
+                </ul>
+                <div className="digital-coords text-xs">FLAT RATE | NO FUEL SURCHARGE</div>
+              </div>
+
+              {/* Interstate Freight */}
+              <div className="service-card-neo pulse-border">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl font-bebas text-wattle-gold">INTERSTATE FREIGHT</h3>
+                  <span className="text-3xl">🛣️</span>
+                </div>
+                <div className="border-t border-eucalyptus pt-4 mb-4">
+                  <p className="text-4xl font-bebas text-digital-matrix mb-2">$2.20</p>
+                  <p className="text-gray-400 font-space-mono text-sm">PER KM | PER TONNE</p>
+                </div>
+                <ul className="space-y-2 text-gray-300 font-playfair mb-6">
+                  <li>✓ NSW | SA | QLD destinations</li>
+                  <li>✓ Full load 30+ tonne capacity</li>
+                  <li>✓ Scheduled weekly runs</li>
+                  <li>✓ Real-time tracking updates</li>
+                  <li>✓ Competitive group booking rates</li>
+                </ul>
+                <div className="digital-coords text-xs">QUOTE REQUIRED | PHONE OR EMAIL</div>
+              </div>
+            </div>
+          </section>
+
+          {/* STRAW & BEDDING */}
+          <section className="mb-16">
+            <h2 className="text-4xl font-bebas mb-8 text-center text-wattle-gold">
+              🏵️ STRAW & BEDDING
+            </h2>
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Wheat Straw */}
+              <div className="service-card-neo pulse-border">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl font-bebas text-wattle-gold">WHEAT STRAW</h3>
+                  <span className="text-3xl">🌾</span>
+                </div>
+                <div className="border-t border-eucalyptus pt-4 mb-4">
+                  <p className="text-4xl font-bebas text-digital-matrix mb-2">$120</p>
+                  <p className="text-gray-400 font-space-mono text-sm">PER TONNE</p>
+                </div>
+                <ul className="space-y-2 text-gray-300 font-playfair mb-6">
+                  <li>✓ Premium animal bedding</li>
+                  <li>✓ Low dust & clean cut</li>
+                  <li>✓ Small squares 8-wire</li>
+                  <li>✓ Stables & poultry farms</li>
+                  <li>✓ Minimum 3 tonne order</li>
+                </ul>
+                <div className="digital-coords text-xs">YEAR-ROUND SUPPLY | BULK DISCOUNTS</div>
+              </div>
+
+              {/* Barley Straw */}
+              <div className="service-card-neo pulse-border">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl font-bebas text-wattle-gold">BARLEY STRAW</h3>
+                  <span className="text-3xl">🌿</span>
+                </div>
+                <div className="border-t border-eucalyptus pt-4 mb-4">
+                  <p className="text-4xl font-bebas text-digital-matrix mb-2">$100</p>
+                  <p className="text-gray-400 font-space-mono text-sm">PER TONNE</p>
+                </div>
+                <ul className="space-y-2 text-gray-300 font-playfair mb-6">
+                  <li>✓ Economical bedding option</li>
+                  <li>✓ Composting & mulch grade</li>
+                  <li>✓ Round bales available</li>
+                  <li>✓ Garden & landscaping use</li>
+                  <li>✓ Minimum 5 tonne order</li>
+                </ul>
+                <div className="digital-coords text-xs">
+                  FARM PICKUP AVAILABLE | SAVE ON FREIGHT
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* FLOCK MANAGEMENT BETA */}
+          <section className="mb-16">
+            <div className="service-card-neo pulse-border cyber-border">
+              <div className="text-center mb-8">
+                <h2 className="text-4xl font-bebas text-wattle-gold mb-4">
+                  🐑 FLOCK MANAGEMENT SYSTEM - BETA
                 </h2>
-                <div className="bg-gradient-to-br from-rose-50 to-white border-2 border-rose-200 p-8 rounded-lg shadow-lg">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                      <h3 className="text-2xl font-semibold text-gray-900 mb-6">Incall Rates</h3>
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">60 mins</span>
-                          <span className="text-xl font-semibold text-rose-600">$650</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">90 mins</span>
-                          <span className="text-xl font-semibold text-rose-600">$900</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">2 hours</span>
-                          <span className="text-xl font-semibold text-rose-600">$1,200</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">3 hours</span>
-                          <span className="text-xl font-semibold text-rose-600">$1,700</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">
-                            Dinner Date (2hrs food + 2hrs intimacy)
-                          </span>
-                          <span className="text-xl font-semibold text-rose-600">$2,000</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">Overnight (10 hours)</span>
-                          <span className="text-xl font-semibold text-rose-600">$4,000</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3">
-                          <span className="text-lg text-gray-800">Social only (1 hour)</span>
-                          <span className="text-xl font-semibold text-rose-600">$400</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-semibold text-gray-900 mb-6">Outcall Rates</h3>
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">60 mins</span>
-                          <span className="text-xl font-semibold text-rose-600">$650</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">90 mins</span>
-                          <span className="text-xl font-semibold text-rose-600">$900</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">2 hours</span>
-                          <span className="text-xl font-semibold text-rose-600">$1,200</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">3 hours</span>
-                          <span className="text-xl font-semibold text-rose-600">$1,700</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">
-                            Dinner Date (2hrs food + 2hrs intimacy)
-                          </span>
-                          <span className="text-xl font-semibold text-rose-600">$2,000</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">Overnight (10 hours)</span>
-                          <span className="text-xl font-semibold text-rose-600">$4,000</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3">
-                          <span className="text-lg text-gray-800">Social only (1 hour)</span>
-                          <span className="text-xl font-semibold text-rose-600">$400</span>
-                        </div>
-                      </div>
-                    </div>
+                <p className="text-xl text-digital-matrix font-space-mono">
+                  EARLY ACCESS PROGRAM | LIMITED SPOTS
+                </p>
+              </div>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="text-2xl font-bebas text-eucalyptus mb-4">BETA PRICING</h3>
+                  <div className="mb-6">
+                    <p className="text-5xl font-bebas text-digital-matrix mb-2">$49</p>
+                    <p className="text-gray-400 font-space-mono text-sm">PER MONTH | BETA RATE</p>
+                    <p className="text-sm text-gray-500 italic mt-2">
+                      Regular price $149/month after beta
+                    </p>
+                  </div>
+                  <ul className="space-y-2 text-gray-300 font-playfair">
+                    <li>✓ Digital flock tracking</li>
+                    <li>✓ Health & vaccination records</li>
+                    <li>✓ GPS pasture mapping</li>
+                    <li>✓ Feed consumption analytics</li>
+                    <li>✓ Priority beta support</li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bebas text-eucalyptus mb-4">PROGRAM BENEFITS</h3>
+                  <ul className="space-y-3 text-gray-300 font-playfair">
+                    <li>
+                      🎯 <strong>Lock in beta pricing</strong> - Keep $49/month rate for 24 months
+                    </li>
+                    <li>
+                      🚀 <strong>Feature requests</strong> - Direct input on development
+                    </li>
+                    <li>
+                      🇦🇺 <strong>Aussie farmer community</strong> - Beta tester network
+                    </li>
+                    <li>
+                      📊 <strong>Free data migration</strong> - From existing systems
+                    </li>
+                    <li>
+                      💚 <strong>Lifetime discount</strong> - 50% off after beta ends
+                    </li>
+                  </ul>
+                  <div className="mt-6">
+                    <a href="/contact" className="btn-aussie-primary inline-block">
+                      🦘 APPLY FOR BETA ACCESS
+                    </a>
                   </div>
                 </div>
               </div>
-
-              {/* PSE Rates */}
-              <div className="mb-12">
-                <h2
-                  className="text-3xl sm:text-4xl md:text-5xl font-light text-gray-900 mb-8 text-center"
-                  style={{ fontFamily: '"Playfair Display", serif' }}
-                >
-                  Pornstar Experience (PSE) Rates
-                </h2>
-                <div className="bg-gradient-to-br from-pink-50 to-white border-2 border-pink-200 p-8 rounded-lg shadow-lg">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                      <h3 className="text-2xl font-semibold text-gray-900 mb-6">Incall Rates</h3>
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">60 mins</span>
-                          <span className="text-xl font-semibold text-pink-600">$750</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">90 mins</span>
-                          <span className="text-xl font-semibold text-pink-600">$1,050</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">2 hours</span>
-                          <span className="text-xl font-semibold text-pink-600">$1,400</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">3 hours</span>
-                          <span className="text-xl font-semibold text-pink-600">$2,000</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">
-                            Dinner Date (2hrs food + 2hrs intimacy)
-                          </span>
-                          <span className="text-xl font-semibold text-pink-600">$2,300</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">Overnight (10 hours)</span>
-                          <span className="text-xl font-semibold text-pink-600">$6,000</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">Couples</span>
-                          <span className="text-xl font-semibold text-pink-600">
-                            $1,000 per hour
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center py-3">
-                          <span className="text-lg text-gray-800">Doubles</span>
-                          <span className="text-xl font-semibold text-pink-600">$900 per hour</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-semibold text-gray-900 mb-6">Outcall Rates</h3>
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">60 mins</span>
-                          <span className="text-xl font-semibold text-pink-600">$750</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">90 mins</span>
-                          <span className="text-xl font-semibold text-pink-600">$1,050</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">2 hours</span>
-                          <span className="text-xl font-semibold text-pink-600">$1,400</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">3 hours</span>
-                          <span className="text-xl font-semibold text-pink-600">$2,000</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">
-                            Dinner Date (2hrs food + 2hrs intimacy)
-                          </span>
-                          <span className="text-xl font-semibold text-pink-600">$2,300</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">Overnight (10 hours)</span>
-                          <span className="text-xl font-semibold text-pink-600">$6,000</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                          <span className="text-lg text-gray-800">Couples</span>
-                          <span className="text-xl font-semibold text-pink-600">
-                            $1,000 per hour
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center py-3">
-                          <span className="text-lg text-gray-800">Doubles</span>
-                          <span className="text-xl font-semibold text-pink-600">$900 per hour</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="mt-8 pt-8 border-t border-eucalyptus">
+                <p className="text-center text-gray-400 text-sm font-space-mono">
+                  ONLY 50 BETA SPOTS AVAILABLE | 32 REMAINING | CLOSES JAN 2025
+                </p>
               </div>
+            </div>
+          </section>
 
-              {/* Extras */}
-              <div className="mb-12">
-                <h2
-                  className="text-3xl sm:text-4xl md:text-5xl font-light text-gray-900 mb-8 text-center"
-                  style={{ fontFamily: '"Playfair Display", serif' }}
-                >
-                  Extras
-                </h2>
-                <div className="bg-gray-50 border-2 border-gray-200 p-8 rounded-lg">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="text-center p-4 bg-white rounded-lg">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Pegging</h3>
-                      <p className="text-2xl font-bold text-gray-800">$150</p>
-                    </div>
-                    <div className="text-center p-4 bg-white rounded-lg">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Keep my panties</h3>
-                      <p className="text-2xl font-bold text-gray-800">$150</p>
-                    </div>
-                    <div className="text-center p-4 bg-white rounded-lg">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Kink &amp; BDSM</h3>
-                      <p className="text-lg text-gray-800">Light to moderate - Enquire</p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600 mt-4 text-center">
-                    Additional extras may be provided at my discretion. Some may incur an extra fee.
-                  </p>
-                </div>
+          {/* PAYMENT & TERMS */}
+          <section className="mb-16">
+            <h2 className="text-4xl font-bebas mb-8 text-center text-wattle-gold">
+              💳 PAYMENT & TERMS
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="service-card-neo">
+                <h3 className="text-xl font-bebas text-eucalyptus mb-4">PAYMENT OPTIONS</h3>
+                <ul className="space-y-2 text-gray-300 font-playfair text-sm">
+                  <li>✓ 30-day account (approved customers)</li>
+                  <li>✓ Credit card (Visa, Mastercard)</li>
+                  <li>✓ Direct bank transfer</li>
+                  <li>✓ Cash on delivery</li>
+                  <li>✓ Livestock exchange program</li>
+                </ul>
               </div>
-
-              {/* Booking Information */}
-              <div className="bg-blue-50 border-l-4 border-blue-400 p-6 sm:p-8 rounded">
-                <h3
-                  className="text-2xl sm:text-3xl md:text-4xl font-light text-gray-900 mb-4 sm:mb-6"
-                  style={{ fontFamily: '"Playfair Display", serif' }}
-                >
-                  Booking Information
-                </h3>
-                <ul className="space-y-3 sm:space-y-4 text-lg text-gray-800">
-                  <li className="flex items-start">
-                    <span className="text-blue-500 mr-3">•</span>
-                    <span>Screening is always required for safety</span>
+              <div className="service-card-neo">
+                <h3 className="text-xl font-bebas text-eucalyptus mb-4">DISCOUNTS</h3>
+                <ul className="space-y-2 text-gray-300 font-playfair text-sm">
+                  <li>
+                    🌾 <strong>5%</strong> - Orders over 50 tonnes
                   </li>
-                  <li className="flex items-start">
-                    <span className="text-blue-500 mr-3">•</span>
-                    <span>Deposit via Beem confirms your booking</span>
+                  <li>
+                    🌾 <strong>10%</strong> - Orders over 100 tonnes
                   </li>
-                  <li className="flex items-start">
-                    <span className="text-blue-500 mr-3">•</span>
-                    <span>Remaining balance settled in cash at the start</span>
+                  <li>
+                    🌾 <strong>15%</strong> - Annual contracts
                   </li>
-                  <li className="flex items-start">
-                    <span className="text-blue-500 mr-3">•</span>
-                    <span>24 hours notice required, pre-bookings preferred</span>
+                  <li>
+                    🦘 <strong>20%</strong> - Farm pickup (no freight)
                   </li>
-                  <li className="flex items-start">
-                    <span className="text-blue-500 mr-3">•</span>
-                    <span>All rates in Australian Dollars (AUD)</span>
+                  <li>
+                    🇦🇺 <strong>Loyalty rewards</strong> - Repeat customers
                   </li>
                 </ul>
               </div>
+              <div className="service-card-neo">
+                <h3 className="text-xl font-bebas text-eucalyptus mb-4">GUARANTEES</h3>
+                <ul className="space-y-2 text-gray-300 font-playfair text-sm">
+                  <li>✓ Quality tested & certified</li>
+                  <li>✓ Weight guarantee (+/- 2%)</li>
+                  <li>✓ Delivery timeframe guarantee</li>
+                  <li>✓ Full refund if not satisfied</li>
+                  <li>✓ 100% Australian owned</li>
+                </ul>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Call to Action */}
-        <section className="py-20 sm:py-24 bg-gradient-to-b from-rose-50/30 to-white">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2
-                className="text-4xl sm:text-5xl md:text-6xl font-light text-gray-900 mb-6 sm:mb-8 tracking-tight"
-                style={{ fontFamily: '"Playfair Display", serif' }}
-              >
-                Ready to Book?
-              </h2>
-              <p className="text-xl sm:text-2xl md:text-3xl text-gray-800 leading-relaxed font-normal mb-10 sm:mb-12">
-                Reach out to discuss your ideal experience and confirm availability.
-              </p>
-              <button
-                onClick={() => setIsBookingOpen(true)}
-                className="inline-flex items-center px-10 sm:px-12 py-4 sm:py-5 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-medium rounded-sm hover:from-rose-600 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
-                aria-label="Send inquiry"
-              >
-                <Calendar className="w-5 h-5 mr-2" />
-                Send Inquiry
-              </button>
+          {/* CTA Section */}
+          <div className="text-center cyber-border p-12">
+            <h2 className="text-4xl md:text-5xl font-bebas text-wattle-gold mb-4">
+              READY TO ORDER?
+            </h2>
+            <p className="text-xl text-gray-300 font-playfair mb-8 max-w-2xl mx-auto">
+              Get a custom quote for your operation. Fair dinkum pricing, Aussie quality, no hidden
+              costs.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="/contact" className="btn-aussie-primary text-lg">
+                🦘 REQUEST QUOTE
+              </a>
+              <a href="tel:+61354800123" className="btn-aussie-secondary text-lg">
+                📞 CALL (03) 5480 0123
+              </a>
             </div>
+            <p className="text-sm text-gray-500 font-space-mono mt-6">
+              PROUDLY AUSTRALIAN OWNED & OPERATED | ECHUCA, VICTORIA
+            </p>
           </div>
-        </section>
+        </div>
       </div>
-
-      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
     </>
   );
 }

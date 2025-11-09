@@ -1,43 +1,37 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { useState, useEffect, type MouseEvent } from 'react';
+import { useTenant } from '../core/hooks/useTenant';
 import BookingModal from '../components/BookingModal';
-
-const heroImages = [
-  'https://pbs.twimg.com/media/G3hgK2hX0AAB8RL.jpg:large',
-  'https://pbs.twimg.com/media/G3Gh-hdbUAAQTDo.jpg:large',
-  'https://pbs.twimg.com/media/G3qlG5VWwAAkv0w.jpg:large',
-  'https://pbs.twimg.com/media/G4OoP7-WoAA4YbX.jpg:large',
-  'https://pbs.twimg.com/media/G22stVEaYAAuqaG.jpg:large',
-];
+import MatrixRain from '../components/MatrixRain';
+import SouthernCross from '../components/SouthernCross';
+import InteractiveHayCalculator from '../components/InteractiveHayCalculator';
+import AussieWeatherWidget from '../components/AussieWeatherWidget';
+import FloatingAussieMascot from '../components/FloatingAussieMascot';
+import '../styles/neo-australian.css';
 
 export default function Home() {
+  const { content, photos } = useTenant();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState(0);
-  const [clickLog, setClickLog] = useState<string[]>([]);
 
-  // Add diagnostic info to window for debugging
-  useEffect(() => {
-    const diag = {
-      showClickLogs: () => {
-        console.log('[DIAG] Click logs:', clickLog);
-      },
-      clearClickLogs: () => {
-        setClickLog([]);
-      },
-    };
-    Object.assign(window, diag);
-  }, [clickLog]);
+  // Get hero images from tenant photos config
+  const heroImages = photos?.hero?.variants
+    ? Object.values(photos.hero.variants).map((v) => v.url)
+    : photos?.hero?.control
+      ? [typeof photos.hero.control === 'string' ? photos.hero.control : photos.hero.control.url]
+      : [];
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
-    }, 15000); // Slowed down from 9000ms to 15000ms for better photo impact
-
-    return () => clearInterval(interval);
-  }, []);
+    if (heroImages.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+      }, 15000);
+      return () => clearInterval(interval);
+    }
+  }, [heroImages.length]);
 
   const goToImage = (index: number) => {
     setCurrentImageIndex(index);
@@ -73,11 +67,10 @@ export default function Home() {
   return (
     <>
       <Helmet>
-        <title>Claire Hamilton - Canberra Companion</title>
-        <meta
-          name="description"
-          content="Claire Hamilton - Real curves. Real connection. Ultimate GFE. Independent escort based in Canberra, Australia."
-        />
+        <title>
+          {content.name} - {content.tagline}
+        </title>
+        <meta name="description" content={`${content.name} - ${content.shortBio}`} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
@@ -140,71 +133,100 @@ export default function Home() {
                 <img
                   key={index}
                   src={image}
-                  alt="Claire Hamilton"
-                  className={`absolute inset-0 w-full h-full object-contain transition-transform duration-1000 ease-in-out ${transformClass}`}
-                  style={{ zIndex, backgroundColor: '#000' }}
+                  alt="O'Sullivan Farms Australian Agriculture"
+                  className={`absolute inset-0 w-full h-full object-cover transition-transform duration-1000 ease-in-out ${transformClass}`}
+                  style={{ zIndex, backgroundColor: '#1a1a1a' }}
                 />
               );
             })}
           </div>
 
-          {/* Dark Overlay - Subtle for photo impact */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-rose-900/20 to-black/40" />
+          {/* Dark Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
 
-          {/* Content Overlay - Elegant and readable */}
-          <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center h-full">
-            <h1
-              className="text-5xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light mb-4 sm:mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)] leading-none tracking-tight animate-pulse"
-              style={{
-                textShadow: '2px 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)',
-                fontFamily: '"Playfair Display", serif',
-                animation: 'gentle-pulse 4s ease-in-out infinite',
-              }}
-            >
-              Claire Hamilton
-            </h1>
+          {/* Matrix Rain Effect */}
+          <MatrixRain opacity={0.1} />
+
+          {/* Southern Cross Constellation */}
+          <SouthernCross />
+
+          {/* Scan Line Effect */}
+          <div className="scan-line" />
+
+          {/* Topographical Grid */}
+          <div className="topo-grid" />
+
+          {/* Content Overlay - Neo-Australian Style */}
+          <div className="relative z-20 text-center text-white px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center h-full neo-hero">
+            {/* Australian Flag Icons */}
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <span className="text-5xl">🇦🇺</span>
+              <div>
+                <h1
+                  className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light mb-2 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] leading-none tracking-tight glitch-continuous"
+                  style={{
+                    fontFamily: 'var(--heading-font)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                  }}
+                >
+                  {content.name}
+                </h1>
+              </div>
+              <span className="text-5xl">🇦🇺</span>
+            </div>
+
+            {/* Tagline */}
             <p
-              className="text-xl sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl italic drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] mb-6 sm:mb-8 md:mb-10 max-w-4xl mx-auto leading-relaxed font-light"
+              className="tagline text-2xl sm:text-3xl md:text-4xl italic drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] mb-3 max-w-4xl mx-auto"
               style={{
-                textShadow: '1px 1px 6px rgba(0,0,0,0.8), 0 0 15px rgba(0,0,0,0.5)',
-                fontFamily: '"Crimson Text", serif',
+                fontFamily: 'var(--body-font)',
               }}
             >
-              Real curves. Real connection. Ultimate GFE.
+              {content.tagline}
             </p>
-            <div className="flex gap-3 sm:gap-4 md:gap-6 justify-center flex-wrap px-4 mb-8 sm:mb-12">
+
+            {/* Patriotic Slogan */}
+            <p className="aussie-pride text-xl sm:text-2xl mb-4">
+              100% AUSTRALIAN. 100% QUALITY. NO COMPROMISE.
+            </p>
+
+            {/* Sub-tagline */}
+            <p className="text-lg sm:text-xl text-green-400 mb-2 font-semibold">
+              🦘 Built on Australian soil, powered by Australian grit 🦘
+            </p>
+
+            {/* GPS Coordinates */}
+            <p className="digital-coords mb-8">36°08'39.6"S 144°45'36.0"E | ECHUCA, VICTORIA</p>
+
+            <div className="flex gap-4 sm:gap-6 justify-center flex-wrap px-4 mb-8">
               <button
                 onClick={() => setIsBookingOpen(true)}
-                className="group relative px-6 sm:px-7 md:px-8 lg:px-10 py-3 sm:py-3 md:py-4 bg-gradient-to-r from-red-800/60 to-red-900/70 text-white rounded-lg text-base sm:text-lg md:text-lg font-bold tracking-wide hover:shadow-2xl hover:from-red-800/80 hover:to-red-900/90 transition-all duration-500 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-offset-2 backdrop-blur-sm border border-red-700/50"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                  boxShadow:
-                    '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-                }}
-                aria-label="Book an appointment now"
+                className="btn-aussie-primary glitch-hover"
+                aria-label="Book now"
               >
-                Book Now
-                <span className="ml-2 inline-block group-hover:translate-x-1 transition-transform duration-300">
-                  →
-                </span>
+                <span>🦘 BOOK NOW</span>
               </button>
               <Link
-                to="/gallery"
-                className="group px-6 sm:px-7 md:px-8 lg:px-10 py-3 sm:py-3 md:py-4 border-2 border-rose-300 text-rose-100 rounded-lg text-base sm:text-lg md:text-lg font-semibold tracking-wide hover:bg-rose-50/20 hover:border-rose-200 transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-rose-400 focus:ring-offset-2 backdrop-blur-sm"
-                aria-label="View photo gallery"
+                to="/services"
+                className="btn-aussie-secondary glitch-hover"
+                aria-label="View services"
               >
-                View Gallery
-                <span className="ml-2 inline-block group-hover:translate-x-1 transition-transform">
-                  →
-                </span>
+                <span>VIEW SERVICES →</span>
               </Link>
+            </div>
+
+            {/* Status Indicator */}
+            <div className="flex items-center gap-2 text-sm digital-coords">
+              <span className="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+              <span>SYSTEM ONLINE | ACCEPTING BOOKINGS</span>
             </div>
           </div>
         </section>
 
-        {/* Carousel Indicators - Subtle and refined */}
+        {/* Carousel Indicators - Cyberpunk Style */}
         <div
-          className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 flex gap-3 sm:gap-3 justify-center select-none pointer-events-auto"
+          className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 flex gap-3 justify-center select-none pointer-events-auto"
           onMouseMove={handleIndicatorMouseMove}
           onMouseUp={handleIndicatorMouseUp}
           onMouseLeave={handleIndicatorMouseUp}
@@ -215,11 +237,14 @@ export default function Home() {
               onMouseDown={(e) => handleIndicatorMouseDown(e, index)}
               className={`rounded-full transition-all duration-300 cursor-pointer focus:outline-none flex-shrink-0 ${
                 index === currentImageIndex
-                  ? 'bg-white/80 w-2.5 h-2.5'
-                  : 'bg-white/40 w-2 h-2 hover:bg-white/60'
+                  ? 'bg-gradient-to-r from-green-400 to-yellow-400 w-3 h-3'
+                  : 'bg-white/30 w-2 h-2 hover:bg-yellow-400/60'
               }`}
               style={{
-                boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                boxShadow:
+                  index === currentImageIndex
+                    ? '0 0 10px var(--digital-matrix), 0 0 20px var(--wattle-gold)'
+                    : '0 2px 4px rgba(0,0,0,0.3)',
               }}
               aria-label={`Go to image ${index + 1}`}
             />
@@ -227,7 +252,60 @@ export default function Home() {
         </div>
       </div>
 
-      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
+      {/* Interactive Sections Below Hero */}
+      <div className="bg-gray-900 py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Calculator & Weather Grid */}
+          <div className="grid lg:grid-cols-3 gap-8 mb-16">
+            <div className="lg:col-span-2">
+              <InteractiveHayCalculator />
+            </div>
+            <div className="flex flex-col justify-center">
+              <AussieWeatherWidget />
+            </div>
+          </div>
+
+          {/* Quick Stats Cyber Panel */}
+          <div className="cyber-border p-8 bg-gray-950/50">
+            <h3 className="text-3xl font-bebas text-center text-wattle-gold mb-8">
+              BY THE NUMBERS 🇦🇺
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+              <div className="service-card-neo p-6">
+                <p className="text-4xl font-bebas text-digital-matrix mb-2">1,200+</p>
+                <p className="text-sm text-gray-400 font-space-mono">Tonnes Delivered</p>
+              </div>
+              <div className="service-card-neo p-6">
+                <p className="text-4xl font-bebas text-digital-matrix mb-2">200+</p>
+                <p className="text-sm text-gray-400 font-space-mono">Happy Farmers</p>
+              </div>
+              <div className="service-card-neo p-6">
+                <p className="text-4xl font-bebas text-digital-matrix mb-2">24/7</p>
+                <p className="text-sm text-gray-400 font-space-mono">GPS Tracking</p>
+              </div>
+              <div className="service-card-neo p-6">
+                <p className="text-4xl font-bebas text-digital-matrix mb-2">100%</p>
+                <p className="text-sm text-gray-400 font-space-mono">Aussie Owned</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <BookingModal
+        isOpen={isBookingOpen}
+        onClose={() => setIsBookingOpen(false)}
+        provider={{
+          id: 'osullivanfarms',
+          name: content.name,
+          specialty: content.tagline,
+          isVerified: true,
+        }}
+        hourlyRate={250}
+        platformFeePercentage={15}
+      />
+
+      <FloatingAussieMascot />
     </>
   );
 }

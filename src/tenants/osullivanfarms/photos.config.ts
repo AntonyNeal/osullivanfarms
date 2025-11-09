@@ -10,21 +10,21 @@ export const photos: TenantPhotos = {
   hero: {
     control: {
       id: 'hero-main',
-      url: '/assets/hero-golden-paddock.jpg', // Golden hour over hay paddocks
+      url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920', // Golden hay paddocks
       alt: "O'Sullivan Farms hay paddocks at sunset - Echuca, Victoria",
       caption: 'Premium hay production in the Murray River region',
     },
     variants: [
       {
         id: 'hero-sheep',
-        url: '/assets/hero-merino-flock.jpg', // Mob of sheep in green paddock
-        alt: 'Merino sheep flock on O\'Sullivan Farms',
+        url: 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=1920', // Sheep in paddock
+        alt: "Merino sheep flock on O'Sullivan Farms",
         weight: 0.4,
       },
       {
         id: 'hero-transport',
-        url: '/assets/hero-transport.jpg', // B-double loaded with hay
-        alt: 'O\'Sullivan Farms transport fleet',
+        url: 'https://images.unsplash.com/photo-1595241653851-ea8d1a9b6ba1?w=1920', // Farming equipment
+        alt: "O'Sullivan Farms operations",
         weight: 0.3,
       },
     ],
@@ -77,7 +77,7 @@ export const photos: TenantPhotos = {
     {
       id: 'gallery-7',
       url: '/assets/gallery-farm-sunrise.jpg',
-      alt: 'Dawn over O\'Sullivan Farms',
+      alt: "Dawn over O'Sullivan Farms",
       caption: 'Echuca farmlands at first light',
       category: 'farm',
     },

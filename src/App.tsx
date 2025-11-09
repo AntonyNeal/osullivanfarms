@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { useTenant } from './core/hooks/useTenant';
 import Home from './pages/Home';
 import About from './pages/About';
 import Services from './pages/Services';
@@ -9,9 +10,11 @@ import AdminDashboard from './pages/AdminDashboard';
 import BookingModal from './components/BookingModal';
 import MobileCTABar from './components/MobileCTABar';
 import { initializeSession, registerSession, trackConversion } from './utils/utm.service';
+import './styles/neo-australian.css';
 
 function App() {
   const location = useLocation();
+  const { content, loading } = useTenant();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const clickCountRef = useRef(0);
@@ -52,11 +55,23 @@ function App() {
     initTracking();
   }, []);
 
+  // Show loading state while tenant data is being fetched
+  if (loading || !content) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <Helmet>
-        <title>Claire Hamilton</title>
-        <meta name="description" content="Claire Hamilton - Melbourne Companion" />
+        <title>{content.name}</title>
+        <meta name="description" content={content.shortBio || content.bio} />
       </Helmet>
 
       <div className="min-h-screen bg-white">
@@ -101,7 +116,7 @@ function App() {
                       }, 500);
                     }
                   }}
-                  className={`text-xl sm:text-2xl font-light ${location.pathname === '/' ? 'text-white' : 'text-gray-900'} tracking-tight hover:text-rose-600 transition-colors whitespace-nowrap cursor-pointer select-none`}
+                  className={`text-xl sm:text-2xl font-light ${location.pathname === '/' ? 'text-white' : 'text-gray-900'} tracking-tight hover:text-wattle-gold transition-colors whitespace-nowrap cursor-pointer select-none`}
                   style={
                     location.pathname === '/' ? { textShadow: '0 2px 8px rgba(0,0,0,0.8)' } : {}
                   }
@@ -111,14 +126,14 @@ function App() {
                       : 'Triple-click for surprise!'
                   }
                 >
-                  Claire Hamilton
+                  {content.name}
                 </div>
                 <div className="flex items-center space-x-3">
                   <button
                     onClick={() => {
                       handleBookingOpen();
                     }}
-                    className="px-3 py-2 bg-gradient-to-r from-rose-600 to-rose-700 text-white rounded-lg font-semibold hover:from-rose-700 hover:to-rose-800 transition-all duration-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 text-sm cursor-pointer"
+                    className="px-3 py-2 bg-gradient-to-r from-eucalyptus to-sky-blue text-white rounded-lg font-semibold hover:from-wattle-gold hover:to-eucalyptus transition-all duration-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-wattle-gold focus:ring-offset-2 text-sm cursor-pointer"
                     aria-label="Book an appointment now"
                   >
                     Book Now
@@ -128,7 +143,7 @@ function App() {
                       e.stopPropagation();
                       setIsMobileMenuOpen(!isMobileMenuOpen);
                     }}
-                    className={`p-2 ${location.pathname === '/' ? 'text-white' : 'text-gray-900'} hover:text-rose-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 rounded-lg`}
+                    className={`p-2 ${location.pathname === '/' ? 'text-white' : 'text-gray-900'} hover:text-wattle-gold transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-wattle-gold focus:ring-offset-2 rounded-lg`}
                     style={
                       location.pathname === '/'
                         ? { filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.8))' }
@@ -192,7 +207,7 @@ function App() {
                       }, 500);
                     }
                   }}
-                  className={`text-3xl xl:text-4xl font-light ${location.pathname === '/' ? 'text-white' : 'text-gray-900'} tracking-tight hover:text-rose-600 transition-colors whitespace-nowrap cursor-pointer select-none`}
+                  className={`text-3xl xl:text-4xl font-light ${location.pathname === '/' ? 'text-white' : 'text-gray-900'} tracking-tight hover:text-wattle-gold transition-colors whitespace-nowrap cursor-pointer select-none`}
                   style={
                     location.pathname === '/' ? { textShadow: '0 2px 8px rgba(0,0,0,0.8)' } : {}
                   }
@@ -202,19 +217,19 @@ function App() {
                       : 'Triple-click for surprise!'
                   }
                 >
-                  Claire Hamilton
+                  {content.name}
                 </div>
 
                 {/* Desktop Navigation */}
                 <div className="flex space-x-6 xl:space-x-8 items-center">
                   <Link
                     to="/about"
-                    className={`font-medium transition-colors duration-300 focus:outline-none focus:text-rose-600 ${
+                    className={`font-medium transition-colors duration-300 focus:outline-none focus:text-wattle-gold ${
                       location.pathname === '/about'
-                        ? 'text-rose-600'
+                        ? 'text-wattle-gold'
                         : location.pathname === '/'
-                          ? 'text-white hover:text-rose-400'
-                          : 'text-gray-900 hover:text-rose-600'
+                          ? 'text-white hover:text-wattle-gold'
+                          : 'text-gray-900 hover:text-wattle-gold'
                     }`}
                     style={
                       location.pathname === '/' ? { textShadow: '0 2px 4px rgba(0,0,0,0.8)' } : {}
@@ -225,12 +240,12 @@ function App() {
                   </Link>
                   <Link
                     to="/prices"
-                    className={`font-medium transition-colors duration-300 focus:outline-none focus:text-rose-600 ${
+                    className={`font-medium transition-colors duration-300 focus:outline-none focus:text-wattle-gold ${
                       location.pathname === '/prices'
-                        ? 'text-rose-600'
+                        ? 'text-wattle-gold'
                         : location.pathname === '/'
-                          ? 'text-white hover:text-rose-400'
-                          : 'text-gray-900 hover:text-rose-600'
+                          ? 'text-white hover:text-wattle-gold'
+                          : 'text-gray-900 hover:text-wattle-gold'
                     }`}
                     style={
                       location.pathname === '/' ? { textShadow: '0 2px 4px rgba(0,0,0,0.8)' } : {}
@@ -241,12 +256,12 @@ function App() {
                   </Link>
                   <Link
                     to="/services"
-                    className={`font-medium transition-colors duration-300 focus:outline-none focus:text-rose-600 ${
+                    className={`font-medium transition-colors duration-300 focus:outline-none focus:text-wattle-gold ${
                       location.pathname === '/services'
-                        ? 'text-rose-600'
+                        ? 'text-wattle-gold'
                         : location.pathname === '/'
-                          ? 'text-white hover:text-rose-400'
-                          : 'text-gray-900 hover:text-rose-600'
+                          ? 'text-white hover:text-wattle-gold'
+                          : 'text-gray-900 hover:text-wattle-gold'
                     }`}
                     style={
                       location.pathname === '/' ? { textShadow: '0 2px 4px rgba(0,0,0,0.8)' } : {}
@@ -259,7 +274,7 @@ function App() {
                     onClick={() => {
                       handleBookingOpen();
                     }}
-                    className="px-4 sm:px-5 lg:px-6 py-2 sm:py-2.5 lg:py-3 bg-gradient-to-r from-rose-600 to-rose-700 text-white rounded-lg font-semibold hover:from-rose-700 hover:to-rose-800 transition-all duration-300 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 whitespace-nowrap text-xs sm:text-sm lg:text-base cursor-pointer"
+                    className="px-4 sm:px-5 lg:px-6 py-2 sm:py-2.5 lg:py-3 bg-gradient-to-r from-eucalyptus to-sky-blue text-white rounded-lg font-semibold hover:from-wattle-gold hover:to-eucalyptus transition-all duration-300 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-wattle-gold focus:ring-offset-2 whitespace-nowrap text-xs sm:text-sm lg:text-base cursor-pointer"
                     aria-label="Book an appointment now"
                   >
                     Book Now
@@ -330,54 +345,53 @@ function App() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12 lg:gap-16 mb-8 sm:mb-12 lg:mb-16">
                   <div>
                     <h3 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold mb-4 sm:mb-6">
-                      Claire Hamilton
+                      {content.name}
                     </h3>
-                    <p className="text-gray-300 mb-4 sm:text-base lg:text-lg">
-                      Real curves. Real connection. Ultimate GFE.
-                    </p>
-                    <p className="text-gray-300 text-sm sm:text-base">
-                      Independent escort based in Canberra, Australia
-                    </p>
+                    <p className="text-gray-300 mb-4 sm:text-base lg:text-lg">{content.tagline}</p>
+                    <p className="text-gray-300 text-sm sm:text-base">{content.shortBio}</p>
                   </div>
                   <div>
                     <h3 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold mb-4 sm:mb-6">
                       Contact
                     </h3>
                     <div className="space-y-2 sm:space-y-3 text-gray-300 sm:text-base lg:text-lg">
-                      <p>SMS Only: 0403 977 680</p>
-                      <p>Email: contact.clairehamilton@proton.me</p>
-                      <p>WhatsApp: +61 403 977 680</p>
+                      <p>Phone: (03) 5480 0123</p>
+                      <p>Email: sales@osullivanfarms.com.au</p>
+                      <p>Location: Echuca, Victoria</p>
                     </div>
                   </div>
                   <div>
                     <h3 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold mb-4 sm:mb-6">
-                      Follow Me
+                      Connect
                     </h3>
                     <div className="space-y-2 sm:space-y-3">
                       <a
-                        href="#"
-                        className="block text-gray-300 hover:text-pink-400 transition-colors sm:text-base lg:text-lg"
+                        href="https://www.facebook.com/osullivanfarms"
+                        className="block text-gray-300 hover:text-wattle-gold transition-colors sm:text-base lg:text-lg"
                       >
-                        Twitter
+                        Facebook
                       </a>
                       <a
-                        href="#"
-                        className="block text-gray-300 hover:text-pink-400 transition-colors sm:text-base lg:text-lg"
+                        href="https://www.instagram.com/osullivanfarms"
+                        className="block text-gray-300 hover:text-wattle-gold transition-colors sm:text-base lg:text-lg"
                       >
-                        OnlyFans (Free)
+                        Instagram
                       </a>
                       <a
-                        href="#"
-                        className="block text-gray-300 hover:text-pink-400 transition-colors sm:text-base lg:text-lg"
+                        href="https://twitter.com/osullivanfarms"
+                        className="block text-gray-300 hover:text-wattle-gold transition-colors sm:text-base lg:text-lg"
                       >
-                        Bluesky
+                        Twitter/X
                       </a>
                     </div>
                   </div>
                 </div>
-                <div className="border-t border-gray-700 pt-8 sm:pt-12 lg:pt-16 text-center">
+                <div className="border-t border-eucalyptus pt-8 sm:pt-12 lg:pt-16 text-center">
+                  <p className="text-wattle-gold text-base sm:text-lg lg:text-xl font-bebas mb-2">
+                    🇦🇺 PROUDLY AUSTRALIAN OWNED & OPERATED 🇦🇺
+                  </p>
                   <p className="text-gray-400 text-xs sm:text-sm lg:text-base">
-                    © 2025 Claire Hamilton. All rights reserved. | Privacy & Discretion Guaranteed
+                    © 2025 {content.name}. All rights reserved.
                   </p>
                 </div>
               </div>

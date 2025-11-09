@@ -38,10 +38,23 @@ export function TenantProvider({ children }: TenantProviderProps) {
         console.debug('[Tenant] Detected hostname:', hostname);
         console.debug('[Tenant] Extracted subdomain:', subdomain);
 
-        // For development: localhost always maps to 'claire'
+        // For development: localhost always maps to 'osullivanfarms'
         if (hostname === 'localhost' || hostname.startsWith('127.0.0.1')) {
-          console.debug('[Tenant] Development mode - loading claire tenant');
-          await loadDevelopmentTenant();
+          console.debug('[Tenant] Development mode - loading osullivanfarms tenant');
+          const tenantData = await loadLocalTenantConfig('osullivanfarms');
+
+          if (!tenantData) {
+            throw new Error('Development tenant (osullivanfarms) not found');
+          }
+
+          setTenant(tenantData);
+          setTheme(tenantData.themeConfig);
+          setContent(tenantData.contentConfig);
+
+          const photosConfig = await loadTenantPhotos('osullivanfarms');
+          setPhotos(photosConfig);
+
+          setLoading(false);
           return;
         }
 
@@ -241,14 +254,6 @@ async function loadTenantPhotos(subdomain: string): Promise<TenantPhotos> {
       gallery: [],
     };
   }
-}
-
-/**
- * Load development tenant (Claire)
- */
-async function loadDevelopmentTenant() {
-  // In development, always load Claire's config
-  return loadLocalTenantConfig('claire');
 }
 
 /**
