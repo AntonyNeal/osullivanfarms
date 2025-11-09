@@ -1,6 +1,6 @@
 /**
  * Deployment Configuration
- * 
+ *
  * This file controls which cloud provider is used for deployment.
  * Set before first deployment to avoid conflicting CI/CD workflows.
  */
@@ -42,7 +42,7 @@ export interface DeploymentConfig {
 
 /**
  * Current deployment configuration
- * 
+ *
  * CHANGE THIS BEFORE FIRST DEPLOYMENT
  */
 export const deploymentConfig: DeploymentConfig = {

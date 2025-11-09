@@ -16,7 +16,7 @@ interface MobileCTABarProps {
 }
 
 export default function MobileCTABar({
-  ctaText = 'Book Now',
+  ctaText = 'Book Your Hay',
   ctaAction,
   serviceId,
   hideWhenModalOpen = true,
@@ -86,18 +86,18 @@ export default function MobileCTABar({
       <div className="availability-info" aria-live="polite" aria-atomic="true">
         {loading ? (
           <div className="availability-loading">
-            <span className="loading-icon">⏳</span>
-            <span>Checking availability...</span>
+            <span className="loading-icon">🌾</span>
+            <span>Checking delivery slots...</span>
           </div>
         ) : nextAvailability ? (
           <div className="availability-text">
-            <span className="availability-icon">📅</span>
+            <span className="availability-icon">�</span>
             <span>{nextAvailability.displayText}</span>
           </div>
         ) : (
           <div className="availability-text">
-            <span className="availability-icon">📅</span>
-            <span>Check availability</span>
+            <span className="availability-icon">🇦🇺</span>
+            <span>Fair dinkum delivery</span>
           </div>
         )}
       </div>

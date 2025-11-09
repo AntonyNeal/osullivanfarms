@@ -78,24 +78,22 @@ function App() {
       <div className="min-h-screen bg-white">
         {/* Navigation Header */}
         <header
-          className={`sticky top-0 z-50 ${location.pathname === '/' ? 'bg-transparent backdrop-blur-md border-b-0' : 'bg-white/95 backdrop-blur-sm shadow-sm border-b border-rose-100'}`}
+          className={`sticky top-0 z-50 ${location.pathname === '/' ? 'bg-aussie-green/90 backdrop-blur-md border-b-4 border-aussie-gold' : 'bg-aussie-green/95 backdrop-blur-sm shadow-lg border-b-4 border-aussie-gold'}`}
+          style={{
+            boxShadow: '0 4px 30px rgba(255, 215, 0, 0.4), inset 0 0 30px rgba(0, 255, 65, 0.1)',
+            background:
+              location.pathname === '/'
+                ? 'linear-gradient(135deg, #006747 0%, #008751 50%, #006747 100%)'
+                : 'linear-gradient(135deg, #006747 0%, #008751 100%)',
+          }}
         >
           <div className="w-full px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-5 xl:py-6">
             <nav className="max-w-7xl mx-auto">
               {/* Mobile Layout */}
               <div className="lg:hidden flex justify-between items-center">
                 <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // If on admin page, go home on any click
-                    if (location.pathname === '/admin') {
-                      window.location.href = '/';
-                      return;
-                    }
-
-                    // Otherwise, use triple-click to access admin
-                    clickCountRef.current += 1;
-                    const newCount = clickCountRef.current;
+                  onClick={() => {
+                    const newCount = ++clickCountRef.current;
 
                     if (newCount === 3) {
                       clickCountRef.current = 0;
@@ -104,6 +102,20 @@ function App() {
                         resetTimerRef.current = null;
                       }
                       window.location.href = '/admin';
+                    } else if (newCount === 1) {
+                      // Single click - navigate to home
+                      window.location.href = '/';
+
+                      // Clear existing timer
+                      if (resetTimerRef.current) {
+                        clearTimeout(resetTimerRef.current);
+                      }
+
+                      // Set new timer to reset counter after 500ms
+                      resetTimerRef.current = setTimeout(() => {
+                        clickCountRef.current = 0;
+                        resetTimerRef.current = null;
+                      }, 500);
                     } else {
                       // Clear existing timer
                       if (resetTimerRef.current) {
@@ -117,14 +129,14 @@ function App() {
                       }, 500);
                     }
                   }}
-                  className={`text-xl sm:text-2xl font-light ${location.pathname === '/' ? 'text-white' : 'text-gray-900'} tracking-tight hover:text-wattle-gold transition-colors whitespace-nowrap cursor-pointer select-none`}
-                  style={
-                    location.pathname === '/' ? { textShadow: '0 2px 8px rgba(0,0,0,0.8)' } : {}
-                  }
+                  className={`text-xl sm:text-2xl font-bold text-aussie-gold tracking-wider hover:text-white transition-all duration-300 whitespace-nowrap cursor-pointer select-none uppercase`}
+                  style={{
+                    fontFamily: 'var(--font-heading)',
+                    textShadow:
+                      '0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 204, 0, 0.5), 2px 2px 4px rgba(0, 0, 0, 0.8)',
+                  }}
                   title={
-                    location.pathname === '/admin'
-                      ? 'Click to return home'
-                      : 'Triple-click for surprise!'
+                    location.pathname === '/admin' ? 'Click to return home' : 'Click to go home'
                   }
                 >
                   {content.name}
@@ -134,22 +146,24 @@ function App() {
                     onClick={() => {
                       handleBookingOpen();
                     }}
-                    className="px-3 py-2 bg-gradient-to-r from-eucalyptus to-sky-blue text-white rounded-lg font-semibold hover:from-wattle-gold hover:to-eucalyptus transition-all duration-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-wattle-gold focus:ring-offset-2 text-sm cursor-pointer"
-                    aria-label="Book an appointment now"
+                    className="px-4 py-2 bg-aussie-gold text-aussie-green rounded-lg font-bold hover:bg-white hover:text-aussie-green transition-all duration-300 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 text-sm cursor-pointer uppercase tracking-wide border-3 border-white"
+                    style={{
+                      fontFamily: 'var(--font-heading)',
+                      boxShadow: '0 0 20px rgba(255, 215, 0, 0.8), 0 4px 15px rgba(0, 0, 0, 0.3)',
+                    }}
+                    aria-label="Book your hay delivery"
                   >
-                    Book Now
+                    BOOK NOW
                   </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsMobileMenuOpen(!isMobileMenuOpen);
                     }}
-                    className={`p-2 ${location.pathname === '/' ? 'text-white' : 'text-gray-900'} hover:text-wattle-gold transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-wattle-gold focus:ring-offset-2 rounded-lg`}
-                    style={
-                      location.pathname === '/'
-                        ? { filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.8))' }
-                        : {}
-                    }
+                    className={`p-2 text-aussie-gold hover:text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 rounded-lg`}
+                    style={{
+                      filter: 'drop-shadow(0 0 8px rgba(255, 215, 0, 0.8))',
+                    }}
                     aria-label="Toggle mobile menu"
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -175,6 +189,7 @@ function App() {
 
               {/* Desktop Layout */}
               <div className="hidden lg:flex justify-between items-center">
+                {/* Glass Morphism Logo Button */}
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
@@ -184,7 +199,7 @@ function App() {
                       return;
                     }
 
-                    // Otherwise, use triple-click to access admin
+                    // Count clicks for triple-click easter egg
                     clickCountRef.current += 1;
                     const newCount = clickCountRef.current;
 
@@ -195,6 +210,20 @@ function App() {
                         resetTimerRef.current = null;
                       }
                       window.location.href = '/admin';
+                    } else if (newCount === 1) {
+                      // Single click - navigate to home
+                      window.location.href = '/';
+
+                      // Clear existing timer
+                      if (resetTimerRef.current) {
+                        clearTimeout(resetTimerRef.current);
+                      }
+
+                      // Set new timer to reset counter after 500ms
+                      resetTimerRef.current = setTimeout(() => {
+                        clickCountRef.current = 0;
+                        resetTimerRef.current = null;
+                      }, 500);
                     } else {
                       // Clear existing timer
                       if (resetTimerRef.current) {
@@ -208,152 +237,247 @@ function App() {
                       }, 500);
                     }
                   }}
-                  className={`text-3xl xl:text-4xl font-light ${location.pathname === '/' ? 'text-white' : 'text-gray-900'} tracking-tight hover:text-wattle-gold transition-colors whitespace-nowrap cursor-pointer select-none`}
-                  style={
-                    location.pathname === '/' ? { textShadow: '0 2px 8px rgba(0,0,0,0.8)' } : {}
-                  }
+                  className="px-8 py-4 rounded-xl cursor-pointer select-none transition-all duration-300 hover:scale-105"
+                  style={{
+                    background:
+                      'linear-gradient(135deg, rgba(0, 135, 81, 0.3) 0%, rgba(0, 103, 71, 0.4) 100%)',
+                    backdropFilter: 'blur(10px)',
+                    border: '3px solid',
+                    borderImage:
+                      'linear-gradient(135deg, var(--aussie-gold) 0%, var(--wattle-gold) 50%, var(--aussie-gold) 100%) 1',
+                    boxShadow:
+                      '0 0 30px rgba(255, 215, 0, 0.4), inset 0 0 20px rgba(255, 215, 0, 0.1), inset 0 4px 10px rgba(255, 255, 255, 0.1)',
+                  }}
                   title={
-                    location.pathname === '/admin'
-                      ? 'Click to return home'
-                      : 'Triple-click for surprise!'
+                    location.pathname === '/admin' ? 'Click to return home' : 'Click to go home'
                   }
                 >
-                  {content.name}
+                  <div
+                    className="text-4xl xl:text-5xl font-bold text-aussie-gold tracking-wider hover:text-white transition-all duration-300 whitespace-nowrap uppercase"
+                    style={{
+                      fontFamily: 'var(--font-heading)',
+                      textShadow:
+                        '0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 204, 0, 0.5), 2px 2px 4px rgba(0, 0, 0, 0.8)',
+                    }}
+                  >
+                    {content.name}
+                  </div>
                 </div>
 
                 {/* Desktop Navigation */}
                 <div className="flex space-x-6 xl:space-x-8 items-center">
-                  <Link
-                    to="/about"
-                    className={`font-medium transition-colors duration-300 focus:outline-none focus:text-wattle-gold ${
-                      location.pathname === '/about'
-                        ? 'text-wattle-gold'
-                        : location.pathname === '/'
-                          ? 'text-white hover:text-wattle-gold'
-                          : 'text-gray-900 hover:text-wattle-gold'
-                    }`}
-                    style={
-                      location.pathname === '/' ? { textShadow: '0 2px 4px rgba(0,0,0,0.8)' } : {}
-                    }
-                    aria-label="About page"
-                  >
-                    About
-                  </Link>
-                  <Link
-                    to="/prices"
-                    className={`font-medium transition-colors duration-300 focus:outline-none focus:text-wattle-gold ${
-                      location.pathname === '/prices'
-                        ? 'text-wattle-gold'
-                        : location.pathname === '/'
-                          ? 'text-white hover:text-wattle-gold'
-                          : 'text-gray-900 hover:text-wattle-gold'
-                    }`}
-                    style={
-                      location.pathname === '/' ? { textShadow: '0 2px 4px rgba(0,0,0,0.8)' } : {}
-                    }
-                    aria-label="Prices page"
-                  >
-                    Prices
-                  </Link>
-                  <Link
-                    to="/services"
-                    className={`font-medium transition-colors duration-300 focus:outline-none focus:text-wattle-gold ${
-                      location.pathname === '/services'
-                        ? 'text-wattle-gold'
-                        : location.pathname === '/'
-                          ? 'text-white hover:text-wattle-gold'
-                          : 'text-gray-900 hover:text-wattle-gold'
-                    }`}
-                    style={
-                      location.pathname === '/' ? { textShadow: '0 2px 4px rgba(0,0,0,0.8)' } : {}
-                    }
-                    aria-label="Services page"
-                  >
-                    Services
-                  </Link>
-                  <Link
-                    to="/calculator"
-                    className={`font-medium transition-colors duration-300 focus:outline-none focus:text-wattle-gold ${
-                      location.pathname === '/calculator'
-                        ? 'text-wattle-gold'
-                        : location.pathname === '/'
-                          ? 'text-white hover:text-wattle-gold'
-                          : 'text-gray-900 hover:text-wattle-gold'
-                    }`}
-                    style={
-                      location.pathname === '/' ? { textShadow: '0 2px 4px rgba(0,0,0,0.8)' } : {}
-                    }
-                    aria-label="Calculator page"
-                  >
-                    Calculator
-                  </Link>
                   <button
                     onClick={() => {
                       handleBookingOpen();
                     }}
-                    className="px-4 sm:px-5 lg:px-6 py-2 sm:py-2.5 lg:py-3 bg-gradient-to-r from-eucalyptus to-sky-blue text-white rounded-lg font-semibold hover:from-wattle-gold hover:to-eucalyptus transition-all duration-300 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-wattle-gold focus:ring-offset-2 whitespace-nowrap text-xs sm:text-sm lg:text-base cursor-pointer"
-                    aria-label="Book an appointment now"
+                    className="px-8 lg:px-10 py-4 lg:py-5 bg-aussie-gold text-aussie-green rounded-lg font-bold hover:bg-white hover:text-aussie-green transition-all duration-300 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-white focus:ring-offset-4 whitespace-nowrap text-xl lg:text-2xl cursor-pointer uppercase tracking-wide border-4 border-white"
+                    style={{
+                      fontFamily: 'var(--font-heading)',
+                      boxShadow: '0 0 25px rgba(255, 215, 0, 0.8), 0 4px 15px rgba(0, 0, 0, 0.3)',
+                    }}
+                    aria-label="Book your hay delivery"
                   >
-                    Book Now
+                    BOOK NOW
+                  </button>
+
+                  {/* Hamburger Menu Button - Desktop */}
+                  <button
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    className="p-4 text-aussie-gold hover:text-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-aussie-gold rounded-lg"
+                    style={{
+                      filter: 'drop-shadow(0 0 8px rgba(255, 215, 0, 0.8))',
+                    }}
+                    aria-label="Open menu"
+                  >
+                    <svg
+                      className="h-12 w-12"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      strokeWidth={3}
+                    >
+                      {isMobileMenuOpen ? (
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      ) : (
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 6h16M4 12h16M4 18h16"
+                        />
+                      )}
+                    </svg>
                   </button>
                 </div>
               </div>
             </nav>
 
-            {/* Mobile Menu */}
+            {/* Trucker Windshield Mobile Menu - Full Screen Holographic Overlay */}
             {isMobileMenuOpen && (
-              <div className="lg:hidden absolute top-full left-0 right-0 bg-white/90 backdrop-blur-md shadow-lg z-50">
-                <div className="px-4 py-6 space-y-4">
-                  <Link
-                    to="/about"
-                    className={`block font-medium transition-colors duration-300 focus:outline-none focus:text-rose-600 ${
-                      location.pathname === '/about'
-                        ? 'text-rose-600'
-                        : 'text-gray-900 hover:text-rose-600'
-                    }`}
-                    aria-label="About page"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    About
-                  </Link>
-                  <Link
-                    to="/prices"
-                    className={`block font-medium transition-colors duration-300 focus:outline-none focus:text-rose-600 ${
-                      location.pathname === '/prices'
-                        ? 'text-rose-600'
-                        : 'text-gray-900 hover:text-rose-600'
-                    }`}
-                    aria-label="Prices page"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Prices
-                  </Link>
-                  <Link
-                    to="/services"
-                    className={`block font-medium transition-colors duration-300 focus:outline-none focus:text-rose-600 ${
-                      location.pathname === '/services'
-                        ? 'text-rose-600'
-                        : 'text-gray-900 hover:text-rose-600'
-                    }`}
-                    aria-label="Services page"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Services
-                  </Link>
-                  <Link
-                    to="/calculator"
-                    className={`block font-medium transition-colors duration-300 focus:outline-none focus:text-rose-600 ${
-                      location.pathname === '/calculator'
-                        ? 'text-rose-600'
-                        : 'text-gray-900 hover:text-rose-600'
-                    }`}
-                    aria-label="Calculator page"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Calculator
-                  </Link>
+              <>
+                {/* Windshield Glass Effect - Transparent overlay */}
+                <div
+                  className="fixed inset-0 z-50 animate-slide-down"
+                  style={{
+                    background:
+                      'linear-gradient(180deg, rgba(0, 135, 81, 0.95) 0%, rgba(0, 103, 71, 0.98) 100%)',
+                    backdropFilter: 'blur(10px)',
+                    boxShadow:
+                      'inset 0 0 100px rgba(255, 215, 0, 0.1), inset 0 4px 20px rgba(255, 255, 255, 0.1)',
+                  }}
+                  onClick={(e) => {
+                    if (e.target === e.currentTarget) setIsMobileMenuOpen(false);
+                  }}
+                >
+                  {/* Windshield reflection effects */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background:
+                        'linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%)',
+                    }}
+                  />
+
+                  {/* Rain/scratches effect */}
+                  <div className="absolute inset-0 pointer-events-none opacity-20">
+                    <div
+                      className="absolute top-10 left-1/4 w-px h-32 bg-white/30"
+                      style={{ transform: 'rotate(-15deg)' }}
+                    />
+                    <div
+                      className="absolute top-1/3 right-1/4 w-px h-24 bg-white/20"
+                      style={{ transform: 'rotate(20deg)' }}
+                    />
+                  </div>
+
+                  {/* Content Container */}
+                  <div className="relative h-full flex flex-col items-center justify-center px-8 py-20">
+                    {/* Close button - Top right corner like sun visor */}
+                    <button
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="absolute top-8 right-8 text-aussie-gold hover:text-white transition-all duration-300 transform hover:rotate-90 p-4 rounded-lg focus:outline-none focus:ring-4 focus:ring-aussie-gold"
+                      style={{
+                        fontSize: '4rem',
+                        textShadow: '0 0 30px rgba(255, 215, 0, 1)',
+                        fontWeight: 'bold',
+                      }}
+                      aria-label="Close menu"
+                    >
+                      ✕
+                    </button>
+
+                    {/* Logo at top */}
+                    <div
+                      className="mb-16 text-center"
+                      style={{
+                        fontFamily: 'var(--font-heading)',
+                        fontSize: '3rem',
+                        color: 'var(--aussie-gold)',
+                        textShadow:
+                          '0 0 40px rgba(255, 215, 0, 1), 0 0 80px rgba(255, 215, 0, 0.6)',
+                        letterSpacing: '0.3em',
+                      }}
+                    >
+                      O&apos;SULLIVAN FARMS
+                    </div>
+
+                    {/* Big Holographic Buttons */}
+                    <div className="space-y-8 w-full max-w-2xl px-4">
+                      <Link
+                        to="/"
+                        className="hologram-button block"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        style={{
+                          fontFamily: 'var(--font-heading)',
+                        }}
+                      >
+                        <span className="hologram-icon">🏠</span>
+                        <span className="hologram-text">HOME</span>
+                      </Link>
+
+                      <Link
+                        to="/about"
+                        className="hologram-button block"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        style={{
+                          fontFamily: 'var(--font-heading)',
+                        }}
+                      >
+                        <span className="hologram-icon">🇦🇺</span>
+                        <span className="hologram-text">ABOUT</span>
+                      </Link>
+
+                      <Link
+                        to="/services"
+                        className="hologram-button block"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        style={{
+                          fontFamily: 'var(--font-heading)',
+                        }}
+                      >
+                        <span className="hologram-icon">🚜</span>
+                        <span className="hologram-text">SERVICES</span>
+                      </Link>
+
+                      <Link
+                        to="/prices"
+                        className="hologram-button block"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        style={{
+                          fontFamily: 'var(--font-heading)',
+                        }}
+                      >
+                        <span className="hologram-icon">💰</span>
+                        <span className="hologram-text">PRICES</span>
+                      </Link>
+
+                      <Link
+                        to="/calculator"
+                        className="hologram-button block"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        style={{
+                          fontFamily: 'var(--font-heading)',
+                        }}
+                      >
+                        <span className="hologram-icon">🧮</span>
+                        <span className="hologram-text">CALCULATOR</span>
+                      </Link>
+
+                      <button
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          handleBookingOpen();
+                        }}
+                        className="hologram-button block w-full border-4 border-aussie-gold"
+                        style={{
+                          fontFamily: 'var(--font-heading)',
+                          background:
+                            'linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%)',
+                        }}
+                      >
+                        <span className="hologram-icon">📞</span>
+                        <span className="hologram-text">BOOK NOW</span>
+                      </button>
+                    </div>
+
+                    {/* Bottom tagline */}
+                    <div
+                      className="mt-12 text-center text-aussie-gold/80 text-sm italic"
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        textShadow: '0 0 10px rgba(255, 215, 0, 0.5)',
+                      }}
+                    >
+                      Fair Dinkum Farming • 100% Aussie Owned
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </>
             )}
           </div>
         </header>

@@ -3,8 +3,26 @@
 @tailwind utilities;
 
 @layer base {
+  /* Optimized for 65+ users - Larger base font size */
+  html {
+    font-size: 18px;
+  }
+  
+  @media (min-width: 1024px) {
+    html {
+      font-size: 20px;
+    }
+  }
+  
   body {
     @apply font-sans antialiased;
+    line-height: 1.8;
+  }
+  
+  /* Increase minimum tap target size for touch devices */
+  button, a {
+    min-height: 48px;
+    min-width: 48px;
   }
 }
 
