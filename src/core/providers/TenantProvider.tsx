@@ -39,8 +39,13 @@ export function TenantProvider({ children }: TenantProviderProps) {
         console.debug('[Tenant] Extracted subdomain:', subdomain);
 
         // For development: localhost always maps to 'osullivanfarms'
-        if (hostname === 'localhost' || hostname.startsWith('127.0.0.1')) {
-          console.debug('[Tenant] Development mode - loading osullivanfarms tenant');
+        // For Azure Static Web Apps: *.azurestaticapps.net maps to 'osullivanfarms'
+        if (
+          hostname === 'localhost' ||
+          hostname.startsWith('127.0.0.1') ||
+          hostname.endsWith('.azurestaticapps.net')
+        ) {
+          console.debug('[Tenant] Development/Azure mode - loading osullivanfarms tenant');
           const tenantData = await loadLocalTenantConfig('osullivanfarms');
 
           if (!tenantData) {
