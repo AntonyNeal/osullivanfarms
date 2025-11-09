@@ -1,14 +1,11 @@
 import { Helmet } from 'react-helmet-async';
-import { useTenant } from '../core/hooks/useTenant';
 import '../styles/neo-australian.css';
 
 export default function Prices() {
-  const { content } = useTenant();
-
   return (
     <>
       <Helmet>
-        <title>Pricing - O'Sullivan Farms | Australian Agricultural Products</title>
+        <title>Pricing - O&apos;Sullivan Farms | Australian Agricultural Products</title>
         <meta
           name="description"
           content="Competitive pricing on premium Australian hay, straw, and agricultural transport services. Fair dinkum value for Aussie farmers."
@@ -38,7 +35,7 @@ export default function Prices() {
               🇦🇺 PRICING 🇦🇺
             </h1>
             <p className="text-xl md:text-2xl font-space-mono text-digital-matrix mb-2">
-              36°08'39.6"S 144°45'36.0"E | ECHUCA, VICTORIA
+              36°08&apos;39.6&quot;S 144°45&apos;36.0&quot;E | ECHUCA, VICTORIA
             </p>
             <p className="text-lg text-eucalyptus font-playfair italic">
               Fair Dinkum Value | Aussie Quality | No Hidden Costs

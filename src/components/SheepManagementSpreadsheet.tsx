@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Download, Plus, Filter, Search, Camera, MapPin, Calendar, AlertCircle } from 'lucide-react';
+import { Download, Plus, Filter, Search, Camera, MapPin, AlertCircle } from 'lucide-react';
 
 /**
  * Sheep Flock Management Spreadsheet Component
@@ -139,7 +139,8 @@ export const SheepManagementSpreadsheet: React.FC = () => {
                 🐑 Flock Management System
               </h1>
               <p className="text-gray-600">
-                Digital sheep tracking for O'Sullivan Farms • <span className="text-amber-600 font-semibold">BETA PREVIEW</span>
+                Digital sheep tracking for O&apos;Sullivan Farms •{' '}
+                <span className="text-amber-600 font-semibold">BETA PREVIEW</span>
               </p>
             </div>
             <div className="flex gap-3">
@@ -182,7 +183,10 @@ export const SheepManagementSpreadsheet: React.FC = () => {
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={20}
+              />
               <input
                 type="text"
                 placeholder="Search mobs, paddocks, breeds..."
@@ -250,7 +254,9 @@ export const SheepManagementSpreadsheet: React.FC = () => {
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-700">{record.breed}</td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${conditionColor(record.condition)}`}>
+                      <span
+                        className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${conditionColor(record.condition)}`}
+                      >
                         {record.condition}
                       </span>
                     </td>
@@ -317,10 +323,12 @@ export const SheepManagementSpreadsheet: React.FC = () => {
             <div>
               <h3 className="font-bold text-gray-900 mb-2">🚀 Beta Program - Q1 2026</h3>
               <p className="text-gray-700 mb-3">
-                This flock management system is currently in development. Hope & Leigh are working with us to design the perfect tool for real farm conditions.
+                This flock management system is currently in development. Hope & Leigh are working
+                with us to design the perfect tool for real farm conditions.
               </p>
               <p className="text-sm text-gray-600">
-                <strong>MVP Features:</strong> Offline spreadsheet replacement • Photo attachments • Treatment tracking • Paddock rotation • Multi-worker sync • Voice-to-text notes
+                <strong>MVP Features:</strong> Offline spreadsheet replacement • Photo attachments •
+                Treatment tracking • Paddock rotation • Multi-worker sync • Voice-to-text notes
               </p>
             </div>
           </div>

@@ -197,7 +197,9 @@ export default function Home() {
             </p>
 
             {/* GPS Coordinates */}
-            <p className="digital-coords mb-8">36°08'39.6"S 144°45'36.0"E | ECHUCA, VICTORIA</p>
+            <p className="digital-coords mb-8">
+              36°08&apos;39.6&quot;S 144°45&apos;36.0&quot;E | ECHUCA, VICTORIA
+            </p>
 
             <div className="flex gap-4 sm:gap-6 justify-center flex-wrap px-4 mb-8">
               <button

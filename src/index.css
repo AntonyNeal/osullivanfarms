@@ -12,7 +12,7 @@
   .btn-primary {
     @apply px-6 py-3 bg-brand-primary text-white rounded-lg hover:bg-blue-700 transition-colors duration-200;
   }
-  
+
   .btn-secondary {
     @apply px-6 py-3 bg-brand-secondary text-white rounded-lg hover:bg-slate-700 transition-colors duration-200;
   }

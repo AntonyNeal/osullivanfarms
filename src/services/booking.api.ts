@@ -410,9 +410,7 @@ export async function sendConfirmationEmail(
  * Get booking details
  * Mock implementation - replace with actual API call
  */
-export async function getBookingDetails(
-  bookingReference: string
-): Promise<{
+export async function getBookingDetails(bookingReference: string): Promise<{
   bookingReference: string;
   status: string;
   createdAt: string;

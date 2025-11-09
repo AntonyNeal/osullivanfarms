@@ -44,7 +44,7 @@ export default function About() {
               {content.bio}
             </p>
             <p className="text-green-400 mt-6 digital-coords">
-              ECHUCA, VICTORIA | 36°08'39.6"S 144°45'36.0"E
+              ECHUCA, VICTORIA | 36°08&apos;39.6&quot;S 144°45&apos;36.0&quot;E
             </p>
           </div>
         </section>
@@ -137,7 +137,7 @@ export default function About() {
         <section className="py-16 px-4 relative z-10">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-4xl md:text-5xl mb-12 text-center aussie-pride glitch-hover">
-              AUSSIE FARMERS TRUST O'SULLIVAN
+              AUSSIE FARMERS TRUST O&apos;SULLIVAN
             </h2>
             <div className="grid md:grid-cols-2 gap-8">
               <div className="service-card-neo p-6 hover:scale-105 transition-transform">
@@ -148,9 +148,9 @@ export default function About() {
                   </span>
                 </div>
                 <p className="text-gray-300 italic" style={{ fontFamily: 'var(--body-font)' }}>
-                  &quot;Fair dinkum quality hay, every single time. Been buying from O'Sullivan for
-                  3 seasons now - consistent cuts, reliable delivery, and they actually answer the
-                  phone. That's worth its weight in gold out here.&quot;
+                  &quot;Fair dinkum quality hay, every single time. Been buying from O&apos;Sullivan
+                  for 3 seasons now - consistent cuts, reliable delivery, and they actually answer
+                  the phone. That&apos;s worth its weight in gold out here.&quot;
                 </p>
               </div>
 
@@ -163,8 +163,8 @@ export default function About() {
                 </div>
                 <p className="text-gray-300 italic" style={{ fontFamily: 'var(--body-font)' }}>
                   &quot;Transport service is spot-on. GPS tracking means I know exactly when my
-                  load's arriving. No more waiting around all day. Professional operation from start
-                  to finish.&quot;
+                  load&apos;s arriving. No more waiting around all day. Professional operation from
+                  start to finish.&quot;
                 </p>
               </div>
 
@@ -176,9 +176,9 @@ export default function About() {
                   </span>
                 </div>
                 <p className="text-gray-300 italic" style={{ fontFamily: 'var(--body-font)' }}>
-                  &quot;Straight shooters. Quality product, honest pricing, and they'll go the extra
-                  mile to help you out. That's the Australian way of doing business, and O'Sullivan
-                  gets it right.&quot;
+                  &quot;Straight shooters. Quality product, honest pricing, and they&apos;ll go the
+                  extra mile to help you out. That&apos;s the Australian way of doing business, and
+                  O&apos;Sullivan gets it right.&quot;
                 </p>
               </div>
 
@@ -190,9 +190,9 @@ export default function About() {
                   </span>
                 </div>
                 <p className="text-gray-300 italic" style={{ fontFamily: 'var(--body-font)' }}>
-                  &quot;The flock management system they're building is exactly what we need.
+                  &quot;The flock management system they&apos;re building is exactly what we need.
                   Finally, someone who understands real farm problems and builds real solutions.
-                  Can't wait for the full release.&quot;
+                  Can&apos;t wait for the full release.&quot;
                 </p>
               </div>
             </div>
@@ -225,8 +225,8 @@ export default function About() {
                 className="text-xl text-yellow-100 mb-8 max-w-2xl mx-auto"
                 style={{ fontFamily: 'var(--body-font)' }}
               >
-                If you're looking for premium hay, reliable transport, or innovative farm management
-                solutions - let's have a yarn about how we can help your operation.
+                If you&apos;re looking for premium hay, reliable transport, or innovative farm
+                management solutions - let&apos;s have a yarn about how we can help your operation.
               </p>
               <button
                 onClick={() => setIsBookingOpen(true)}

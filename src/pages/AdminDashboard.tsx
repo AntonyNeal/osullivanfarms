@@ -49,7 +49,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-900 relative">
       {/* Topographical Grid */}
       <div className="topo-grid" />
-      
+
       {/* SECTION 1: HERO FEATURE - Farm Operations Dashboard */}
       <div className="px-4 sm:px-6 lg:px-8 pb-12 max-w-7xl mx-auto relative z-10">
         <div className="cyber-border rounded-2xl overflow-hidden bg-gradient-to-br from-eucalyptus/20 to-sky-blue/20">
@@ -81,11 +81,15 @@ export default function AdminDashboard() {
                           <span className="text-xs text-eucalyptus font-space-mono capitalize">
                             {order.location}
                           </span>
-                          <span className={`text-xs px-2 py-1 rounded-full ${
-                            order.status === 'delivered' ? 'bg-digital-matrix/20 text-digital-matrix' :
-                            order.status === 'in-transit' ? 'bg-wattle-gold/20 text-wattle-gold' :
-                            'bg-sky-blue/20 text-sky-blue'
-                          }`}>
+                          <span
+                            className={`text-xs px-2 py-1 rounded-full ${
+                              order.status === 'delivered'
+                                ? 'bg-digital-matrix/20 text-digital-matrix'
+                                : order.status === 'in-transit'
+                                  ? 'bg-wattle-gold/20 text-wattle-gold'
+                                  : 'bg-sky-blue/20 text-sky-blue'
+                            }`}
+                          >
                             {order.status.toUpperCase()}
                           </span>
                         </div>
@@ -167,7 +171,10 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <a href="/contact" className="btn-aussie-primary w-full mt-6 text-center inline-block">
+                <a
+                  href="/contact"
+                  className="btn-aussie-primary w-full mt-6 text-center inline-block"
+                >
                   📊 VIEW FULL ANALYTICS
                 </a>
               </div>
@@ -196,7 +203,9 @@ export default function AdminDashboard() {
               </p>
               <div className="mt-auto">
                 <div className="bg-eucalyptus/20 rounded p-2">
-                  <div className="text-xs text-eucalyptus font-space-mono">Today: 250 bales cut</div>
+                  <div className="text-xs text-eucalyptus font-space-mono">
+                    Today: 250 bales cut
+                  </div>
                 </div>
               </div>
             </div>
@@ -268,19 +277,25 @@ export default function AdminDashboard() {
             <div className="service-card-neo hover:pulse-border transition-all duration-300">
               <div className="text-4xl mb-3">�</div>
               <h3 className="text-lg font-bebas text-wattle-gold mb-2">Order Notifications</h3>
-              <p className="text-gray-300 text-sm font-playfair">Get notified instantly when orders come in</p>
+              <p className="text-gray-300 text-sm font-playfair">
+                Get notified instantly when orders come in
+              </p>
             </div>
 
             <div className="service-card-neo hover:pulse-border transition-all duration-300">
               <div className="text-4xl mb-3">�</div>
               <h3 className="text-lg font-bebas text-wattle-gold mb-2">Payment Tracking</h3>
-              <p className="text-gray-300 text-sm font-playfair">Track deposits and payments in real-time</p>
+              <p className="text-gray-300 text-sm font-playfair">
+                Track deposits and payments in real-time
+              </p>
             </div>
 
             <div className="service-card-neo hover:pulse-border transition-all duration-300">
               <div className="text-4xl mb-3">�️</div>
               <h3 className="text-lg font-bebas text-wattle-gold mb-2">GPS Delivery Tracking</h3>
-              <p className="text-gray-300 text-sm font-playfair">Track B-doubles with live GPS updates</p>
+              <p className="text-gray-300 text-sm font-playfair">
+                Track B-doubles with live GPS updates
+              </p>
             </div>
 
             <div className="service-card-neo hover:pulse-border transition-all duration-300">
@@ -294,7 +309,9 @@ export default function AdminDashboard() {
             <div className="service-card-neo hover:pulse-border transition-all duration-300">
               <div className="text-4xl mb-3">📱</div>
               <h3 className="text-lg font-bebas text-wattle-gold mb-2">Mobile Management</h3>
-              <p className="text-gray-300 text-sm font-playfair">Update orders from your phone anytime</p>
+              <p className="text-gray-300 text-sm font-playfair">
+                Update orders from your phone anytime
+              </p>
             </div>
           </div>
         </div>
@@ -312,7 +329,9 @@ export default function AdminDashboard() {
             <div className="service-card-neo hover:pulse-border transition-all duration-300">
               <div className="text-4xl mb-3">🌾</div>
               <h3 className="text-lg font-bebas text-wattle-gold mb-2">Product Management</h3>
-              <p className="text-gray-300 text-sm font-playfair">Manage hay types, grades, and availability</p>
+              <p className="text-gray-300 text-sm font-playfair">
+                Manage hay types, grades, and availability
+              </p>
             </div>
 
             <div className="service-card-neo hover:pulse-border transition-all duration-300">

@@ -39,7 +39,7 @@ This guide will help you deploy the Neo-Australian O'Sullivan Farms website to A
 
 - **Build Presets**: React
 - **App location**: `/`
-- **Api location**: *(leave empty)*
+- **Api location**: _(leave empty)_
 - **Output location**: `dist`
 
 #### Step 5: Review + Create
@@ -125,6 +125,7 @@ TTL: 3600
 ```
 
 For apex domain (osullivanfarms.com.au):
+
 ```
 Type: ALIAS or ANAME
 Name: @
@@ -158,7 +159,7 @@ The GitHub Actions workflow needs this secret:
 4. Go to GitHub → Settings → Secrets and variables → Actions
 5. Create new secret:
    - Name: `AZURE_STATIC_WEB_APPS_API_TOKEN`
-   - Value: *paste token*
+   - Value: _paste token_
 
 ## Monitoring & Analytics
 
@@ -176,6 +177,7 @@ The GitHub Actions workflow needs this secret:
 ### Check Build Status
 
 Badge for README:
+
 ```markdown
 [![Azure Static Web Apps](https://github.com/AntonyNeal/osullivanfarms/actions/workflows/azure-static-web-apps.yml/badge.svg)](https://github.com/AntonyNeal/osullivanfarms/actions/workflows/azure-static-web-apps.yml)
 ```
@@ -183,6 +185,7 @@ Badge for README:
 ## Costs
 
 ### Free Tier Includes:
+
 - ✅ 100 GB bandwidth/month
 - ✅ 250 MB storage
 - ✅ Custom domains + SSL
@@ -192,6 +195,7 @@ Badge for README:
 **Perfect for demo/sample sites!**
 
 ### If You Need More:
+
 - Standard tier: $9/month
 - Unlimited bandwidth
 - 500 MB storage
@@ -201,11 +205,13 @@ Badge for README:
 ### Build Fails
 
 Check GitHub Actions logs:
+
 1. Go to repository → Actions tab
 2. Click failed workflow
 3. Expand failed step
 
 Common issues:
+
 - Missing `AZURE_STATIC_WEB_APPS_API_TOKEN` secret
 - Node version mismatch (needs 20+)
 - Build command errors
@@ -241,6 +247,7 @@ Common issues:
 ## Your URLs
 
 After deployment:
+
 - **Default Azure URL**: `https://osullivanfarms.azurestaticapps.net`
 - **Custom Domain** (when configured): `https://www.osullivanfarms.com.au`
 

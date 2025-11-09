@@ -9,7 +9,7 @@ export const content: TenantContent = {
   // Basic Information
   name: "O'Sullivan Farms",
   tagline: 'Premium Hay Production & Sheep Management',
-  bio: 'O\'Sullivan Farms Pty Ltd operates in Echuca, Victoria, producing premium quality hay and straw for livestock operations across southeastern Australia. Our modern farming practices combine traditional agricultural wisdom with innovative technology.\n\nWe specialize in lucerne, oaten, and wheaten hay production, with reliable transport services ensuring your feed arrives fresh and on schedule. Our commitment to quality and consistency has built lasting relationships with farms throughout the region.\n\nOur newest initiative brings digital transformation to sheep flock management, helping farmers track mob health, manage paddock rotation, and optimize breeding programs with intuitive tools designed for real-world conditions.',
+  bio: "O'Sullivan Farms Pty Ltd operates in Echuca, Victoria, producing premium quality hay and straw for livestock operations across southeastern Australia. Our modern farming practices combine traditional agricultural wisdom with innovative technology.\n\nWe specialize in lucerne, oaten, and wheaten hay production, with reliable transport services ensuring your feed arrives fresh and on schedule. Our commitment to quality and consistency has built lasting relationships with farms throughout the region.\n\nOur newest initiative brings digital transformation to sheep flock management, helping farmers track mob health, manage paddock rotation, and optimize breeding programs with intuitive tools designed for real-world conditions.",
   shortBio:
     'Family-operated agricultural business in Echuca, VIC. Premium hay production, reliable transport, and innovative sheep flock management solutions.',
 
@@ -115,7 +115,7 @@ export const content: TenantContent = {
   seo: {
     title: "O'Sullivan Farms - Premium Hay Production & Sheep Management | Echuca, VIC",
     description:
-      'O\'Sullivan Farms: Quality hay production, reliable transport, and innovative sheep flock management solutions. Serving Victoria and southern NSW.',
+      "O'Sullivan Farms: Quality hay production, reliable transport, and innovative sheep flock management solutions. Serving Victoria and southern NSW.",
     keywords: [
       'hay production victoria',
       'lucerne hay echuca',

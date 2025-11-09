@@ -60,11 +60,9 @@ const testimonials = [
 
 export default function AussieTestimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState<'left' | 'right'>('right');
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setDirection('right');
       setCurrentIndex((prev) => (prev + 1) % testimonials.length);
     }, 10000);
 
@@ -72,7 +70,6 @@ export default function AussieTestimonials() {
   }, []);
 
   const navigate = (newDirection: 'left' | 'right') => {
-    setDirection(newDirection);
     if (newDirection === 'left') {
       setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
     } else {
@@ -107,7 +104,7 @@ export default function AussieTestimonials() {
 
           {/* Quote */}
           <blockquote className="text-xl font-playfair text-gray-200 italic mb-6 leading-relaxed">
-            "{current.quote}"
+            &ldquo;{current.quote}&rdquo;
           </blockquote>
 
           {/* Name & Location */}
@@ -149,7 +146,6 @@ export default function AussieTestimonials() {
             <button
               key={index}
               onClick={() => {
-                setDirection(index > currentIndex ? 'right' : 'left');
                 setCurrentIndex(index);
               }}
               className={`h-1 rounded-full transition-all ${
