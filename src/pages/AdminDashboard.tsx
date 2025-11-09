@@ -1,32 +1,36 @@
 import { useState, useEffect } from 'react';
-import { Calendar, ArrowUp, Instagram, Twitter, MessageSquare, AlertCircle } from 'lucide-react';
-// CRITICAL: This MUST be a default import, NOT a named import
-// ✅ CORRECT: import SDKTests from '../components/SDKTests';
-// ❌ WRONG: import { SDKTests } from '../components/SDKTests';
+import { Calendar, ArrowUp, Truck, TrendingUp, AlertCircle, Package } from 'lucide-react';
 import SDKTests from '../components/SDKTests';
+import '../styles/neo-australian.css';
 
-// Mock social media posts data - Admin dashboard for template platform
-const mockSocialPosts = [
+// Mock farm operations data - Admin dashboard for O'Sullivan Farms
+const mockRecentOrders = [
   {
-    platform: 'instagram',
-    caption: "New photos from last week's shoot 📸✨",
-    bookings: 5,
-    views: 2847,
-    image: '🌸',
+    customer: 'Blue Heeler Barry',
+    product: 'Premium Lucerne Hay',
+    quantity: 15,
+    revenue: 6300,
+    location: 'Wagga Wagga, NSW',
+    status: 'delivered',
+    icon: '�',
   },
   {
-    platform: 'twitter',
-    caption: 'Available in Sydney next weekend! DM to book',
-    bookings: 8,
-    views: 1523,
-    image: '🗓️',
+    customer: 'Shearing Sheila',
+    product: 'Oaten Hay + Transport',
+    quantity: 25,
+    revenue: 8680,
+    location: 'Bendigo, VIC',
+    status: 'in-transit',
+    icon: '�',
   },
   {
-    platform: 'tiktok',
-    caption: 'Behind the scenes makeup routine 💄',
-    bookings: 12,
-    views: 5921,
-    image: '💋',
+    customer: 'Outback Owen',
+    product: 'B-Double Transport Service',
+    quantity: 30,
+    revenue: 180,
+    location: 'Swan Hill, VIC',
+    status: 'scheduled',
+    icon: '�',
   },
 ];
 
@@ -42,54 +46,59 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* SECTION 1: HERO FEATURE - Social Attribution Dashboard */}
-      <div className="px-4 sm:px-6 lg:px-8 pb-12 max-w-7xl mx-auto">
-        <div className="bg-gradient-to-br from-purple-900 to-blue-900 rounded-2xl overflow-hidden shadow-2xl">
+    <div className="min-h-screen bg-gray-900 relative">
+      {/* Topographical Grid */}
+      <div className="topo-grid" />
+      
+      {/* SECTION 1: HERO FEATURE - Farm Operations Dashboard */}
+      <div className="px-4 sm:px-6 lg:px-8 pb-12 max-w-7xl mx-auto relative z-10">
+        <div className="cyber-border rounded-2xl overflow-hidden bg-gradient-to-br from-eucalyptus/20 to-sky-blue/20">
           <div className="p-8 sm:p-12">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">
-              Know Exactly What Brings You Business
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bebas text-wattle-gold mb-4 aussie-pride">
+              🇦🇺 FARM OPERATIONS COMMAND CENTER 🇦🇺
             </h1>
-            <p className="text-xl sm:text-2xl text-purple-200 mb-12">
-              See which social posts drive bookings in real-time
+            <p className="text-xl sm:text-2xl text-eucalyptus mb-12 font-playfair">
+              Track production, orders, and deliveries in real-time
             </p>
 
             <div className="grid lg:grid-cols-5 gap-8">
-              {/* LEFT SIDE: Social Feed Preview */}
+              {/* LEFT SIDE: Recent Orders */}
               <div className="lg:col-span-3 space-y-4">
-                <h3 className="text-lg font-semibold text-purple-200 mb-4">Your Social Posts</h3>
-                {mockSocialPosts.map((post, idx) => (
+                <h3 className="text-lg font-bebas text-wattle-gold mb-4">RECENT ORDERS</h3>
+                {mockRecentOrders.map((order, idx) => (
                   <div
                     key={idx}
-                    className={`bg-white/10 backdrop-blur-md border ${
-                      hoveredPost === idx ? 'border-rose-400' : 'border-white/20'
-                    } rounded-lg p-4 transition-all duration-300 cursor-pointer hover:bg-white/15`}
+                    className={`service-card-neo ${
+                      hoveredPost === idx ? 'pulse-border' : ''
+                    } transition-all duration-300 cursor-pointer`}
                     onMouseEnter={() => setHoveredPost(idx)}
                     onMouseLeave={() => setHoveredPost(null)}
                   >
                     <div className="flex items-start gap-4">
-                      <div className="text-4xl">{post.image}</div>
+                      <div className="text-4xl">{order.icon}</div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          {post.platform === 'instagram' && (
-                            <Instagram className="w-4 h-4 text-pink-400" />
-                          )}
-                          {post.platform === 'twitter' && (
-                            <Twitter className="w-4 h-4 text-blue-400" />
-                          )}
-                          {post.platform === 'tiktok' && (
-                            <div className="w-4 h-4 bg-gradient-to-br from-cyan-400 to-pink-400 rounded" />
-                          )}
-                          <span className="text-xs text-purple-200 capitalize">
-                            {post.platform}
+                          <span className="text-xs text-eucalyptus font-space-mono capitalize">
+                            {order.location}
+                          </span>
+                          <span className={`text-xs px-2 py-1 rounded-full ${
+                            order.status === 'delivered' ? 'bg-digital-matrix/20 text-digital-matrix' :
+                            order.status === 'in-transit' ? 'bg-wattle-gold/20 text-wattle-gold' :
+                            'bg-sky-blue/20 text-sky-blue'
+                          }`}>
+                            {order.status.toUpperCase()}
                           </span>
                         </div>
-                        <p className="text-white text-sm mb-3">{post.caption}</p>
+                        <p className="text-white text-sm mb-1 font-bebas">{order.customer}</p>
+                        <p className="text-gray-400 text-sm mb-3 font-playfair">{order.product}</p>
                         <div className="flex items-center gap-4">
-                          <span className="text-xs text-purple-300">{post.views} views</span>
-                          <div className="flex items-center gap-1 px-3 py-1 bg-rose-500/80 rounded-full">
-                            <span className="text-white font-bold text-sm">{post.bookings}</span>
-                            <span className="text-white text-xs">bookings</span>
+                          <span className="text-xs text-gray-400 font-space-mono">
+                            {order.quantity} tonnes
+                          </span>
+                          <div className="flex items-center gap-1 px-3 py-1 bg-digital-matrix/20 rounded-full">
+                            <span className="text-digital-matrix font-bebas text-sm">
+                              ${order.revenue.toLocaleString()}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -100,68 +109,67 @@ export default function AdminDashboard() {
 
               {/* RIGHT SIDE: Analytics Dashboard */}
               <div className="lg:col-span-2">
-                <h3 className="text-lg font-semibold text-purple-200 mb-4">Platform Performance</h3>
+                <h3 className="text-lg font-bebas text-wattle-gold mb-4">PRODUCTION METRICS</h3>
                 <div className="space-y-3">
-                  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4">
+                  <div className="service-card-neo">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <MessageSquare className="w-4 h-4 text-purple-300" />
-                        <span className="text-white font-medium">Direct DMs</span>
+                        <Package className="w-4 h-4 text-eucalyptus" />
+                        <span className="text-white font-bebas">Orders This Month</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <ArrowUp className="w-4 h-4 text-green-400" />
-                        <span className="text-green-400 text-sm">+24%</span>
+                        <ArrowUp className="w-4 h-4 text-digital-matrix" />
+                        <span className="text-digital-matrix text-sm font-space-mono">+24%</span>
                       </div>
                     </div>
-                    <p className="text-3xl font-bold text-white">12 bookings</p>
+                    <p className="text-3xl font-bebas text-wattle-gold">47 orders</p>
                   </div>
 
-                  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4">
+                  <div className="service-card-neo">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-gradient-to-br from-cyan-400 to-pink-400 rounded" />
-                        <span className="text-white font-medium">TikTok</span>
+                        <Truck className="w-4 h-4 text-eucalyptus" />
+                        <span className="text-white font-bebas">Active Deliveries</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <ArrowUp className="w-4 h-4 text-green-400" />
-                        <span className="text-green-400 text-sm">+18%</span>
+                        <ArrowUp className="w-4 h-4 text-digital-matrix" />
+                        <span className="text-digital-matrix text-sm font-space-mono">+18%</span>
                       </div>
                     </div>
-                    <p className="text-3xl font-bold text-white">8 bookings</p>
+                    <p className="text-3xl font-bebas text-wattle-gold">12 trucks</p>
                   </div>
 
-                  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4">
+                  <div className="service-card-neo">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <Twitter className="w-4 h-4 text-blue-400" />
-                        <span className="text-white font-medium">Twitter</span>
+                        <TrendingUp className="w-4 h-4 text-eucalyptus" />
+                        <span className="text-white font-bebas">Monthly Revenue</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <ArrowUp className="w-4 h-4 text-green-400" />
-                        <span className="text-green-400 text-sm">+12%</span>
+                        <ArrowUp className="w-4 h-4 text-digital-matrix" />
+                        <span className="text-digital-matrix text-sm font-space-mono">+12%</span>
                       </div>
                     </div>
-                    <p className="text-3xl font-bold text-white">5 bookings</p>
+                    <p className="text-3xl font-bebas text-wattle-gold">$124,800</p>
                   </div>
 
-                  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4">
+                  <div className="service-card-neo">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 text-orange-400" />
-                        <span className="text-white font-medium">Reddit</span>
+                        <AlertCircle className="w-4 h-4 text-eucalyptus" />
+                        <span className="text-white font-bebas">Inventory Alert</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <ArrowUp className="w-4 h-4 text-green-400" />
-                        <span className="text-green-400 text-sm">+8%</span>
+                        <span className="text-wattle-gold text-sm font-space-mono">Low Stock</span>
                       </div>
                     </div>
-                    <p className="text-3xl font-bold text-white">2 bookings</p>
+                    <p className="text-3xl font-bebas text-wattle-gold">Lucerne Hay</p>
                   </div>
                 </div>
 
-                <button className="w-full mt-6 px-6 py-3 bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-rose-600/50">
-                  See Your Analytics
-                </button>
+                <a href="/contact" className="btn-aussie-primary w-full mt-6 text-center inline-block">
+                  📊 VIEW FULL ANALYTICS
+                </a>
               </div>
             </div>
           </div>
@@ -169,157 +177,157 @@ export default function AdminDashboard() {
       </div>
 
       {/* SECTION 3: FEATURE GROUPS */}
-      <div className="px-4 sm:px-6 lg:px-8 py-16 max-w-7xl mx-auto">
-        {/* GROUP 1: BUSINESS INTELLIGENCE */}
+      <div className="px-4 sm:px-6 lg:px-8 py-16 max-w-7xl mx-auto relative z-10">
+        {/* GROUP 1: FARM OPERATIONS */}
         <div className="mb-20">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 flex items-center gap-3">
-            <span>📊</span> BUSINESS INTELLIGENCE
+          <h2 className="text-3xl sm:text-4xl font-bebas text-wattle-gold mb-4 flex items-center gap-3">
+            <span>�</span> FARM OPERATIONS
           </h2>
-          <p className="text-gray-400 mb-8 text-lg">
-            Features that help you understand and grow your business
+          <p className="text-gray-400 mb-8 text-lg font-playfair">
+            Tools to manage production, inventory, and quality control
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-slate-800/50 backdrop-blur-sm border-2 border-blue-500/30 rounded-lg p-6 hover:border-blue-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20">
-              <div className="text-4xl mb-4">🎯</div>
-              <h3 className="text-xl font-bold text-white mb-3">Social Attribution</h3>
-              <p className="text-slate-300 text-sm mb-4">
-                See EXACTLY which social posts bring in bookings
+            <div className="service-card-neo hover:pulse-border transition-all duration-300">
+              <div className="text-4xl mb-4">�</div>
+              <h3 className="text-xl font-bebas text-wattle-gold mb-3">Production Tracking</h3>
+              <p className="text-gray-300 text-sm mb-4 font-playfair">
+                Track hay bales cut, moisture levels, and quality grades
               </p>
               <div className="mt-auto">
-                <div className="bg-blue-900/30 rounded p-2">
-                  <div className="text-xs text-blue-300">Latest: TikTok post → 12 bookings</div>
+                <div className="bg-eucalyptus/20 rounded p-2">
+                  <div className="text-xs text-eucalyptus font-space-mono">Today: 250 bales cut</div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-slate-800/50 backdrop-blur-sm border-2 border-purple-500/30 rounded-lg p-6 hover:border-purple-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20">
-              <div className="text-4xl mb-4">📊</div>
-              <h3 className="text-xl font-bold text-white mb-3">Platform Performance</h3>
-              <p className="text-slate-300 text-sm mb-4">
-                Compare Twitter, TikTok, Reddit, Direct - see what works
+            <div className="service-card-neo hover:pulse-border transition-all duration-300">
+              <div className="text-4xl mb-4">�</div>
+              <h3 className="text-xl font-bebas text-wattle-gold mb-3">Inventory Management</h3>
+              <p className="text-gray-300 text-sm mb-4 font-playfair">
+                Real-time stock levels for lucerne, oaten, wheaten hay
               </p>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 bg-slate-700 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-purple-600 to-purple-500 h-2 rounded-full w-4/5" />
+                  <div className="flex-1 bg-gray-700 rounded-full h-2">
+                    <div className="bg-gradient-to-r from-digital-matrix to-eucalyptus h-2 rounded-full w-4/5" />
                   </div>
-                  <span className="text-xs text-slate-400">TikTok</span>
+                  <span className="text-xs text-gray-400 font-space-mono">Lucerne</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 bg-slate-700 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-blue-600 to-blue-500 h-2 rounded-full w-2/3" />
+                  <div className="flex-1 bg-gray-700 rounded-full h-2">
+                    <div className="bg-gradient-to-r from-digital-matrix to-eucalyptus h-2 rounded-full w-2/3" />
                   </div>
-                  <span className="text-xs text-slate-400">Direct</span>
+                  <span className="text-xs text-gray-400 font-space-mono">Oaten</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-slate-800/50 backdrop-blur-sm border-2 border-indigo-500/30 rounded-lg p-6 hover:border-indigo-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/20">
-              <div className="text-4xl mb-4">💡</div>
-              <h3 className="text-xl font-bold text-white mb-3">Conversion Tracking</h3>
-              <p className="text-slate-300 text-sm mb-4">
-                Know your conversion rates per campaign and platform
+            <div className="service-card-neo hover:pulse-border transition-all duration-300">
+              <div className="text-4xl mb-4">🌡️</div>
+              <h3 className="text-xl font-bebas text-wattle-gold mb-3">Quality Control</h3>
+              <p className="text-gray-300 text-sm mb-4 font-playfair">
+                Monitor moisture content, weed seed levels, protein %
               </p>
-              <div className="bg-indigo-900/30 rounded p-2">
-                <div className="text-2xl font-bold text-indigo-300">12.4%</div>
-                <div className="text-xs text-indigo-400">Avg conversion rate</div>
+              <div className="bg-eucalyptus/20 rounded p-2">
+                <div className="text-2xl font-bebas text-digital-matrix">12.4%</div>
+                <div className="text-xs text-eucalyptus font-space-mono">Avg moisture</div>
               </div>
             </div>
 
-            <div className="bg-slate-800/50 backdrop-blur-sm border-2 border-violet-500/30 rounded-lg p-6 hover:border-violet-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-violet-500/20">
-              <div className="text-4xl mb-4">🎨</div>
-              <h3 className="text-xl font-bold text-white mb-3">A/B Testing</h3>
-              <p className="text-slate-300 text-sm mb-4">
-                Test different website designs automatically
+            <div className="service-card-neo hover:pulse-border transition-all duration-300">
+              <div className="text-4xl mb-4">📊</div>
+              <h3 className="text-xl font-bebas text-wattle-gold mb-3">Yield Analytics</h3>
+              <p className="text-gray-300 text-sm mb-4 font-playfair">
+                Compare seasons, paddocks, and varieties
               </p>
               <div className="flex gap-2">
-                <div className="flex-1 bg-violet-900/30 rounded p-2 text-center">
-                  <div className="text-xs text-violet-300">Design A</div>
-                  <div className="text-sm font-bold text-white">8.2%</div>
+                <div className="flex-1 bg-eucalyptus/20 rounded p-2 text-center">
+                  <div className="text-xs text-eucalyptus font-space-mono">2024</div>
+                  <div className="text-sm font-bebas text-white">8.2t/ha</div>
                 </div>
-                <div className="flex-1 bg-violet-900/50 rounded p-2 text-center border border-violet-400">
-                  <div className="text-xs text-violet-300">Design B</div>
-                  <div className="text-sm font-bold text-white">11.5%</div>
+                <div className="flex-1 bg-eucalyptus/30 rounded p-2 text-center border border-digital-matrix">
+                  <div className="text-xs text-eucalyptus font-space-mono">2025</div>
+                  <div className="text-sm font-bebas text-white">11.5t/ha</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* GROUP 2: CLIENT EXPERIENCE */}
+        {/* GROUP 2: CUSTOMER & DELIVERY */}
         <div className="mb-20">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 flex items-center gap-3">
-            <span>⚡</span> CLIENT EXPERIENCE
+          <h2 className="text-3xl sm:text-4xl font-bebas text-wattle-gold mb-4 flex items-center gap-3">
+            <span>🚛</span> CUSTOMER & DELIVERY
           </h2>
-          <p className="text-gray-400 mb-8 text-lg">
-            Features that enhance the booking and client interaction experience
+          <p className="text-gray-400 mb-8 text-lg font-playfair">
+            Tools to manage orders, deliveries, and customer relationships
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-            <div className="bg-gradient-to-br from-cyan-900/40 to-cyan-800/20 border border-cyan-500/30 rounded-lg p-6 hover:border-cyan-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20">
-              <div className="text-4xl mb-3">🔔</div>
-              <h3 className="text-lg font-bold text-white mb-2">Instant Notifications</h3>
-              <p className="text-cyan-100 text-sm">Get notified instantly when someone books</p>
+            <div className="service-card-neo hover:pulse-border transition-all duration-300">
+              <div className="text-4xl mb-3">�</div>
+              <h3 className="text-lg font-bebas text-wattle-gold mb-2">Order Notifications</h3>
+              <p className="text-gray-300 text-sm font-playfair">Get notified instantly when orders come in</p>
             </div>
 
-            <div className="bg-gradient-to-br from-green-900/40 to-green-800/20 border border-green-500/30 rounded-lg p-6 hover:border-green-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20">
-              <div className="text-4xl mb-3">💰</div>
-              <h3 className="text-lg font-bold text-white mb-2">Real-Time Deposits</h3>
-              <p className="text-green-100 text-sm">See deposit payments land in real-time</p>
+            <div className="service-card-neo hover:pulse-border transition-all duration-300">
+              <div className="text-4xl mb-3">�</div>
+              <h3 className="text-lg font-bebas text-wattle-gold mb-2">Payment Tracking</h3>
+              <p className="text-gray-300 text-sm font-playfair">Track deposits and payments in real-time</p>
             </div>
 
-            <div className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 border border-blue-500/30 rounded-lg p-6 hover:border-blue-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20">
-              <div className="text-4xl mb-3">📅</div>
-              <h3 className="text-lg font-bold text-white mb-2">Google Calendar Sync</h3>
-              <p className="text-blue-100 text-sm">Syncs with your Google Calendar automatically</p>
+            <div className="service-card-neo hover:pulse-border transition-all duration-300">
+              <div className="text-4xl mb-3">�️</div>
+              <h3 className="text-lg font-bebas text-wattle-gold mb-2">GPS Delivery Tracking</h3>
+              <p className="text-gray-300 text-sm font-playfair">Track B-doubles with live GPS updates</p>
             </div>
 
-            <div className="bg-gradient-to-br from-teal-900/40 to-teal-800/20 border border-teal-500/30 rounded-lg p-6 hover:border-teal-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-teal-500/20">
+            <div className="service-card-neo hover:pulse-border transition-all duration-300">
               <div className="text-4xl mb-3">⏰</div>
-              <h3 className="text-lg font-bold text-white mb-2">Auto Reminders</h3>
-              <p className="text-teal-100 text-sm">
-                Send automatic reminders to clients (reduce no-shows)
+              <h3 className="text-lg font-bebas text-wattle-gold mb-2">Auto Reminders</h3>
+              <p className="text-gray-300 text-sm font-playfair">
+                Automatic delivery notifications to customers
               </p>
             </div>
 
-            <div className="bg-gradient-to-br from-indigo-900/40 to-indigo-800/20 border border-indigo-500/30 rounded-lg p-6 hover:border-indigo-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/20">
+            <div className="service-card-neo hover:pulse-border transition-all duration-300">
               <div className="text-4xl mb-3">📱</div>
-              <h3 className="text-lg font-bold text-white mb-2">Mobile Updates</h3>
-              <p className="text-indigo-100 text-sm">Update availability from your phone anytime</p>
+              <h3 className="text-lg font-bebas text-wattle-gold mb-2">Mobile Management</h3>
+              <p className="text-gray-300 text-sm font-playfair">Update orders from your phone anytime</p>
             </div>
           </div>
         </div>
 
-        {/* GROUP 3: YOUR CONTROL */}
+        {/* GROUP 3: BUSINESS CONTROL */}
         <div className="mb-20">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 flex items-center gap-3">
-            <span>🎯</span> YOUR CONTROL
+          <h2 className="text-3xl sm:text-4xl font-bebas text-wattle-gold mb-4 flex items-center gap-3">
+            <span>⚙️</span> BUSINESS CONTROL
           </h2>
-          <p className="text-gray-400 mb-8 text-lg">
-            Features that give you control over your time and availability
+          <p className="text-gray-400 mb-8 text-lg font-playfair">
+            Tools that give you control over pricing and operations
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-gradient-to-br from-red-900/40 to-red-800/20 border border-red-500/30 rounded-lg p-6 hover:border-red-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-red-500/20">
-              <div className="text-4xl mb-3">🚫</div>
-              <h3 className="text-lg font-bold text-white mb-2">Personal Time Blocking</h3>
-              <p className="text-red-100 text-sm">Block out personal time with one click</p>
+            <div className="service-card-neo hover:pulse-border transition-all duration-300">
+              <div className="text-4xl mb-3">🌾</div>
+              <h3 className="text-lg font-bebas text-wattle-gold mb-2">Product Management</h3>
+              <p className="text-gray-300 text-sm font-playfair">Manage hay types, grades, and availability</p>
             </div>
 
-            <div className="bg-gradient-to-br from-orange-900/40 to-orange-800/20 border border-orange-500/30 rounded-lg p-6 hover:border-orange-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/20">
+            <div className="service-card-neo hover:pulse-border transition-all duration-300">
               <div className="text-4xl mb-3">📍</div>
-              <h3 className="text-lg font-bold text-white mb-2">Multi-City Availability</h3>
-              <p className="text-orange-100 text-sm">
-                Set different availability for different cities
+              <h3 className="text-lg font-bebas text-wattle-gold mb-2">Delivery Zones</h3>
+              <p className="text-gray-300 text-sm font-playfair">
+                Set different rates for different regions
               </p>
             </div>
 
-            <div className="bg-gradient-to-br from-amber-900/40 to-amber-800/20 border border-amber-500/30 rounded-lg p-6 hover:border-amber-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/20">
-              <div className="text-4xl mb-3">💵</div>
-              <h3 className="text-lg font-bold text-white mb-2">Custom Pricing</h3>
-              <p className="text-amber-100 text-sm">
-                Set different rates for different services/cities
+            <div className="service-card-neo hover:pulse-border transition-all duration-300">
+              <div className="text-4xl mb-3">�</div>
+              <h3 className="text-lg font-bebas text-wattle-gold mb-2">Dynamic Pricing</h3>
+              <p className="text-gray-300 text-sm font-playfair">
+                Adjust prices based on season and supply
               </p>
             </div>
           </div>
@@ -335,27 +343,29 @@ export default function AdminDashboard() {
         </div>
 
         {/* SECTION 5: CALL-TO-ACTION */}
-        <div className="bg-gradient-to-br from-purple-900 to-blue-900 rounded-2xl overflow-hidden shadow-2xl p-8 sm:p-12 text-center">
-          <h3 className="text-3xl sm:text-4xl font-bold text-white mb-4">Ready to Get Started?</h3>
-          <p className="text-xl text-purple-200 mb-8 max-w-2xl mx-auto">
-            Connect your accounts and start seeing which posts bring you business
+        <div className="bg-gradient-to-br from-outback-red/40 to-eucalyptus/20 rounded-2xl cyber-border overflow-hidden shadow-2xl p-8 sm:p-12 text-center">
+          <h3 className="text-3xl sm:text-4xl font-bebas text-wattle-gold mb-4 aussie-pride">
+            🇦🇺 READY TO DIGITIZE YOUR FARM? 🇦🇺
+          </h3>
+          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto font-playfair">
+            Connect your business systems and start managing deliveries like a true-blue legend
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-            <button className="px-8 py-4 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white font-bold text-lg rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-rose-600/50 flex items-center justify-center gap-2">
-              <Instagram className="w-5 h-5" />
-              Connect Social Media
+            <button className="btn-aussie-primary flex items-center justify-center gap-2 text-lg">
+              <Truck className="w-5 h-5" />
+              Connect Logistics Platform
             </button>
-            <button className="px-8 py-4 bg-white/10 hover:bg-white/20 border-2 border-white/30 hover:border-white/50 text-white font-bold text-lg rounded-lg transition-all duration-300 flex items-center justify-center gap-2">
+            <button className="btn-aussie-secondary flex items-center justify-center gap-2 text-lg">
               <Calendar className="w-5 h-5" />
-              Connect Google Calendar
+              Connect Accounting System
             </button>
           </div>
-          <div className="text-purple-300 text-sm">
-            <a href="#" className="hover:text-white transition-colors underline">
-              View Live Demo
+          <div className="text-gray-400 text-sm font-playfair">
+            <a href="#" className="hover:text-wattle-gold transition-colors underline">
+              View Live Dashboard Demo
             </a>
             <span className="mx-3">•</span>
-            <span>Used by 50+ providers</span>
+            <span>Trusted by 200+ Aussie Farmers</span>
           </div>
         </div>
       </div>

@@ -5,6 +5,11 @@
  */
 
 /* ============================================================================
+   TYPOGRAPHY - Import fonts first
+   ============================================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+/* ============================================================================
    COLOR PALETTE
    ============================================================================ */
 :root {
@@ -23,11 +28,6 @@
   --body-font: 'Playfair Display', Georgia, serif;
   --accent-font: 'Space Mono', 'Courier New', monospace;
 }
-
-/* ============================================================================
-   TYPOGRAPHY
-   ============================================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap');
 
 /* ============================================================================
    ANIMATIONS
