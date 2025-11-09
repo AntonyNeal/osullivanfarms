@@ -20,6 +20,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "node server.js",
+    "deploy:azure": "npx ts-node deploy-azure.ts",
+    "deploy:check": "az account show && echo 'Azure CLI configured correctly'",
     "lint": "eslint src --max-warnings 0",
     "lint:fix": "eslint src --fix",
     "format": "prettier --write src/**/*.{ts,tsx,css,md}",
