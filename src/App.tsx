@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Services from './pages/Services';
 import Prices from './pages/Prices';
+import Calculator from './pages/Calculator';
 import AdminDashboard from './pages/AdminDashboard';
 import BookingModal from './components/BookingModal';
 import MobileCTABar from './components/MobileCTABar';
@@ -270,6 +271,22 @@ function App() {
                   >
                     Services
                   </Link>
+                  <Link
+                    to="/calculator"
+                    className={`font-medium transition-colors duration-300 focus:outline-none focus:text-wattle-gold ${
+                      location.pathname === '/calculator'
+                        ? 'text-wattle-gold'
+                        : location.pathname === '/'
+                          ? 'text-white hover:text-wattle-gold'
+                          : 'text-gray-900 hover:text-wattle-gold'
+                    }`}
+                    style={
+                      location.pathname === '/' ? { textShadow: '0 2px 4px rgba(0,0,0,0.8)' } : {}
+                    }
+                    aria-label="Calculator page"
+                  >
+                    Calculator
+                  </Link>
                   <button
                     onClick={() => {
                       handleBookingOpen();
@@ -323,6 +340,18 @@ function App() {
                   >
                     Services
                   </Link>
+                  <Link
+                    to="/calculator"
+                    className={`block font-medium transition-colors duration-300 focus:outline-none focus:text-rose-600 ${
+                      location.pathname === '/calculator'
+                        ? 'text-rose-600'
+                        : 'text-gray-900 hover:text-rose-600'
+                    }`}
+                    aria-label="Calculator page"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Calculator
+                  </Link>
                 </div>
               </div>
             )}
@@ -334,6 +363,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/prices" element={<Prices />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/calculator" element={<Calculator />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
 

@@ -5,7 +5,6 @@ import { useTenant } from '../core/hooks/useTenant';
 import BookingModal from '../components/BookingModal';
 import MatrixRain from '../components/MatrixRain';
 import SouthernCross from '../components/SouthernCross';
-import InteractiveHayCalculator from '../components/InteractiveHayCalculator';
 import AussieWeatherWidget from '../components/AussieWeatherWidget';
 import FloatingAussieMascot from '../components/FloatingAussieMascot';
 import '../styles/neo-australian.css';
@@ -257,38 +256,51 @@ export default function Home() {
       {/* Interactive Sections Below Hero */}
       <div className="bg-gray-900 py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          {/* Calculator & Weather Grid */}
-          <div className="grid lg:grid-cols-3 gap-8 mb-16">
-            <div className="lg:col-span-2">
-              <InteractiveHayCalculator />
-            </div>
+          {/* Weather & Stats Grid */}
+          <div className="grid lg:grid-cols-2 gap-8 mb-16">
             <div className="flex flex-col justify-center">
               <AussieWeatherWidget />
             </div>
+            <div className="cyber-border p-8 bg-gray-950/50 flex flex-col justify-center">
+              <h3 className="text-3xl font-bebas text-center text-wattle-gold mb-8">
+                BY THE NUMBERS 🇦🇺
+              </h3>
+              <div className="grid grid-cols-2 gap-6 text-center">
+                <div className="service-card-neo p-6">
+                  <p className="text-4xl font-bebas text-digital-matrix mb-2">1,200+</p>
+                  <p className="text-sm text-gray-400 font-space-mono">Tonnes Delivered</p>
+                </div>
+                <div className="service-card-neo p-6">
+                  <p className="text-4xl font-bebas text-digital-matrix mb-2">200+</p>
+                  <p className="text-sm text-gray-400 font-space-mono">Happy Farmers</p>
+                </div>
+                <div className="service-card-neo p-6">
+                  <p className="text-4xl font-bebas text-digital-matrix mb-2">24/7</p>
+                  <p className="text-sm text-gray-400 font-space-mono">GPS Tracking</p>
+                </div>
+                <div className="service-card-neo p-6">
+                  <p className="text-4xl font-bebas text-digital-matrix mb-2">100%</p>
+                  <p className="text-sm text-gray-400 font-space-mono">Aussie Owned</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Quick Stats Cyber Panel */}
-          <div className="cyber-border p-8 bg-gray-950/50">
-            <h3 className="text-3xl font-bebas text-center text-wattle-gold mb-8">
-              BY THE NUMBERS 🇦🇺
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-              <div className="service-card-neo p-6">
-                <p className="text-4xl font-bebas text-digital-matrix mb-2">1,200+</p>
-                <p className="text-sm text-gray-400 font-space-mono">Tonnes Delivered</p>
-              </div>
-              <div className="service-card-neo p-6">
-                <p className="text-4xl font-bebas text-digital-matrix mb-2">200+</p>
-                <p className="text-sm text-gray-400 font-space-mono">Happy Farmers</p>
-              </div>
-              <div className="service-card-neo p-6">
-                <p className="text-4xl font-bebas text-digital-matrix mb-2">24/7</p>
-                <p className="text-sm text-gray-400 font-space-mono">GPS Tracking</p>
-              </div>
-              <div className="service-card-neo p-6">
-                <p className="text-4xl font-bebas text-digital-matrix mb-2">100%</p>
-                <p className="text-sm text-gray-400 font-space-mono">Aussie Owned</p>
-              </div>
+          {/* CTA Section */}
+          <div className="cyber-border p-12 bg-gradient-to-br from-outback-red/30 to-eucalyptus/20 text-center">
+            <h2 className="text-4xl font-bebas text-wattle-gold mb-4 aussie-pride">
+              READY TO GET STARTED?
+            </h2>
+            <p className="text-xl text-gray-300 mb-8 font-playfair">
+              Calculate your feed costs or book a delivery in minutes!
+            </p>
+            <div className="flex gap-4 justify-center flex-wrap">
+              <Link to="/calculator" className="btn-aussie-primary">
+                🧮 Use Calculator
+              </Link>
+              <Link to="/services#booking" className="btn-aussie-secondary">
+                📋 Book Delivery
+              </Link>
             </div>
           </div>
         </div>
