@@ -243,7 +243,7 @@ export default function MobDetail() {
         <div className="flex items-start justify-between mb-4">
           <div>
             <Link
-              to="/sheep-sheet"
+              to="/"
               className="text-green-600 hover:text-green-700 text-sm font-medium mb-2 inline-flex items-center"
             >
               ← Back to Dashboard

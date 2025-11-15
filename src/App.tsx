@@ -2,38 +2,39 @@ import { useEffect, useState, useRef } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useTenant } from './core/hooks/useTenant';
-import Home from './pages/Home';
-import About from './pages/About';
-import Services from './pages/Services';
-import Prices from './pages/Prices';
-import Calculator from './pages/Calculator';
+// Hay booking pages - on ice
+// import Home from './pages/Home';
+// import About from './pages/About';
+// import Services from './pages/Services';
+// import Prices from './pages/Prices';
+// import Calculator from './pages/Calculator';
 import AdminDashboard from './pages/AdminDashboard';
 import SheepSheet from './pages/SheepSheet';
-import ConceptsLanding from './pages/ConceptsLanding';
-import BookingModal from './components/BookingModal';
-import MobileCTABar from './components/MobileCTABar';
+// import ConceptsLanding from './pages/ConceptsLanding';
+// import BookingModal from './components/BookingModal';
+// import MobileCTABar from './components/MobileCTABar';
 import { initializeSession, registerSession, trackConversion } from './utils/utm.service';
 import './styles/neo-australian.css';
 
 function App() {
   const location = useLocation();
   const { content, loading } = useTenant();
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  // const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const clickCountRef = useRef(0);
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Handle booking modal open
-  const handleBookingOpen = () => {
-    setIsBookingOpen(true);
-    window.dispatchEvent(new CustomEvent('modalOpened'));
-  };
+  // Handle booking modal open - commented out for hay booking on ice
+  // const handleBookingOpen = () => {
+  //   setIsBookingOpen(true);
+  //   window.dispatchEvent(new CustomEvent('modalOpened'));
+  // };
 
-  // Handle booking modal close
-  const handleBookingClose = () => {
-    setIsBookingOpen(false);
-    window.dispatchEvent(new CustomEvent('modalClosed'));
-  };
+  // Handle booking modal close - commented out for hay booking on ice
+  // const handleBookingClose = () => {
+  //   setIsBookingOpen(false);
+  //   window.dispatchEvent(new CustomEvent('modalClosed'));
+  // };
 
   useEffect(() => {
     // Initialize UTM tracking and session on app load
@@ -147,7 +148,7 @@ function App() {
                   <div className="flex items-center space-x-3">
                     <button
                       onClick={() => {
-                        handleBookingOpen();
+                        // handleBookingOpen(); // Hay booking on ice
                       }}
                       className="px-4 py-2 bg-aussie-gold text-aussie-green rounded-lg font-bold hover:bg-white hover:text-aussie-green transition-all duration-300 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 text-sm cursor-pointer uppercase tracking-wide border-3 border-white"
                       style={{
@@ -276,7 +277,7 @@ function App() {
                   <div className="flex space-x-6 xl:space-x-8 items-center">
                     <button
                       onClick={() => {
-                        handleBookingOpen();
+                        // handleBookingOpen(); // Hay booking on ice
                       }}
                       className="px-8 lg:px-10 py-4 lg:py-5 bg-aussie-gold text-aussie-green rounded-lg font-bold hover:bg-white hover:text-aussie-green transition-all duration-300 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-white focus:ring-offset-4 whitespace-nowrap text-xl lg:text-2xl cursor-pointer uppercase tracking-wide border-4 border-white"
                       style={{
@@ -459,7 +460,7 @@ function App() {
                         <button
                           onClick={() => {
                             setIsMobileMenuOpen(false);
-                            handleBookingOpen();
+                            // handleBookingOpen(); // Hay booking on ice
                           }}
                           className="hologram-button block w-full border-4 border-aussie-gold"
                           style={{
@@ -492,14 +493,14 @@ function App() {
         )}
 
         <Routes>
-          <Route path="/" element={<ConceptsLanding />} />
-          <Route path="/hay-booking" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/prices" element={<Prices />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/calculator" element={<Calculator />} />
+          <Route path="/*" element={<SheepSheet />} />
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/sheep-sheet/*" element={<SheepSheet />} />
+          {/* Hay booking routes - on ice */}
+          {/* <Route path="/hay-booking" element={<Home />} /> */}
+          {/* <Route path="/about" element={<About />} /> */}
+          {/* <Route path="/prices" element={<Prices />} /> */}
+          {/* <Route path="/services" element={<Services />} /> */}
+          {/* <Route path="/calculator" element={<Calculator />} /> */}
         </Routes>
 
         {/* Footer - Hidden on home page, admin page, and sheep-sheet */}
@@ -569,7 +570,8 @@ function App() {
           )}
       </div>
 
-      <BookingModal
+      {/* Hay booking components - on ice */}
+      {/* <BookingModal
         isOpen={isBookingOpen}
         onClose={handleBookingClose}
         provider={{
@@ -578,12 +580,8 @@ function App() {
         }}
         hourlyRate={100}
         platformFeePercentage={0.1}
-      />
-      {location.pathname !== '/' &&
-        location.pathname !== '/admin' &&
-        !location.pathname.startsWith('/sheep-sheet') && (
-          <MobileCTABar ctaText="Book Now" ctaAction={handleBookingOpen} />
-        )}
+      /> */}
+      {/* <MobileCTABar ctaText="Book Now" ctaAction={handleBookingOpen} /> */}
     </>
   );
 }

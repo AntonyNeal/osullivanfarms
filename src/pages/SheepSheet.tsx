@@ -24,7 +24,7 @@ export default function SheepSheet() {
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex items-center justify-between">
               <Link
-                to="/sheep-sheet"
+                to="/"
                 className="flex items-center space-x-2 sm:space-x-3 hover:opacity-90 transition"
               >
                 <div className="flex items-center space-x-1.5 sm:space-x-2">
@@ -71,10 +71,7 @@ export default function SheepSheet() {
         {/* Mobile Bottom Navigation */}
         <div className="bg-gradient-to-r from-green-700 to-emerald-700 border-t-2 border-green-600 shadow-lg md:hidden mt-4 sm:mt-6">
           <div className="flex justify-around py-2">
-            <Link
-              to="/sheep-sheet"
-              className="flex flex-col items-center px-3 sm:px-4 py-2 text-white"
-            >
+            <Link to="/" className="flex flex-col items-center px-3 sm:px-4 py-2 text-white">
               <svg
                 className="w-5 h-5 sm:w-6 sm:h-6"
                 fill="none"
