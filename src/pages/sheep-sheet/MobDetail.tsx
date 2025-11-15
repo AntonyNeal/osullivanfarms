@@ -184,9 +184,6 @@ export default function MobDetail() {
             <div className="text-center text-gray-500 py-8">
               <div className="text-4xl mb-2">✂️</div>
               <p>No marking data recorded yet</p>
-              <button className="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition">
-                Record Marking Data
-              </button>
             </div>
           </div>
         );
@@ -198,9 +195,6 @@ export default function MobDetail() {
             <div className="text-center text-gray-500 py-8">
               <div className="text-4xl mb-2">👶</div>
               <p>No weaning data recorded yet</p>
-              <button className="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition">
-                Record Weaning Data
-              </button>
             </div>
           </div>
         );
@@ -267,9 +261,6 @@ export default function MobDetail() {
               </span>
             </div>
           </div>
-          <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition">
-            Edit Mob
-          </button>
         </div>
       </div>
 

@@ -220,21 +220,6 @@ export default function MobDashboard() {
             </svg>
             <span>Filters</span>
           </button>
-
-          <Link
-            to="/sheep-sheet/mob/new"
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium flex items-center space-x-2 transition"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
-            <span className="hidden md:inline">Add Mob</span>
-          </Link>
         </div>
       </div>
 
@@ -282,15 +267,6 @@ export default function MobDashboard() {
                 <option>Weaning</option>
               </select>
             </div>
-          </div>
-
-          <div className="mt-4 flex justify-end space-x-2">
-            <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition">
-              Clear Filters
-            </button>
-            <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition">
-              Apply Filters
-            </button>
           </div>
         </div>
       )}
