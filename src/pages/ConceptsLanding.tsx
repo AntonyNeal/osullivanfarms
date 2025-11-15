@@ -6,7 +6,7 @@ export default function ConceptsLanding() {
   return (
     <>
       <Helmet>
-        <title>Platform Concepts - O'Sullivan Farms</title>
+        <title>Platform Concepts - O&apos;Sullivan Farms</title>
         <meta
           name="description"
           content="Explore two innovative concepts for your farm business platform"
@@ -30,9 +30,9 @@ export default function ConceptsLanding() {
             </h1>
 
             <p className="text-xl md:text-2xl text-green-100 max-w-3xl mx-auto mb-8">
-              You're now stepping into a new role as a platform owner. Below are two concept pieces
-              designed specifically for your farm business - each showcasing different opportunities
-              for growth and innovation.
+              You&apos;re now stepping into a new role as a platform owner. Below are two concept
+              pieces designed specifically for your farm business - each showcasing different
+              opportunities for growth and innovation.
             </p>
           </div>
         </div>
@@ -50,7 +50,7 @@ export default function ConceptsLanding() {
                   </span>
                 </div>
                 <h2 className="text-3xl font-bold mb-2">Hay Booking Platform</h2>
-                <p className="text-green-100 text-lg">O'Sullivan Farms Direct</p>
+                <p className="text-green-100 text-lg">O&apos;Sullivan Farms Direct</p>
               </div>
 
               <div className="p-8">
@@ -269,8 +269,9 @@ export default function ConceptsLanding() {
               Two Concepts. Endless Possibilities.
             </h2>
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-              These are working prototypes built to demonstrate what's possible. Each represents a
-              different path forward - or we can combine elements from both. The choice is yours.
+              These are working prototypes built to demonstrate what&apos;s possible. Each
+              represents a different path forward - or we can combine elements from both. The choice
+              is yours.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link

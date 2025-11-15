@@ -214,13 +214,13 @@ export default function MobDashboard() {
         </div>
       </div>
 
-      {/* Filter Panel */}
+      {/* Filter Panel - THIRD PRIORITY: Occasional use 2-3x/day */}
       {showFilters && (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Filter Mobs</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-5">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Filter Mobs</h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Breed</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Breed</label>
               <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 <option value="">All Breeds</option>
                 <option>Merinos</option>
@@ -229,7 +229,7 @@ export default function MobDashboard() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Zone</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Zone</label>
               <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 <option value="">All Zones</option>
                 <option>Deni</option>
@@ -239,7 +239,7 @@ export default function MobDashboard() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Team</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Team</label>
               <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 <option value="">All Teams</option>
                 <option>Self Replacing</option>
@@ -248,7 +248,7 @@ export default function MobDashboard() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Stage</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Stage</label>
               <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 <option value="">All Stages</option>
                 <option>Joining</option>
@@ -262,37 +262,38 @@ export default function MobDashboard() {
         </div>
       )}
 
-      {/* Farm Advisor Panel */}
+      {/* Farm Advisor Panel - FOURTH PRIORITY: Infrequent use 1-2x/day */}
       {showAssistant && (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-900">Farm Advisor</h3>
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-5">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900">Farm Advisor</h3>
             <span className="text-xs text-gray-500">AI Assistant</span>
           </div>
-          <div className="space-y-4">
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div className="space-y-3">
+            <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
               <p className="text-sm text-gray-700">
-                👋 G'day! I'm your Farm Advisor. Ask me about your mobs, breeding statistics, or farm management advice.
+                👋 G&apos;day! I&apos;m your Farm Advisor. Ask me about your mobs, breeding
+                statistics, or farm management advice.
               </p>
             </div>
             <div className="flex gap-2">
               <input
                 type="text"
                 placeholder="Ask about your flock..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
-              <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
+              <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium">
                 Ask
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
-              <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-sm transition">
-                What's my best performing mob?
+              <button className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-xs transition">
+                What&apos;s my best performing mob?
               </button>
-              <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-sm transition">
+              <button className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-xs transition">
                 Show scanning trends
               </button>
-              <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-sm transition">
+              <button className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-xs transition">
                 Compare zones
               </button>
             </div>
@@ -300,11 +301,11 @@ export default function MobDashboard() {
         </div>
       )}
 
-      {/* Scoreboard View */}
+      {/* Scoreboard View - HIGHEST PRIORITY: Quick glance 10-15x/day */}
       {showScoreboard && (
         <div className="space-y-4 sm:space-y-6">
-          {/* KPI Summary Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
+          {/* KPI Summary Cards - Large, prominent display */}
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
             <KPICard
               title="Total Mobs"
               value={summary.total_mobs}
@@ -332,18 +333,18 @@ export default function MobDashboard() {
             />
           </div>
 
-          {/* Stage Distribution */}
-          <div className="bg-white rounded-lg md:rounded-xl shadow-md p-3 sm:p-4 md:p-6">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">
+          {/* Stage Distribution - Tall for easy reading */}
+          <div className="bg-white rounded-lg md:rounded-xl shadow-md p-4 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
               Mobs by Stage
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
               {['Joining', 'Scanning', 'Lambing', 'Marking', 'Weaning'].map((stage) => (
-                <div key={stage} className="text-center p-2 sm:p-3 md:p-4 bg-gray-50 rounded-lg">
-                  <div className="text-2xl sm:text-3xl font-bold text-gray-900">
+                <div key={stage} className="text-center p-4 sm:p-6 md:p-8 bg-gray-50 rounded-lg">
+                  <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">
                     {Math.floor(Math.random() * 8) + 2}
                   </div>
-                  <div className="text-sm text-gray-600 mt-1">{stage}</div>
+                  <div className="text-sm sm:text-base text-gray-600 mt-2">{stage}</div>
                 </div>
               ))}
             </div>
@@ -351,10 +352,10 @@ export default function MobDashboard() {
         </div>
       )}
 
-      {/* Mob List */}
+      {/* Mob List - SECOND PRIORITY: Main working view 5-10x/day */}
       {showListView && (
-        <div className="space-y-2 sm:space-y-3">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900">All Mobs ({mobs.length})</h2>
+        <div className="space-y-3 sm:space-y-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">All Mobs ({mobs.length})</h2>
           {mobs.map((mob) => (
             <MobRow key={mob.mob_id} mob={mob} />
           ))}
