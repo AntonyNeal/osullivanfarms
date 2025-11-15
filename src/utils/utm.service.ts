@@ -8,8 +8,6 @@
  * 3. Pass to booking form submission
  */
 
-import crypto from 'crypto';
-
 interface UTMParams {
   utm_source?: string;
   utm_medium?: string;
@@ -33,11 +31,22 @@ const UTM_STORAGE_KEY = 'ch_utm_params';
 const USER_ID_STORAGE_KEY = 'ch_user_id';
 
 /**
+ * Simple hash function for browser (replaces Node crypto)
+ */
+async function simpleHash(str: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
  * Generate a persistent user ID based on browser fingerprint
  * Uses combination of user agent and screen resolution for privacy
  * (NOT using IP address - handled server-side instead)
  */
-export function generateUserId(): string {
+export async function generateUserId(): Promise<string> {
   // Check if user already has an ID (they've visited before)
   const storedId = localStorage.getItem(USER_ID_STORAGE_KEY);
   if (storedId) return storedId;
@@ -48,14 +57,11 @@ export function generateUserId(): string {
     navigator.language,
     new Date().getTimezoneOffset(),
     screen.width + 'x' + screen.height,
+    Date.now(),
   ].join('|');
 
   // Generate deterministic hash (same device = same ID)
-  const hash = crypto
-    .createHash('sha256')
-    .update(fingerprint + Date.now())
-    .digest('hex')
-    .substring(0, 32);
+  const hash = (await simpleHash(fingerprint)).substring(0, 32);
 
   // Store for persistence
   localStorage.setItem(USER_ID_STORAGE_KEY, hash);
@@ -97,7 +103,7 @@ function getDeviceType(): string {
  * Initialize session on app load
  * Stores in sessionStorage so data persists across page navigation
  */
-export function initializeSession(): SessionData {
+export async function initializeSession(): Promise<SessionData> {
   // Check if session already exists (was created earlier in this session)
   const existingSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
   if (existingSession) {
@@ -108,7 +114,7 @@ export function initializeSession(): SessionData {
     }
   }
 
-  const userId = generateUserId();
+  const userId = await generateUserId();
   const utmParams = extractUTMParams();
 
   // Generate browser-compatible UUID

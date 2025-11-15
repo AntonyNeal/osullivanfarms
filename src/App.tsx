@@ -40,8 +40,8 @@ function App() {
     // Initialize UTM tracking and session on app load
     const initTracking = async () => {
       try {
-        // Initialize local session data (sync)
-        const session = initializeSession();
+        // Initialize local session data (async)
+        const session = await initializeSession();
         console.debug('Session initialized:', session.userId);
 
         // Register session with backend (async, non-blocking)
