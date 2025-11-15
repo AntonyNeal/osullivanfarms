@@ -238,49 +238,51 @@ export default function MobDetail() {
 
   return (
     <div className="space-y-6 pb-20 md:pb-6">
-      {/* Header */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <Link
-              to="/"
-              className="text-green-600 hover:text-green-700 text-sm font-medium mb-2 inline-flex items-center"
-            >
-              ← Back to Dashboard
-            </Link>
-            <h1 className="text-2xl font-bold text-gray-900">{mob.mob_name}</h1>
-            <div className="flex flex-wrap gap-2 mt-2">
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                {mob.breed_name}
-              </span>
-              <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
-                {mob.zone_name}
-              </span>
-              <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                {mob.team_name}
-              </span>
+      {/* Header with Tabs */}
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="p-6 pb-4">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <Link
+                to="/"
+                className="text-green-600 hover:text-green-700 text-sm font-medium mb-2 inline-flex items-center"
+              >
+                ← Back to Dashboard
+              </Link>
+              <h1 className="text-2xl font-bold text-gray-900">{mob.mob_name}</h1>
+              <div className="flex flex-wrap gap-2 mt-2">
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                  {mob.breed_name}
+                </span>
+                <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                  {mob.zone_name}
+                </span>
+                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                  {mob.team_name}
+                </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Tabs */}
-      <div className="bg-white rounded-lg shadow-md overflow-x-auto">
-        <div className="flex border-b border-gray-200 min-w-max">
-          {tabs.map((tab) => (
-            <button
-              key={String(tab.id)}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 px-4 py-3 text-sm font-medium transition whitespace-nowrap ${
-                activeTab === tab.id
-                  ? 'text-green-600 border-b-2 border-green-600 bg-green-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              <span className="mr-2">{tab.icon}</span>
-              {tab.label}
-            </button>
-          ))}
+        {/* Tabs */}
+        <div className="overflow-x-auto">
+          <div className="flex border-b border-gray-200 min-w-max">
+            {tabs.map((tab) => (
+              <button
+                key={String(tab.id)}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 px-4 py-3 text-sm font-medium transition whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'text-green-600 border-b-2 border-green-600 bg-green-50'
+                    : 'text-gray-900 hover:text-green-700 hover:bg-gray-50'
+                }`}
+              >
+                <span className="mr-2">{tab.icon}</span>
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

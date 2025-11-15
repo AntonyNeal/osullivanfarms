@@ -193,7 +193,7 @@ export async function registerSession(apiBaseUrl: string): Promise<{ sessionId: 
   }
 
   try {
-    const response = await fetch(`${apiBaseUrl}/api/sessions/register`, {
+    const response = await fetch(`${apiBaseUrl}/sessions/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -239,7 +239,7 @@ export async function trackConversion(
   // Try to send to backend, but don't fail if it doesn't work
   if (apiBaseUrl && session) {
     try {
-      await fetch(`${apiBaseUrl}/api/conversions/track`, {
+      await fetch(`${apiBaseUrl}/conversions/track`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

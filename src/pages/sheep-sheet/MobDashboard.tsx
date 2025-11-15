@@ -83,8 +83,8 @@ export default function MobDashboard() {
   // Mob Row Component
   const MobRow = ({ mob }: { mob: MobKPI }) => (
     <Link
-      to={`/sheep-sheet/mob/${mob.mob_id}`}
-      className="bg-white rounded-lg shadow hover:shadow-md transition-shadow p-3 sm:p-4 border border-gray-200 hover:border-green-400"
+      to={`/mob/${mob.mob_id}`}
+      className="block bg-white rounded-lg shadow hover:shadow-md transition-shadow p-3 sm:p-4 border border-gray-200 hover:border-green-400 min-h-0"
     >
       <div className="grid grid-cols-1 md:grid-cols-6 gap-3 sm:gap-4">
         <div className="md:col-span-2">
