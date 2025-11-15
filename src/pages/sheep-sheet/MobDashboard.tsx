@@ -139,79 +139,81 @@ export default function MobDashboard() {
 
   return (
     <div className="space-y-6 pb-20 md:pb-6">
-      {/* Toolbar */}
-      <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
-        <div className="flex items-center space-x-1 sm:space-x-2">
-          <button
-            onClick={() => setShowScoreboard(!showScoreboard)}
-            className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded-lg font-medium transition ${
-              showScoreboard
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            Scoreboard
-          </button>
-          <button
-            onClick={() => setShowListView(!showListView)}
-            className={`px-4 py-2 rounded-lg font-medium transition ${
-              showListView
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            List View
-          </button>
-        </div>
+      {/* Toolbar - Usage frequency: Scoreboard (10-15x) > List View (5-10x) > Filters (2-3x) > Farm Advisor (1-2x) */}
+      <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+        {/* HIGHEST PRIORITY: Scoreboard - Largest, Blue */}
+        <button
+          onClick={() => setShowScoreboard(!showScoreboard)}
+          className={`px-5 sm:px-8 py-2.5 sm:py-3 text-base sm:text-lg rounded-xl font-bold transition-all transform hover:scale-105 shadow-md ${
+            showScoreboard
+              ? 'bg-blue-600 text-white shadow-blue-300'
+              : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+          }`}
+        >
+          📊 Scoreboard
+        </button>
 
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setShowAssistant(!showAssistant)}
-            className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded-lg font-medium flex items-center space-x-1 sm:space-x-2 transition ${
-              showAssistant
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+        {/* SECOND PRIORITY: List View - Large, Green */}
+        <button
+          onClick={() => setShowListView(!showListView)}
+          className={`px-5 sm:px-7 py-2.5 sm:py-3 text-base sm:text-lg rounded-xl font-bold transition-all transform hover:scale-105 shadow-md ${
+            showListView
+              ? 'bg-green-600 text-white shadow-green-300'
+              : 'bg-green-100 text-green-700 hover:bg-green-200'
+          }`}
+        >
+          📋 List View
+        </button>
+
+        {/* THIRD PRIORITY: Filters - Medium, Amber */}
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className={`px-3 sm:px-5 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg font-semibold flex items-center space-x-1.5 transition-all ${
+            showFilters
+              ? 'bg-amber-600 text-white'
+              : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+          }`}
+        >
+          <svg
+            className="w-4 h-4 sm:w-5 sm:h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <svg
-              className="w-4 h-4 sm:w-5 sm:h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-              />
-            </svg>
-            <span>Farm Advisor</span>
-          </button>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded-lg font-medium flex items-center space-x-1 sm:space-x-2 transition ${
-              showFilters
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+            />
+          </svg>
+          <span>Filters</span>
+        </button>
+
+        {/* FOURTH PRIORITY: Farm Advisor - Smaller, Purple */}
+        <button
+          onClick={() => setShowAssistant(!showAssistant)}
+          className={`px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg font-semibold flex items-center space-x-1.5 transition-all ${
+            showAssistant
+              ? 'bg-purple-600 text-white'
+              : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+          }`}
+        >
+          <svg
+            className="w-4 h-4 sm:w-5 sm:h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <svg
-              className="w-4 h-4 sm:w-5 sm:h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-              />
-            </svg>
-            <span>Filters</span>
-          </button>
-        </div>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+            />
+          </svg>
+          <span>Farm Advisor</span>
+        </button>
       </div>
 
       {/* Filter Panel - THIRD PRIORITY: Occasional use 2-3x/day */}
