@@ -55,7 +55,9 @@ export default function MobDashboard() {
   const [summary] = useState<FarmSummary>(mockSummary);
   const [_filters, _setFilters] = useState<MobFilters>({});
   const [showFilters, setShowFilters] = useState(false);
-  const [viewMode, setViewMode] = useState<'scoreboard' | 'list'>('scoreboard');
+  const [showAssistant, setShowAssistant] = useState(false);
+  const [showScoreboard, setShowScoreboard] = useState(true);
+  const [showListView, setShowListView] = useState(true);
 
   // KPI Card Component
   const KPICard = ({
@@ -137,64 +139,13 @@ export default function MobDashboard() {
 
   return (
     <div className="space-y-6 pb-20 md:pb-6">
-      {/* Scoreboard View */}
-      {viewMode === 'scoreboard' && (
-        <div className="space-y-4 sm:space-y-6">
-          {/* KPI Summary Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
-            <KPICard
-              title="Total Mobs"
-              value={summary.total_mobs}
-              color="from-blue-100 to-blue-50"
-            />
-            <KPICard
-              title="Total Ewes"
-              value={summary.total_ewes?.toLocaleString() || 0}
-              color="from-green-100 to-green-50"
-            />
-            <KPICard
-              title="Avg Scanning"
-              value={`${summary.avg_scanning_percent?.toFixed(1) || 0}%`}
-              color="from-purple-100 to-purple-50"
-            />
-            <KPICard
-              title="Avg Marking"
-              value={`${summary.avg_marking_percent?.toFixed(1) || 0}%`}
-              color="from-amber-100 to-amber-50"
-            />
-            <KPICard
-              title="Avg Weaning"
-              value={`${summary.avg_weaning_percent?.toFixed(1) || 0}%`}
-              color="from-emerald-100 to-emerald-50"
-            />
-          </div>
-
-          {/* Stage Distribution */}
-          <div className="bg-white rounded-lg md:rounded-xl shadow-md p-3 sm:p-4 md:p-6">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">
-              Mobs by Stage
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
-              {['Joining', 'Scanning', 'Lambing', 'Marking', 'Weaning'].map((stage) => (
-                <div key={stage} className="text-center p-2 sm:p-3 md:p-4 bg-gray-50 rounded-lg">
-                  <div className="text-2xl sm:text-3xl font-bold text-gray-900">
-                    {Math.floor(Math.random() * 8) + 2}
-                  </div>
-                  <div className="text-sm text-gray-600 mt-1">{stage}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Toolbar */}
       <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
         <div className="flex items-center space-x-1 sm:space-x-2">
           <button
-            onClick={() => setViewMode('scoreboard')}
+            onClick={() => setShowScoreboard(!showScoreboard)}
             className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded-lg font-medium transition ${
-              viewMode === 'scoreboard'
+              showScoreboard
                 ? 'bg-green-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
@@ -202,9 +153,9 @@ export default function MobDashboard() {
             Scoreboard
           </button>
           <button
-            onClick={() => setViewMode('list')}
+            onClick={() => setShowListView(!showListView)}
             className={`px-4 py-2 rounded-lg font-medium transition ${
-              viewMode === 'list'
+              showListView
                 ? 'bg-green-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
@@ -215,8 +166,35 @@ export default function MobDashboard() {
 
         <div className="flex items-center space-x-2">
           <button
+            onClick={() => setShowAssistant(!showAssistant)}
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded-lg font-medium flex items-center space-x-1 sm:space-x-2 transition ${
+              showAssistant
+                ? 'bg-green-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <svg
+              className="w-4 h-4 sm:w-5 sm:h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+              />
+            </svg>
+            <span>Farm Advisor</span>
+          </button>
+          <button
             onClick={() => setShowFilters(!showFilters)}
-            className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium flex items-center space-x-1 sm:space-x-2 transition"
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded-lg font-medium flex items-center space-x-1 sm:space-x-2 transition ${
+              showFilters
+                ? 'bg-green-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
           >
             <svg
               className="w-4 h-4 sm:w-5 sm:h-5"
@@ -284,13 +262,104 @@ export default function MobDashboard() {
         </div>
       )}
 
+      {/* Farm Advisor Panel */}
+      {showAssistant && (
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-900">Farm Advisor</h3>
+            <span className="text-xs text-gray-500">AI Assistant</span>
+          </div>
+          <div className="space-y-4">
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <p className="text-sm text-gray-700">
+                👋 G'day! I'm your Farm Advisor. Ask me about your mobs, breeding statistics, or farm management advice.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Ask about your flock..."
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+              <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
+                Ask
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-sm transition">
+                What's my best performing mob?
+              </button>
+              <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-sm transition">
+                Show scanning trends
+              </button>
+              <button className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-sm transition">
+                Compare zones
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Scoreboard View */}
+      {showScoreboard && (
+        <div className="space-y-4 sm:space-y-6">
+          {/* KPI Summary Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
+            <KPICard
+              title="Total Mobs"
+              value={summary.total_mobs}
+              color="from-blue-100 to-blue-50"
+            />
+            <KPICard
+              title="Total Ewes"
+              value={summary.total_ewes?.toLocaleString() || 0}
+              color="from-green-100 to-green-50"
+            />
+            <KPICard
+              title="Avg Scanning"
+              value={`${summary.avg_scanning_percent?.toFixed(1) || 0}%`}
+              color="from-purple-100 to-purple-50"
+            />
+            <KPICard
+              title="Avg Marking"
+              value={`${summary.avg_marking_percent?.toFixed(1) || 0}%`}
+              color="from-amber-100 to-amber-50"
+            />
+            <KPICard
+              title="Avg Weaning"
+              value={`${summary.avg_weaning_percent?.toFixed(1) || 0}%`}
+              color="from-emerald-100 to-emerald-50"
+            />
+          </div>
+
+          {/* Stage Distribution */}
+          <div className="bg-white rounded-lg md:rounded-xl shadow-md p-3 sm:p-4 md:p-6">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">
+              Mobs by Stage
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
+              {['Joining', 'Scanning', 'Lambing', 'Marking', 'Weaning'].map((stage) => (
+                <div key={stage} className="text-center p-2 sm:p-3 md:p-4 bg-gray-50 rounded-lg">
+                  <div className="text-2xl sm:text-3xl font-bold text-gray-900">
+                    {Math.floor(Math.random() * 8) + 2}
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">{stage}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Mob List */}
-      <div className="space-y-2 sm:space-y-3">
-        <h2 className="text-lg sm:text-xl font-bold text-gray-900">All Mobs ({mobs.length})</h2>
-        {mobs.map((mob) => (
-          <MobRow key={mob.mob_id} mob={mob} />
-        ))}
-      </div>
+      {showListView && (
+        <div className="space-y-2 sm:space-y-3">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900">All Mobs ({mobs.length})</h2>
+          {mobs.map((mob) => (
+            <MobRow key={mob.mob_id} mob={mob} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

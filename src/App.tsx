@@ -79,8 +79,8 @@ function App() {
       </Helmet>
 
       <div className="min-h-screen bg-white">
-        {/* Navigation Header - Hidden for sheep-sheet and concepts landing */}
-        {!location.pathname.startsWith('/sheep-sheet') && location.pathname !== '/' && (
+        {/* Navigation Header - Hidden for SheepSheet (now at root) */}
+        {location.pathname !== '/' && !location.pathname.startsWith('/mob') && (
           <header
             className={`sticky top-0 z-50 ${location.pathname === '/' ? 'bg-aussie-green/90 backdrop-blur-md border-b-4 border-aussie-gold' : 'bg-aussie-green/95 backdrop-blur-sm shadow-lg border-b-4 border-aussie-gold'}`}
             style={{
