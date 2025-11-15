@@ -2,7 +2,7 @@
 
 ## 📋 Overview
 
-SheepSheet is a mobile-first, offline-capable farm management application designed for tracking sheep mobs through complete breeding cycles. Built specifically for Leigh O'Sullivan's sheep farm near Wagga Wagga, NSW, this application digitizes traditional Excel spreadsheet workflows into a modern, responsive web application.
+SheepSheet is a mobile-first, offline-capable farm management application designed for tracking sheep mobs through complete breeding cycles. Built for sheep farms throughout NSW, this application digitizes traditional Excel spreadsheet workflows into a modern, responsive web application.
 
 ## 🎯 Key Features
 
@@ -249,11 +249,7 @@ VITE_SYNC_INTERVAL=300000
 
 ## 🤝 Contributing
 
-This is a private farm management system. For questions or issues:
-
-- Contact: Julian (Developer)
-- Farm Owner: Leigh O'Sullivan
-- Location: Near Wagga Wagga, NSW
+This is a private farm management system. For questions or issues, please contact the system administrator.
 
 ## 📄 License
 

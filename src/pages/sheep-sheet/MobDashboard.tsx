@@ -12,7 +12,7 @@ const mockMobs: MobKPI[] = [
     zone_name: 'Deni',
     team_name: 'Self Replacing',
     current_stage: 'Scanning',
-    current_location: 'moriac paddock',
+    current_location: 'home paddock',
     ewes_joined: 545,
     rams_in: 11,
     joining_date: '2024-11-01',

@@ -581,7 +581,7 @@ GO
 /*
 -- Insert a new mob
 INSERT INTO Mobs (mob_name, breed_id, status_id, zone_id, team_id, current_stage_id, current_location)
-VALUES ('Mob 1 - Merino Ewes', 1, 1, 1, 1, 2, 'moriac paddock');
+VALUES ('Mob 1 - Merino Ewes', 1, 1, 1, 1, 2, 'home paddock');
 
 -- Get the mob_id
 DECLARE @mob_id INT = SCOPE_IDENTITY();
