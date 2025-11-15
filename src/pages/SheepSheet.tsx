@@ -21,26 +21,28 @@ export default function SheepSheet() {
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
         {/* Header Bar */}
         <div className="bg-gradient-to-r from-green-700 to-emerald-700 border-b-2 border-green-600 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex items-center justify-between">
               <Link
                 to="/sheep-sheet"
-                className="flex items-center space-x-3 hover:opacity-90 transition"
+                className="flex items-center space-x-2 sm:space-x-3 hover:opacity-90 transition"
               >
-                <div className="flex items-center space-x-2">
-                  <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-md">
-                    <span className="text-2xl">🐑</span>
+                <div className="flex items-center space-x-1.5 sm:space-x-2">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg flex items-center justify-center shadow-md">
+                    <span className="text-xl sm:text-2xl">🐑</span>
                   </div>
                   <div>
-                    <h1 className="text-xl font-bold text-white tracking-tight">SheepSheet</h1>
+                    <h1 className="text-base sm:text-lg md:text-xl font-bold text-white tracking-tight">
+                      SheepSheet
+                    </h1>
                     <p className="text-xs text-green-100">Farm Management System</p>
                   </div>
                 </div>
               </Link>
 
               {/* Sync Status Indicator */}
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center space-x-2 text-sm bg-white/20 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                <div className="flex items-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm bg-white/20 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg backdrop-blur-sm">
                   <div
                     className={`w-2 h-2 rounded-full ${syncStatus.is_online ? 'bg-green-300' : 'bg-red-400'}`}
                   ></div>
@@ -59,7 +61,7 @@ export default function SheepSheet() {
         </div>
 
         {/* Main Content Area */}
-        <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
           <Routes>
             <Route index element={<MobDashboard />} />
             <Route path="mob/:mobId" element={<MobDetail />} />
@@ -67,10 +69,18 @@ export default function SheepSheet() {
         </div>
 
         {/* Mobile Bottom Navigation */}
-        <div className="bg-gradient-to-r from-green-700 to-emerald-700 border-t-2 border-green-600 shadow-lg md:hidden mt-6">
+        <div className="bg-gradient-to-r from-green-700 to-emerald-700 border-t-2 border-green-600 shadow-lg md:hidden mt-4 sm:mt-6">
           <div className="flex justify-around py-2">
-            <Link to="/sheep-sheet" className="flex flex-col items-center px-4 py-2 text-white">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <Link
+              to="/sheep-sheet"
+              className="flex flex-col items-center px-3 sm:px-4 py-2 text-white"
+            >
+              <svg
+                className="w-5 h-5 sm:w-6 sm:h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -80,8 +90,13 @@ export default function SheepSheet() {
               </svg>
               <span className="text-xs mt-1 font-medium">Dashboard</span>
             </Link>
-            <button className="flex flex-col items-center px-4 py-2 text-green-100 hover:text-white">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button className="flex flex-col items-center px-3 sm:px-4 py-2 text-green-100 hover:text-white">
+              <svg
+                className="w-5 h-5 sm:w-6 sm:h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

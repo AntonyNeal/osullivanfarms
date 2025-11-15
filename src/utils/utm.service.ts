@@ -111,9 +111,22 @@ export function initializeSession(): SessionData {
   const userId = generateUserId();
   const utmParams = extractUTMParams();
 
+  // Generate browser-compatible UUID
+  const generateSessionId = () => {
+    if (typeof window !== 'undefined' && window.crypto && window.crypto.randomUUID) {
+      return window.crypto.randomUUID();
+    }
+    // Fallback UUID v4 implementation
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  };
+
   const sessionData: SessionData = {
     userId,
-    sessionId: crypto.randomUUID ? crypto.randomUUID() : 'session_' + Date.now(),
+    sessionId: generateSessionId(),
     utmParams,
     referrer: document.referrer,
     deviceType: getDeviceType(),

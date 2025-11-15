@@ -9,6 +9,7 @@ import Prices from './pages/Prices';
 import Calculator from './pages/Calculator';
 import AdminDashboard from './pages/AdminDashboard';
 import SheepSheet from './pages/SheepSheet';
+import ConceptsLanding from './pages/ConceptsLanding';
 import BookingModal from './components/BookingModal';
 import MobileCTABar from './components/MobileCTABar';
 import { initializeSession, registerSession, trackConversion } from './utils/utm.service';
@@ -77,8 +78,8 @@ function App() {
       </Helmet>
 
       <div className="min-h-screen bg-white">
-        {/* Navigation Header - Hidden for sheep-sheet */}
-        {!location.pathname.startsWith('/sheep-sheet') && (
+        {/* Navigation Header - Hidden for sheep-sheet and concepts landing */}
+        {!location.pathname.startsWith('/sheep-sheet') && location.pathname !== '/' && (
           <header
             className={`sticky top-0 z-50 ${location.pathname === '/' ? 'bg-aussie-green/90 backdrop-blur-md border-b-4 border-aussie-gold' : 'bg-aussie-green/95 backdrop-blur-sm shadow-lg border-b-4 border-aussie-gold'}`}
             style={{
@@ -491,7 +492,8 @@ function App() {
         )}
 
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<ConceptsLanding />} />
+          <Route path="/hay-booking" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/prices" element={<Prices />} />
           <Route path="/services" element={<Services />} />
@@ -577,9 +579,11 @@ function App() {
         hourlyRate={100}
         platformFeePercentage={0.1}
       />
-      {location.pathname !== '/admin' && !location.pathname.startsWith('/sheep-sheet') && (
-        <MobileCTABar ctaText="Book Now" ctaAction={handleBookingOpen} />
-      )}
+      {location.pathname !== '/' &&
+        location.pathname !== '/admin' &&
+        !location.pathname.startsWith('/sheep-sheet') && (
+          <MobileCTABar ctaText="Book Now" ctaAction={handleBookingOpen} />
+        )}
     </>
   );
 }
