@@ -8,6 +8,7 @@ import Services from './pages/Services';
 import Prices from './pages/Prices';
 import Calculator from './pages/Calculator';
 import AdminDashboard from './pages/AdminDashboard';
+import SheepSheet from './pages/SheepSheet';
 import BookingModal from './components/BookingModal';
 import MobileCTABar from './components/MobileCTABar';
 import { initializeSession, registerSession, trackConversion } from './utils/utm.service';
@@ -489,6 +490,7 @@ function App() {
           <Route path="/services" element={<Services />} />
           <Route path="/calculator" element={<Calculator />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/sheep-sheet/*" element={<SheepSheet />} />
         </Routes>
 
         {/* Footer - Hidden on home page and admin page */}
