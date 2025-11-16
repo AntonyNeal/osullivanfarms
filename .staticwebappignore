@@ -1,9 +1,12 @@
+# This file is kept for reference but not actively used
+# The workflow now deploys only the contents of the dist folder
+
 # Dependencies
 node_modules/
 api/node_modules/
 mcp-server/node_modules/
 
-# Source files (not needed, we deploy built dist/)
+# Source files
 src/
 
 # Development files
@@ -50,3 +53,4 @@ test-*.ps1
 
 # SDK and templates
 sdk/
+
