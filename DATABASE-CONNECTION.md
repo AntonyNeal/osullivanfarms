@@ -32,6 +32,7 @@ DATABASE_URL="postgresql://sheepsheetadmin:SheepSheet2025!@osullivanfarms-db.pos
 ✅ **Deployed:** November 16, 2025
 
 ### Tables Created:
+
 - `mobs` - Core mob tracking with breeding lifecycle
 - `mob_history` - Audit trail for changes
 - `paddocks` - Location management
@@ -39,10 +40,12 @@ DATABASE_URL="postgresql://sheepsheetadmin:SheepSheet2025!@osullivanfarms-db.pos
 - `farm_settings` - Configuration
 
 ### Views Created:
+
 - `mob_kpi_summary` - Calculated KPIs per mob
 - `farm_statistics` - Farm-wide aggregates
 
 ### Sample Data:
+
 - 2 sample mobs (Merino Ewes, Dohne Maidens)
 - 3 sample paddocks
 
@@ -60,6 +63,7 @@ DATABASE_URL="postgresql://sheepsheetadmin:SheepSheet2025!@osullivanfarms-db.pos
 - **AllowAllWindowsAzureIps:** 0.0.0.0 (for Azure services)
 
 **Note:** Your IP is whitelisted. If you change networks, add the new IP via:
+
 ```powershell
 az postgres flexible-server firewall-rule create \
   --resource-group osullivanfarms-rg \

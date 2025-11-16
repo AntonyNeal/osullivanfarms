@@ -3,10 +3,8 @@ const db = require('../db');
 // Get all active mobs with KPIs
 exports.getAllMobs = async (req, res) => {
   try {
-    const result = await db.query(
-      'SELECT * FROM mob_kpi_summary ORDER BY last_updated DESC'
-    );
-    
+    const result = await db.query('SELECT * FROM mob_kpi_summary ORDER BY last_updated DESC');
+
     res.json({
       success: true,
       data: result.rows,
@@ -26,19 +24,16 @@ exports.getAllMobs = async (req, res) => {
 exports.getMobById = async (req, res) => {
   try {
     const { id } = req.params;
-    
-    const result = await db.query(
-      'SELECT * FROM mobs WHERE mob_id = $1',
-      [id]
-    );
-    
+
+    const result = await db.query('SELECT * FROM mobs WHERE mob_id = $1', [id]);
+
     if (result.rows.length === 0) {
       return res.status(404).json({
         success: false,
         error: 'Mob not found',
       });
     }
-    
+
     res.json({
       success: true,
       data: result.rows[0],
@@ -57,14 +52,14 @@ exports.getMobById = async (req, res) => {
 exports.getMobHistory = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const result = await db.query(
       `SELECT * FROM mob_history 
        WHERE mob_id = $1 
        ORDER BY changed_at DESC`,
       [id]
     );
-    
+
     res.json({
       success: true,
       data: result.rows,
@@ -95,7 +90,7 @@ exports.createMob = async (req, res) => {
       rams_in,
       joining_date,
     } = req.body;
-    
+
     const result = await db.query(
       `INSERT INTO mobs (
         mob_name, breed_name, status_name, zone_name, team_name,
@@ -115,7 +110,7 @@ exports.createMob = async (req, res) => {
         joining_date,
       ]
     );
-    
+
     res.status(201).json({
       success: true,
       data: result.rows[0],
@@ -136,38 +131,36 @@ exports.updateMob = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
-    
+
     // Build dynamic UPDATE query
     const fields = Object.keys(updates);
     const values = Object.values(updates);
-    
+
     if (fields.length === 0) {
       return res.status(400).json({
         success: false,
         error: 'No fields to update',
       });
     }
-    
-    const setClause = fields
-      .map((field, index) => `${field} = $${index + 2}`)
-      .join(', ');
-    
+
+    const setClause = fields.map((field, index) => `${field} = $${index + 2}`).join(', ');
+
     const query = `
       UPDATE mobs 
       SET ${setClause}
       WHERE mob_id = $1
       RETURNING *
     `;
-    
+
     const result = await db.query(query, [id, ...values]);
-    
+
     if (result.rows.length === 0) {
       return res.status(404).json({
         success: false,
         error: 'Mob not found',
       });
     }
-    
+
     res.json({
       success: true,
       data: result.rows[0],
@@ -187,7 +180,7 @@ exports.updateMob = async (req, res) => {
 exports.getFarmStatistics = async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM farm_statistics');
-    
+
     res.json({
       success: true,
       data: result.rows[0] || {},
@@ -205,16 +198,8 @@ exports.getFarmStatistics = async (req, res) => {
 // Record breeding event
 exports.recordBreedingEvent = async (req, res) => {
   try {
-    const {
-      mob_id,
-      event_type,
-      event_date,
-      event_time,
-      event_data,
-      notes,
-      recorded_by,
-    } = req.body;
-    
+    const { mob_id, event_type, event_date, event_time, event_data, notes, recorded_by } = req.body;
+
     const result = await db.query(
       `INSERT INTO breeding_events (
         mob_id, event_type, event_date, event_time, 
@@ -231,7 +216,7 @@ exports.recordBreedingEvent = async (req, res) => {
         recorded_by,
       ]
     );
-    
+
     res.status(201).json({
       success: true,
       data: result.rows[0],
