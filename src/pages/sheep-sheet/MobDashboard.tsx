@@ -109,16 +109,18 @@ export default function MobDashboard() {
           <div className="text-xs text-gray-500 mb-1">Scanning %</div>
           <div
             className={`font-bold text-base sm:text-lg ${
-              mob.scanning_percent && mob.scanning_percent >= 150
+              mob.scanning_percent && parseFloat(mob.scanning_percent as string) >= 150
                 ? 'text-green-600'
-                : mob.scanning_percent && mob.scanning_percent >= 130
+                : mob.scanning_percent && parseFloat(mob.scanning_percent as string) >= 130
                   ? 'text-amber-600'
                   : mob.scanning_percent
                     ? 'text-red-600'
                     : 'text-gray-400'
             }`}
           >
-            {mob.scanning_percent ? `${mob.scanning_percent.toFixed(0)}%` : '-'}
+            {mob.scanning_percent
+              ? `${parseFloat(mob.scanning_percent as string).toFixed(0)}%`
+              : '-'}
           </div>
         </div>
 
@@ -345,7 +347,7 @@ export default function MobDashboard() {
             />
             <KPICard
               title="Avg Scanning"
-              value={`${summary.avg_scanning_percent?.toFixed(1) || 0}%`}
+              value={`${summary.avg_scanning_percent ? parseFloat(summary.avg_scanning_percent.toString()).toFixed(1) : 0}%`}
               color="from-purple-100 to-purple-50"
             />
             <KPICard
