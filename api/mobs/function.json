@@ -5,11 +5,7 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "methods": [
-        "get",
-        "options"
-      ],
-      "route": "v1/farm/statistics"
+      "methods": ["get", "post", "put", "delete", "options"]
     },
     {
       "type": "http",

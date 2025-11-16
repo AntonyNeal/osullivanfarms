@@ -1,6 +1,6 @@
 // API configuration
-const API_BASE_URL = import.meta.env.PROD 
-  ? '/api/v1' // Production: uses Azure Static Web Apps API
+const API_BASE_URL = import.meta.env.PROD
+  ? '/api' // Production: uses Azure Static Web Apps API
   : 'http://localhost:3001/api/v1'; // Development: local API server
 
 // API client with error handling
@@ -59,6 +59,6 @@ export const mobsApi = {
   getMobHistory: (id: number) => api.get(`/mobs/${id}/history`),
   createMob: (data: any) => api.post('/mobs', data),
   updateMob: (id: number, data: any) => api.put(`/mobs/${id}`, data),
-  getFarmStatistics: () => api.get('/farm/statistics'),
+  getFarmStatistics: () => api.get('/farm-statistics'),
   recordBreedingEvent: (data: any) => api.post('/breeding-events', data),
 };

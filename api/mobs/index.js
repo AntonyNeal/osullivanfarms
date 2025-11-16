@@ -4,7 +4,7 @@ const { Pool } = require('pg');
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
   },
   max: 20,
   idleTimeoutMillis: 30000,
@@ -20,8 +20,8 @@ module.exports = async function (context, req) {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-    }
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
   };
 
   // Handle OPTIONS request for CORS preflight
@@ -35,7 +35,7 @@ module.exports = async function (context, req) {
     // GET all mobs
     if (req.method === 'GET') {
       const result = await pool.query('SELECT * FROM mob_kpi_summary ORDER BY last_updated DESC');
-      
+
       context.res.status = 200;
       context.res.body = {
         success: true,
@@ -93,7 +93,7 @@ module.exports = async function (context, req) {
     context.res.status = 405;
     context.res.body = {
       success: false,
-      error: 'Method not allowed'
+      error: 'Method not allowed',
     };
   } catch (error) {
     context.log.error('Error:', error);
