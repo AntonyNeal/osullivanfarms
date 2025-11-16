@@ -195,7 +195,7 @@ export interface MobKPI {
   dry?: number | null;
   twins?: number | null;
   singles?: number | null;
-  scanning_percent?: number | null;
+  scanning_percent?: string | number | null; // PostgreSQL returns numeric as string
 
   // Lambing data
   wet_ewes?: number | null;
@@ -224,8 +224,8 @@ export interface MobKPI {
 
 export interface FarmSummary {
   total_mobs: number;
-  total_ewes?: number | null;
-  avg_scanning_percent?: number | null;
+  total_ewes: number;
+  avg_scanning_percent?: string | number | null; // PostgreSQL returns numeric as string
   avg_marking_percent?: number | null;
   avg_weaning_percent?: number | null;
 }

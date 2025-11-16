@@ -23,10 +23,10 @@ export default function MobDashboard() {
   // Fetch data on component mount
   useEffect(() => {
     async function fetchData() {
-      try {
-        setLoading(true);
-        setError(null);
+      setLoading(true);
+      setError(null);
 
+      try {
         // Fetch mobs and statistics in parallel
         const [mobsResponse, statsResponse] = await Promise.all([
           mobsApi.getAllMobs(),
@@ -42,8 +42,9 @@ export default function MobDashboard() {
           avg_weaning_percent: parseFloat(statsResponse.data.avg_weaning_percent) || 0,
         });
       } catch (err) {
-        console.error('Error fetching data:', err);
-        setError('Failed to load farm data. Please try again.');
+        console.warn('API unavailable, continuing with empty data:', err);
+        setError('Unable to connect to database. Showing empty form.');
+        // Continue with empty data - don't block the UI
       } finally {
         setLoading(false);
       }
@@ -109,9 +110,9 @@ export default function MobDashboard() {
           <div className="text-xs text-gray-500 mb-1">Scanning %</div>
           <div
             className={`font-bold text-base sm:text-lg ${
-              mob.scanning_percent && parseFloat(mob.scanning_percent as string) >= 150
+              mob.scanning_percent && parseFloat(mob.scanning_percent.toString()) >= 150
                 ? 'text-green-600'
-                : mob.scanning_percent && parseFloat(mob.scanning_percent as string) >= 130
+                : mob.scanning_percent && parseFloat(mob.scanning_percent.toString()) >= 130
                   ? 'text-amber-600'
                   : mob.scanning_percent
                     ? 'text-red-600'
@@ -119,7 +120,7 @@ export default function MobDashboard() {
             }`}
           >
             {mob.scanning_percent
-              ? `${parseFloat(mob.scanning_percent as string).toFixed(0)}%`
+              ? `${parseFloat(mob.scanning_percent.toString()).toFixed(0)}%`
               : '-'}
           </div>
         </div>
