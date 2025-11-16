@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+api/node_modules/
+mcp-server/node_modules/
+
+# Source files (not needed, we deploy built dist/)
+src/
+
+# Development files
+*.md
+.git/
+.github/
+.vscode/
+
+# Environment files
+.env*
+
+# Documentation
+docs/
+deployment/
+terraform/
+scripts/
+
+# Build config files
+*.config.ts
+*.config.js
+tsconfig*.json
+eslint.config.js
+playwright.config.ts
+postcss.config.js
+tailwind.config.js
+vite.config.ts
+
+# Other files not needed in deployment
+package.json
+package-lock.json
+README.md
+*.sh
+*.ps1
+Procfile
+vercel.json
+firebase.json
+
+# Database and migration files
+db/
+
+# Tests
+tests/
+test-*.ps1
+
+# SDK and templates
+sdk/
