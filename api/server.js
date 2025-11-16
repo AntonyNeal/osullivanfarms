@@ -5,6 +5,9 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Import routes
+const mobRoutes = require("./routes/mobs");
+
 // Middleware
 app.use(
   cors({
@@ -16,6 +19,7 @@ app.use(
 
       // Define allowed patterns for your domains
       const allowedPatterns = [
+        /^https?:\/\/([a-z0-9-]+\.)?azurestaticapps\.net$/, // Azure Static Web Apps
         /^https?:\/\/([a-z0-9-]+\.)?yourdomain\.com$/, // *.yourdomain.com
         /^https?:\/\/([a-z0-9-]+\.)?your-custom-domain\.com$/, // Custom domain
         /^http:\/\/localhost(:\d+)?$/, // localhost:*
@@ -70,6 +74,9 @@ app.get("/health", (req, res) => {
 
 // API versioning
 const apiV1 = express.Router();
+
+// SheepSheet API routes
+apiV1.use(mobRoutes);
 
 // Tenant management endpoints
 apiV1.get("/tenant/:tenantId", async (req, res) => {
