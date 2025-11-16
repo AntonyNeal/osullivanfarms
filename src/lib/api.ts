@@ -1,7 +1,5 @@
 // API configuration
-const API_BASE_URL = import.meta.env.PROD
-  ? '/api' // Production: uses Azure Static Web Apps API
-  : 'http://localhost:3001/api/v1'; // Development: local API server
+const API_BASE_URL = '/api'; // Always use Azure Static Web Apps API (works in both dev and prod)
 
 // API client with error handling
 export const api = {
