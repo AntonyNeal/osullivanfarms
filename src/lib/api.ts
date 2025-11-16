@@ -13,7 +13,7 @@ export const api = {
     return response.json();
   },
 
-  async post(endpoint: string, data: any) {
+  async post(endpoint: string, data: unknown) {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'POST',
       headers: {
@@ -27,7 +27,7 @@ export const api = {
     return response.json();
   },
 
-  async put(endpoint: string, data: any) {
+  async put(endpoint: string, data: unknown) {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'PUT',
       headers: {
@@ -57,8 +57,8 @@ export const mobsApi = {
   getAllMobs: () => api.get('/mobs'),
   getMobById: (id: number) => api.get(`/mobs/${id}`),
   getMobHistory: (id: number) => api.get(`/mobs/${id}/history`),
-  createMob: (data: any) => api.post('/mobs', data),
-  updateMob: (id: number, data: any) => api.put(`/mobs/${id}`, data),
+  createMob: (data: unknown) => api.post('/mobs', data),
+  updateMob: (id: number, data: unknown) => api.put(`/mobs/${id}`, data),
   getFarmStatistics: () => api.get('/farm-statistics'),
-  recordBreedingEvent: (data: any) => api.post('/breeding-events', data),
+  recordBreedingEvent: (data: unknown) => api.post('/breeding-events', data),
 };
