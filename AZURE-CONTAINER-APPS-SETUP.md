@@ -23,11 +23,13 @@ az ad sp create-for-rbac --name "osullivanfarms-github" --role contributor --sco
 ### 2. Container Registry Credentials
 
 Get the credentials by running:
+
 ```powershell
 az acr credential show --name osullivanfarmsacr
 ```
 
 Then add these secrets:
+
 - **REGISTRY_LOGIN_SERVER**: `osullivanfarmsacr.azurecr.io`
 - **REGISTRY_USERNAME**: (from the command output)
 - **REGISTRY_PASSWORD**: (from the command output)
