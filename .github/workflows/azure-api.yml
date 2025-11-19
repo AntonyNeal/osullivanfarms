@@ -1,0 +1,59 @@
+name: Deploy API to Azure Container Apps
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'api/**'
+      - '.github/workflows/azure-api.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'api/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Build and Deploy API
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and push container image
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      
+      - name: Build and push Docker image
+        working-directory: ./api
+        run: |
+          docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/osullivanfarms-api:${{ github.sha }}
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/osullivanfarms-api:${{ github.sha }}
+
+      - name: Deploy to Azure Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          resourceGroup: osullivanfarms-rg
+          containerAppName: osullivanfarms-api
+          imageToDeploy: ${{ secrets.REGISTRY_LOGIN_SERVER }}/osullivanfarms-api:${{ github.sha }}
+          environmentVariables: |
+            NODE_ENV=production
+            PORT=8080
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_SSL=require
+            SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
+            SENDGRID_FROM_EMAIL=${{ secrets.SENDGRID_FROM_EMAIL }}
+            ALLOWED_ORIGINS=https://witty-coast-049457e0f.3.azurestaticapps.net,https://kind-smoke-078aaff0f.azurestaticapps.net
