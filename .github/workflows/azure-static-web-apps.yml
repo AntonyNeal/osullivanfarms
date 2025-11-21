@@ -38,6 +38,12 @@ jobs:
       - name: Run unit tests
         run: npm run test:unit:run
 
+      - name: Install API dependencies
+        run: npm ci --prefix api
+
+      - name: Run API tests
+        run: npm test --prefix api
+
   build_and_deploy_job:
     needs: quality_check
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
