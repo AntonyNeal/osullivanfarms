@@ -1,4 +1,4 @@
-name: CI/CD - Azure Static Web App
+name: CI/CD - Azure Deployment
 
 on:
   push:
@@ -10,36 +10,75 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  RESOURCE_GROUP: osullivanfarms-rg
+  CONTAINER_APP: osullivanfarms-api
+  IMAGE_NAME: osullivanfarms-api
+
 jobs:
+  # Detect what changed to determine which jobs to run
+  detect_changes:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      api: ${{ steps.filter.outputs.api }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'src/**'
+              - 'public/**'
+              - 'index.html'
+              - 'vite.config.ts'
+              - 'package.json'
+            api:
+              - 'api/**'
+
+  # Quality checks for both frontend and API
   quality_check:
+    needs: detect_changes
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Quality Check
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      - name: Install dependencies
+
+      - name: Install frontend dependencies
+        if: needs.detect_changes.outputs.frontend == 'true'
         run: npm ci
-      - name: Lint code
+
+      - name: Lint frontend code
+        if: needs.detect_changes.outputs.frontend == 'true'
         run: npm run lint
-      - name: Run unit tests
+
+      - name: Run frontend unit tests
+        if: needs.detect_changes.outputs.frontend == 'true'
         run: npm run test:unit:run
 
       - name: Install API dependencies
+        if: needs.detect_changes.outputs.api == 'true'
         run: npm ci --prefix api
 
       - name: Run API tests
+        if: needs.detect_changes.outputs.api == 'true'
         run: npm test --prefix api
 
-  build_and_deploy_job:
-    needs: quality_check
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+  # Deploy frontend to Azure Static Web Apps
+  deploy_frontend:
+    needs: [detect_changes, quality_check]
+    if: (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')) && needs.detect_changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
-    name: Build and Deploy Frontend
+    name: Deploy Frontend
     steps:
       - uses: actions/checkout@v4
         with:
@@ -79,10 +118,79 @@ jobs:
           output_location: ''
           skip_app_build: true
 
+  # Deploy API to Azure Container Apps
+  deploy_api:
+    needs: [detect_changes, quality_check]
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && needs.detect_changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    name: Deploy API
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: api/package-lock.json
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get ACR credentials from Terraform outputs
+        id: acr
+        run: |
+          cd terraform/azure
+          terraform init
+          ACR_NAME=$(terraform output -raw container_registry_name)
+          ACR_LOGIN_SERVER=$(terraform output -raw container_registry_login_server)
+          echo "acr_name=$ACR_NAME" >> $GITHUB_OUTPUT
+          echo "acr_login_server=$ACR_LOGIN_SERVER" >> $GITHUB_OUTPUT
+
+      - name: Login to Azure Container Registry
+        run: |
+          az acr login --name ${{ steps.acr.outputs.acr_name }}
+
+      - name: Build and push Docker image
+        working-directory: ./api
+        run: |
+          docker build . -t ${{ steps.acr.outputs.acr_login_server }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+                         -t ${{ steps.acr.outputs.acr_login_server }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ steps.acr.outputs.acr_login_server }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ steps.acr.outputs.acr_login_server }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Deploy to Azure Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          containerAppName: ${{ env.CONTAINER_APP }}
+          imageToDeploy: ${{ steps.acr.outputs.acr_login_server }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          environmentVariables: |
+            NODE_ENV=production
+            PORT=8080
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_SSL=require
+            SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
+            SENDGRID_FROM_EMAIL=${{ secrets.SENDGRID_FROM_EMAIL }}
+
+      - name: Get API URL
+        run: |
+          cd terraform/azure
+          API_URL=$(terraform output -raw api_url)
+          echo "✅ API deployed successfully!"
+          echo "📍 API URL: $API_URL"
+
+  # Clean up when PRs are closed
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
-    name: Close Pull Request Job
+    name: Close Pull Request
     steps:
       - name: Close Pull Request
         id: closepullrequest
