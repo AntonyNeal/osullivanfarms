@@ -169,7 +169,7 @@ export default function MobDashboard() {
         </div>
       )}
       {/* Toolbar - Usage frequency: Scoreboard (10-15x) > List View (5-10x) > Filters (2-3x) > Farm Advisor (1-2x) */}
-      {!loading && !error && (
+      {!loading && (
         <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
           {/* HIGHEST PRIORITY: Scoreboard - Largest, Blue */}
           <button
@@ -247,7 +247,7 @@ export default function MobDashboard() {
         </div>
       )}{' '}
       {/* Filter Panel - THIRD PRIORITY: Occasional use 2-3x/day */}
-      {!loading && !error && showFilters && (
+      {!loading && showFilters && (
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-5">
           <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Filter Mobs</h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -294,7 +294,7 @@ export default function MobDashboard() {
         </div>
       )}
       {/* Farm Advisor Panel - FOURTH PRIORITY: Infrequent use 1-2x/day */}
-      {!loading && !error && showAssistant && (
+      {!loading && showAssistant && (
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-5">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-base sm:text-lg font-bold text-gray-900">Farm Advisor</h3>
@@ -332,7 +332,7 @@ export default function MobDashboard() {
         </div>
       )}
       {/* Scoreboard View - HIGHEST PRIORITY: Quick glance 10-15x/day */}
-      {!loading && !error && showScoreboard && (
+      {!loading && showScoreboard && (
         <div className="space-y-4 sm:space-y-6">
           {/* KPI Summary Cards - Large, prominent display */}
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
@@ -382,12 +382,17 @@ export default function MobDashboard() {
         </div>
       )}
       {/* Mob List - SECOND PRIORITY: Main working view 5-10x/day */}
-      {!loading && !error && showListView && (
+      {!loading && showListView && (
         <div className="space-y-3 sm:space-y-4">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900">All Mobs ({mobs.length})</h2>
           {mobs.map((mob) => (
             <MobRow key={mob.mob_id} mob={mob} />
           ))}
+          {mobs.length === 0 && (
+            <div className="text-center py-10 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+              <p className="text-gray-500">No mobs found.</p>
+            </div>
+          )}
         </div>
       )}
     </div>

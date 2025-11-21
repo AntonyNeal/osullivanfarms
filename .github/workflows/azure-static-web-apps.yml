@@ -106,6 +106,18 @@ jobs:
           cache: 'npm'
           cache-dependency-path: api/package-lock.json
 
+      - name: Debug Secrets
+        env:
+          AZURE_CREDS: ${{ secrets.AZURE_CREDENTIALS }}
+        run: |
+          echo "Checking if AZURE_CREDENTIALS is set..."
+          if [ -n "$AZURE_CREDS" ]; then
+            echo "AZURE_CREDENTIALS is set."
+            echo "Length: ${#AZURE_CREDS}"
+          else
+            echo "::error::AZURE_CREDENTIALS is NOT set."
+          fi
+
       - name: Log in to Azure
         uses: azure/login@v1
         with:
