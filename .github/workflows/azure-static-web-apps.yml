@@ -1,21 +1,45 @@
-name: Deploy Frontend to Azure Static Web Apps
+name: Deploy Frontend to Azure
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'vite.config.ts'
+      - 'package.json'
+      - '.github/workflows/azure-static-web-apps.yml'
     paths-ignore:
       - 'api/**'
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - main
-    paths-ignore:
-      - 'api/**'
   workflow_dispatch:
 
 jobs:
+  quality_check:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    name: Quality Check
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint code
+        run: npm run lint
+      - name: Run unit tests
+        run: npm run test:unit:run
+
   build_and_deploy_job:
+    needs: quality_check
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Frontend
@@ -37,7 +61,8 @@ jobs:
       - name: Build application
         run: npm run build
         env:
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL || 'https://osullivanfarms.com/api' }}
+          VITE_API_BASE_URL: https://osullivanfarms-api.wonderfulsky-3834edbe.eastus2.azurecontainerapps.io/api
+          VITE_FUNCTIONS_URL: https://witty-coast-049457e0f.3.azurestaticapps.net
 
       - name: Prepare deployment directory
         run: |
@@ -69,4 +94,3 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           action: 'close'
           app_location: '/'
-

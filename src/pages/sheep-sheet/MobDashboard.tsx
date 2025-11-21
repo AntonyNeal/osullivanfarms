@@ -1,61 +1,57 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MobKPI, MobFilters, FarmSummary } from './types';
-
-// Mock data for demonstration (will be replaced with API calls)
-const mockMobs: MobKPI[] = [
-  {
-    mob_id: 1,
-    mob_name: 'Mob 1 - Merino Ewes',
-    breed_name: 'Merinos',
-    status_name: 'ewe',
-    zone_name: 'Deni',
-    team_name: 'Self Replacing',
-    current_stage: 'Scanning',
-    current_location: 'home paddock',
-    ewes_joined: 545,
-    rams_in: 11,
-    joining_date: '2024-11-01',
-    scanning_date: '2025-02-06',
-    in_lamb: 465,
-    dry: 25,
-    twins: 200,
-    singles: 265,
-    scanning_percent: 158.0,
-    is_active: true,
-    last_updated: '2025-02-06T10:30:00Z',
-  },
-  {
-    mob_id: 2,
-    mob_name: 'Mob 2 - Dohne Maidens',
-    breed_name: 'Dohnes',
-    status_name: 'maidens',
-    zone_name: 'Elmore',
-    team_name: 'Terminal',
-    current_stage: 'Joining',
-    current_location: 'north paddock',
-    ewes_joined: 320,
-    rams_in: 8,
-    joining_date: '2024-11-15',
-    is_active: true,
-    last_updated: '2024-11-15T14:20:00Z',
-  },
-];
-
-const mockSummary: FarmSummary = {
-  total_mobs: 26,
-  total_ewes: 12480,
-  avg_scanning_percent: 152.3,
-  avg_marking_percent: 135.8,
-  avg_weaning_percent: 128.4,
-};
+import { mobsApi } from '../../lib/api';
 
 export default function MobDashboard() {
-  const [mobs] = useState<MobKPI[]>(mockMobs);
-  const [summary] = useState<FarmSummary>(mockSummary);
+  const [mobs, setMobs] = useState<MobKPI[]>([]);
+  const [summary, setSummary] = useState<FarmSummary>({
+    total_mobs: 0,
+    total_ewes: 0,
+    avg_scanning_percent: 0,
+    avg_marking_percent: 0,
+    avg_weaning_percent: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [_filters, _setFilters] = useState<MobFilters>({});
   const [showFilters, setShowFilters] = useState(false);
-  const [viewMode, setViewMode] = useState<'scoreboard' | 'list'>('scoreboard');
+  const [showAssistant, setShowAssistant] = useState(false);
+  const [showScoreboard, setShowScoreboard] = useState(true);
+  const [showListView, setShowListView] = useState(true);
+
+  // Fetch data on component mount
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Fetch mobs and statistics in parallel
+        const [mobsResponse, statsResponse] = await Promise.all([
+          mobsApi.getAllMobs(),
+          mobsApi.getFarmStatistics(),
+        ]);
+
+        setMobs(mobsResponse.data || []);
+        setSummary({
+          total_mobs: parseInt(statsResponse.data.total_mobs) || 0,
+          total_ewes: parseInt(statsResponse.data.total_ewes) || 0,
+          avg_scanning_percent: parseFloat(statsResponse.data.avg_scanning_percent) || 0,
+          avg_marking_percent: parseFloat(statsResponse.data.avg_marking_percent) || 0,
+          avg_weaning_percent: parseFloat(statsResponse.data.avg_weaning_percent) || 0,
+        });
+      } catch (err) {
+        console.warn('API unavailable, continuing with empty data:', err);
+        setError('Unable to connect to database. Showing empty form.');
+        // Continue with empty data - don't block the UI
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
 
   // KPI Card Component
   const KPICard = ({
@@ -83,8 +79,8 @@ export default function MobDashboard() {
   // Mob Row Component
   const MobRow = ({ mob }: { mob: MobKPI }) => (
     <Link
-      to={`/sheep-sheet/mob/${mob.mob_id}`}
-      className="bg-white rounded-lg shadow hover:shadow-md transition-shadow p-3 sm:p-4 border border-gray-200 hover:border-green-400"
+      to={`/mob/${mob.mob_id}`}
+      className="block bg-white rounded-lg shadow hover:shadow-md transition-shadow p-3 sm:p-4 border border-gray-200 hover:border-green-400 min-h-0"
     >
       <div className="grid grid-cols-1 md:grid-cols-6 gap-3 sm:gap-4">
         <div className="md:col-span-2">
@@ -114,16 +110,18 @@ export default function MobDashboard() {
           <div className="text-xs text-gray-500 mb-1">Scanning %</div>
           <div
             className={`font-bold text-base sm:text-lg ${
-              mob.scanning_percent && mob.scanning_percent >= 150
+              mob.scanning_percent && parseFloat(mob.scanning_percent.toString()) >= 150
                 ? 'text-green-600'
-                : mob.scanning_percent && mob.scanning_percent >= 130
+                : mob.scanning_percent && parseFloat(mob.scanning_percent.toString()) >= 130
                   ? 'text-amber-600'
                   : mob.scanning_percent
                     ? 'text-red-600'
                     : 'text-gray-400'
             }`}
           >
-            {mob.scanning_percent ? `${mob.scanning_percent.toFixed(0)}%` : '-'}
+            {mob.scanning_percent
+              ? `${parseFloat(mob.scanning_percent.toString()).toFixed(0)}%`
+              : '-'}
           </div>
         </div>
 
@@ -137,86 +135,74 @@ export default function MobDashboard() {
 
   return (
     <div className="space-y-6 pb-20 md:pb-6">
-      {/* Scoreboard View */}
-      {viewMode === 'scoreboard' && (
-        <div className="space-y-4 sm:space-y-6">
-          {/* KPI Summary Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
-            <KPICard
-              title="Total Mobs"
-              value={summary.total_mobs}
-              color="from-blue-100 to-blue-50"
-            />
-            <KPICard
-              title="Total Ewes"
-              value={summary.total_ewes?.toLocaleString() || 0}
-              color="from-green-100 to-green-50"
-            />
-            <KPICard
-              title="Avg Scanning"
-              value={`${summary.avg_scanning_percent?.toFixed(1) || 0}%`}
-              color="from-purple-100 to-purple-50"
-            />
-            <KPICard
-              title="Avg Marking"
-              value={`${summary.avg_marking_percent?.toFixed(1) || 0}%`}
-              color="from-amber-100 to-amber-50"
-            />
-            <KPICard
-              title="Avg Weaning"
-              value={`${summary.avg_weaning_percent?.toFixed(1) || 0}%`}
-              color="from-emerald-100 to-emerald-50"
-            />
+      {/* Loading State */}
+      {loading && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+          <div className="animate-pulse">
+            <div className="text-lg font-semibold text-blue-900 mb-2">Loading farm data...</div>
+            <div className="text-sm text-blue-700">Fetching mobs and statistics from database</div>
           </div>
-
-          {/* Stage Distribution */}
-          <div className="bg-white rounded-lg md:rounded-xl shadow-md p-3 sm:p-4 md:p-6">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">
-              Mobs by Stage
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
-              {['Joining', 'Scanning', 'Lambing', 'Marking', 'Weaning'].map((stage) => (
-                <div key={stage} className="text-center p-2 sm:p-3 md:p-4 bg-gray-50 rounded-lg">
-                  <div className="text-2xl sm:text-3xl font-bold text-gray-900">
-                    {Math.floor(Math.random() * 8) + 2}
-                  </div>
-                  <div className="text-sm text-gray-600 mt-1">{stage}</div>
-                </div>
-              ))}
+        </div>
+      )}
+      {/* Error State */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+          <div className="flex items-start space-x-3">
+            <svg
+              className="w-6 h-6 text-red-600 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <div>
+              <h3 className="text-lg font-semibold text-red-900 mb-1">Error Loading Data</h3>
+              <p className="text-sm text-red-700">{error}</p>
             </div>
           </div>
         </div>
       )}
-
-      {/* Toolbar */}
-      <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
-        <div className="flex items-center space-x-1 sm:space-x-2">
+      {/* Toolbar - Usage frequency: Scoreboard (10-15x) > List View (5-10x) > Filters (2-3x) > Farm Advisor (1-2x) */}
+      {!loading && !error && (
+        <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+          {/* HIGHEST PRIORITY: Scoreboard - Largest, Blue */}
           <button
-            onClick={() => setViewMode('scoreboard')}
-            className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded-lg font-medium transition ${
-              viewMode === 'scoreboard'
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            onClick={() => setShowScoreboard(!showScoreboard)}
+            className={`px-5 sm:px-8 py-2.5 sm:py-3 text-base sm:text-lg rounded-xl font-bold transition-all transform hover:scale-105 shadow-md ${
+              showScoreboard
+                ? 'bg-blue-600 text-white shadow-blue-300'
+                : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
             }`}
           >
-            Scoreboard
+            📊 Scoreboard
           </button>
+
+          {/* SECOND PRIORITY: List View - Large, Green */}
           <button
-            onClick={() => setViewMode('list')}
-            className={`px-4 py-2 rounded-lg font-medium transition ${
-              viewMode === 'list'
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            onClick={() => setShowListView(!showListView)}
+            className={`px-5 sm:px-7 py-2.5 sm:py-3 text-base sm:text-lg rounded-xl font-bold transition-all transform hover:scale-105 shadow-md ${
+              showListView
+                ? 'bg-green-600 text-white shadow-green-300'
+                : 'bg-green-100 text-green-700 hover:bg-green-200'
             }`}
           >
-            List View
+            📋 List View
           </button>
-        </div>
 
-        <div className="flex items-center space-x-2">
+          {/* THIRD PRIORITY: Filters - Medium, Amber */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium flex items-center space-x-1 sm:space-x-2 transition"
+            className={`px-3 sm:px-5 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg font-semibold flex items-center space-x-1.5 transition-all ${
+              showFilters
+                ? 'bg-amber-600 text-white'
+                : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+            }`}
           >
             <svg
               className="w-4 h-4 sm:w-5 sm:h-5"
@@ -233,16 +219,40 @@ export default function MobDashboard() {
             </svg>
             <span>Filters</span>
           </button>
-        </div>
-      </div>
 
-      {/* Filter Panel */}
-      {showFilters && (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Filter Mobs</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* FOURTH PRIORITY: Farm Advisor - Smaller, Purple */}
+          <button
+            onClick={() => setShowAssistant(!showAssistant)}
+            className={`px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg font-semibold flex items-center space-x-1.5 transition-all ${
+              showAssistant
+                ? 'bg-purple-600 text-white'
+                : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+            }`}
+          >
+            <svg
+              className="w-4 h-4 sm:w-5 sm:h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+              />
+            </svg>
+            <span>Farm Advisor</span>
+          </button>
+        </div>
+      )}{' '}
+      {/* Filter Panel - THIRD PRIORITY: Occasional use 2-3x/day */}
+      {!loading && !error && showFilters && (
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-5">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Filter Mobs</h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Breed</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Breed</label>
               <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 <option value="">All Breeds</option>
                 <option>Merinos</option>
@@ -251,7 +261,7 @@ export default function MobDashboard() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Zone</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Zone</label>
               <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 <option value="">All Zones</option>
                 <option>Deni</option>
@@ -261,7 +271,7 @@ export default function MobDashboard() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Team</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Team</label>
               <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 <option value="">All Teams</option>
                 <option>Self Replacing</option>
@@ -270,7 +280,7 @@ export default function MobDashboard() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Stage</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Stage</label>
               <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 <option value="">All Stages</option>
                 <option>Joining</option>
@@ -283,14 +293,103 @@ export default function MobDashboard() {
           </div>
         </div>
       )}
+      {/* Farm Advisor Panel - FOURTH PRIORITY: Infrequent use 1-2x/day */}
+      {!loading && !error && showAssistant && (
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-5">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900">Farm Advisor</h3>
+            <span className="text-xs text-gray-500">AI Assistant</span>
+          </div>
+          <div className="space-y-3">
+            <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+              <p className="text-sm text-gray-700">
+                👋 G&apos;day! I&apos;m your Farm Advisor. Ask me about your mobs, breeding
+                statistics, or farm management advice.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Ask about your flock..."
+                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+              <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium">
+                Ask
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-xs transition">
+                What&apos;s my best performing mob?
+              </button>
+              <button className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-xs transition">
+                Show scanning trends
+              </button>
+              <button className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-xs transition">
+                Compare zones
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Scoreboard View - HIGHEST PRIORITY: Quick glance 10-15x/day */}
+      {!loading && !error && showScoreboard && (
+        <div className="space-y-4 sm:space-y-6">
+          {/* KPI Summary Cards - Large, prominent display */}
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+            <KPICard
+              title="Total Mobs"
+              value={summary.total_mobs}
+              color="from-blue-100 to-blue-50"
+            />
+            <KPICard
+              title="Total Ewes"
+              value={summary.total_ewes?.toLocaleString() || 0}
+              color="from-green-100 to-green-50"
+            />
+            <KPICard
+              title="Avg Scanning"
+              value={`${summary.avg_scanning_percent ? parseFloat(summary.avg_scanning_percent.toString()).toFixed(1) : 0}%`}
+              color="from-purple-100 to-purple-50"
+            />
+            <KPICard
+              title="Avg Marking"
+              value={`${summary.avg_marking_percent?.toFixed(1) || 0}%`}
+              color="from-amber-100 to-amber-50"
+            />
+            <KPICard
+              title="Avg Weaning"
+              value={`${summary.avg_weaning_percent?.toFixed(1) || 0}%`}
+              color="from-emerald-100 to-emerald-50"
+            />
+          </div>
 
-      {/* Mob List */}
-      <div className="space-y-2 sm:space-y-3">
-        <h2 className="text-lg sm:text-xl font-bold text-gray-900">All Mobs ({mobs.length})</h2>
-        {mobs.map((mob) => (
-          <MobRow key={mob.mob_id} mob={mob} />
-        ))}
-      </div>
+          {/* Stage Distribution - Tall for easy reading */}
+          <div className="bg-white rounded-lg md:rounded-xl shadow-md p-4 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
+              Mobs by Stage
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+              {['Joining', 'Scanning', 'Lambing', 'Marking', 'Weaning'].map((stage) => (
+                <div key={stage} className="text-center p-4 sm:p-6 md:p-8 bg-gray-50 rounded-lg">
+                  <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">
+                    {Math.floor(Math.random() * 8) + 2}
+                  </div>
+                  <div className="text-sm sm:text-base text-gray-600 mt-2">{stage}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Mob List - SECOND PRIORITY: Main working view 5-10x/day */}
+      {!loading && !error && showListView && (
+        <div className="space-y-3 sm:space-y-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">All Mobs ({mobs.length})</h2>
+          {mobs.map((mob) => (
+            <MobRow key={mob.mob_id} mob={mob} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

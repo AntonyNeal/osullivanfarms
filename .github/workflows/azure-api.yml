@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 name: Deploy API to Azure Static Web Apps
+=======
+name: Deploy API to Azure Container Apps
+>>>>>>> staging
 
 on:
   push:
@@ -7,6 +11,7 @@ on:
     paths:
       - 'api/**'
       - '.github/workflows/azure-api.yml'
+<<<<<<< HEAD
   pull_request:
     branches:
       - main
@@ -47,3 +52,60 @@ jobs:
           app_location: '/'
           api_location: 'api'
           output_location: ''
+=======
+  workflow_dispatch:
+
+env:
+  REGISTRY: osullivanfarmsacr.azurecr.io
+  IMAGE_NAME: osullivanfarms-api
+  RESOURCE_GROUP: osullivanfarms-rg
+  CONTAINER_APP: osullivanfarms-api
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    name: Build and Deploy API
+    environment:
+      name: production
+      url: https://osullivanfarms-api.wonderfulsky-3834edbe.eastus2.azurecontainerapps.io
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and push container image
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      
+      - name: Build and push Docker image
+        working-directory: ./api
+        run: |
+          docker build . -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Deploy to Azure Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          containerAppName: ${{ env.CONTAINER_APP }}
+          imageToDeploy: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          environmentVariables: |
+            NODE_ENV=production
+            PORT=8080
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_SSL=require
+            SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
+            SENDGRID_FROM_EMAIL=${{ secrets.SENDGRID_FROM_EMAIL }}
+            ALLOWED_ORIGINS=https://witty-coast-049457e0f.3.azurestaticapps.net,https://kind-smoke-078aaff0f.azurestaticapps.net
+>>>>>>> staging

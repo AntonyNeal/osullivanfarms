@@ -4,11 +4,12 @@ A comprehensive, multi-tenant service booking platform built with React, TypeScr
 
 ## 🎯 Quick Start for New Users
 
-**Want to create your own booking app?** 
+**Want to create your own booking app?**
 
-👉 **[READ THE FORK & CUSTOMIZE GUIDE](./FORK-AND-CUSTOMIZE.md)** 👈
+👉 **[READ THE FORK & CUSTOMIZE GUIDE](./docs/guides/FORK-AND-CUSTOMIZE.md)** 👈
 
 This guide walks you through:
+
 1. Forking this repository
 2. Using the SDK generators to create your theme
 3. Customizing content for your business
@@ -16,6 +17,7 @@ This guide walks you through:
 5. Deploying to Azure
 
 **Built-in SDK Generators:**
+
 - 🎨 **Theme Generator** - Create complete themes from prompts like "fitness studio with modern blue theme"
 - 🚀 **App Generator** - Generate entire app configurations from natural language
 - 📊 **SEO Generator** - Auto-generate Open Graph and Twitter Card meta tags
@@ -23,9 +25,9 @@ This guide walks you through:
 - 🔍 **Content Auditor** - Scan files for template content that needs updating
 - ☁️ **Infrastructure Module** - Deploy to Azure, DigitalOcean, or any cloud provider
 
-[See SDK Documentation →](./sdk/GENERATORS-GUIDE.md)
+[See SDK Documentation →](./docs/guides/SDK-USAGE-GUIDE.md)
 
-[See Infrastructure Guide →](./sdk/INFRASTRUCTURE-GUIDE.md)
+[See Infrastructure Guide →](./docs/deployment/AZURE-DEPLOYMENT.md)
 
 ---
 
@@ -294,10 +296,10 @@ npm run lint
 
 ## 📚 Documentation
 
-- **[API Documentation](./docs/api.md)**: Backend API reference
-- **[Deployment Guide](./docs/deployment.md)**: Step-by-step deployment
-- **[Customization Guide](./docs/customization.md)**: Advanced customization
-- **[Tenant Management](./docs/tenants.md)**: Multi-tenant setup
+- **[API Documentation](./api/README.md)**: Backend API reference
+- **[Deployment Guide](./docs/deployment/DEPLOYMENT-GUIDE.md)**: Step-by-step deployment
+- **[Customization Guide](./docs/guides/FORK-AND-CUSTOMIZE.md)**: Advanced customization
+- **[Tenant Management](./docs/specs/MULTI-TENANT-ARCHITECTURE.md)**: Multi-tenant setup
 
 ## 🤝 Contributing
 

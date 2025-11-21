@@ -29,5 +29,11 @@
         "DO_API_TOKEN": "${env:DO_API_TOKEN}"
       }
     }
-  }
+  },
+  "azureFunctions.deploySubpath": "api",
+  "azureFunctions.postDeployTask": "npm install (functions)",
+  "azureFunctions.projectLanguage": "JavaScript",
+  "azureFunctions.projectRuntime": "~4",
+  "debug.internalConsoleOptions": "neverOpen",
+  "azureFunctions.preDeployTask": "npm prune (functions)"
 }

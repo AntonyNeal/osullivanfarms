@@ -1,9 +1,12 @@
-const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Import routes
+const mobRoutes = require('./routes/mobs');
 
 // Middleware
 app.use(
@@ -16,6 +19,7 @@ app.use(
 
       // Define allowed patterns for your domains
       const allowedPatterns = [
+        /^https?:\/\/([a-z0-9-]+\.)?azurestaticapps\.net$/, // Azure Static Web Apps
         /^https?:\/\/([a-z0-9-]+\.)?yourdomain\.com$/, // *.yourdomain.com
         /^https?:\/\/([a-z0-9-]+\.)?your-custom-domain\.com$/, // Custom domain
         /^http:\/\/localhost(:\d+)?$/, // localhost:*
@@ -24,23 +28,21 @@ app.use(
       ];
 
       // Check if origin matches any allowed pattern
-      const isAllowed = allowedPatterns.some((pattern) =>
-        pattern.test(origin)
-      );
+      const isAllowed = allowedPatterns.some((pattern) => pattern.test(origin));
 
       if (isAllowed) {
         callback(null, true);
       } else {
         console.warn(`CORS: Blocked origin ${origin}`);
-        callback(new Error("Not allowed by CORS"));
+        callback(new Error('Not allowed by CORS'));
       }
     },
     credentials: true,
   })
 );
 
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Request logging middleware
 app.use((req, res, next) => {
@@ -50,19 +52,19 @@ app.use((req, res, next) => {
 });
 
 // Health check endpoint
-app.get("/", (req, res) => {
+app.get('/', (req, res) => {
   res.json({
-    message: "Service Booking Platform API",
-    version: "1.0.0",
-    status: "healthy",
+    message: 'Service Booking Platform API',
+    version: '1.0.0',
+    status: 'healthy',
     timestamp: new Date().toISOString(),
   });
 });
 
 // Health check endpoint
-app.get("/health", (req, res) => {
+app.get('/health', (req, res) => {
   res.json({
-    status: "healthy",
+    status: 'healthy',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
   });
@@ -71,94 +73,97 @@ app.get("/health", (req, res) => {
 // API versioning
 const apiV1 = express.Router();
 
+// SheepSheet API routes
+apiV1.use(mobRoutes);
+
 // Tenant management endpoints
-apiV1.get("/tenant/:tenantId", async (req, res) => {
+apiV1.get('/tenant/:tenantId', async (req, res) => {
   try {
     const { tenantId } = req.params;
-    
+
     // TODO: Replace with actual database query
     const tenantConfig = {
       id: tenantId,
-      businessName: "Demo Business",
+      businessName: 'Demo Business',
       customDomain: null,
-      status: "active",
+      status: 'active',
       branding: {
-        primaryColor: "#2563eb",
-        secondaryColor: "#6366f1",
+        primaryColor: '#2563eb',
+        secondaryColor: '#6366f1',
         logo: null,
       },
       services: [
         {
-          id: "service-1",
-          name: "Consultation",
-          description: "Professional consultation service",
+          id: 'service-1',
+          name: 'Consultation',
+          description: 'Professional consultation service',
           duration: 60,
           price: 100,
-          currency: "USD",
+          currency: 'USD',
         },
       ],
       contact: {
-        email: "contact@yourdomain.com",
-        phone: "+1234567890",
-        address: "123 Main St, City, State 12345",
+        email: 'contact@yourdomain.com',
+        phone: '+1234567890',
+        address: '123 Main St, City, State 12345',
       },
     };
 
     res.json(tenantConfig);
   } catch (error) {
-    console.error("Error fetching tenant:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error('Error fetching tenant:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // Booking management endpoints
-apiV1.post("/bookings", async (req, res) => {
+apiV1.post('/bookings', async (req, res) => {
   try {
     const bookingData = req.body;
-    
+
     // TODO: Validate booking data
     // TODO: Check availability
     // TODO: Save to database
     // TODO: Send confirmation email
-    
+
     const booking = {
       id: `booking-${Date.now()}`,
       ...bookingData,
-      status: "confirmed",
+      status: 'confirmed',
       createdAt: new Date().toISOString(),
     };
 
     res.status(201).json(booking);
   } catch (error) {
-    console.error("Error creating booking:", error);
-    res.status(500).json({ error: "Failed to create booking" });
+    console.error('Error creating booking:', error);
+    res.status(500).json({ error: 'Failed to create booking' });
   }
 });
 
-apiV1.get("/bookings/:bookingId", async (req, res) => {
+apiV1.get('/bookings/:bookingId', async (req, res) => {
   try {
     const { bookingId } = req.params;
-    
+
     // TODO: Fetch from database
     const booking = {
       id: bookingId,
-      status: "confirmed",
+      status: 'confirmed',
       // Add other booking details
     };
 
     if (!booking) {
-      return res.status(404).json({ error: "Booking not found" });
+      return res.status(404).json({ error: 'Booking not found' });
     }
 
     res.json(booking);
   } catch (error) {
-    console.error("Error fetching booking:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error('Error fetching booking:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // Analytics endpoints
-apiV1.get("/analytics/stats", async (req, res) => {
+apiV1.get('/analytics/stats', async (req, res) => {
   try {
     // TODO: Implement analytics queries
     const stats = {
@@ -171,35 +176,35 @@ apiV1.get("/analytics/stats", async (req, res) => {
 
     res.json(stats);
   } catch (error) {
-    console.error("Error fetching analytics:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error('Error fetching analytics:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // Mount API routes
-app.use("/api/v1", apiV1);
+app.use('/api/v1', apiV1);
 
 // 404 handler
-app.use("*", (req, res) => {
+app.use('*', (req, res) => {
   res.status(404).json({
-    error: "Endpoint not found",
+    error: 'Endpoint not found',
     message: `${req.method} ${req.originalUrl} is not a valid endpoint`,
   });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error("Unhandled error:", err);
+  console.error('Unhandled error:', err);
   res.status(500).json({
-    error: "Internal server error",
-    message: process.env.NODE_ENV === "development" ? err.message : undefined,
+    error: 'Internal server error',
+    message: process.env.NODE_ENV === 'development' ? err.message : undefined,
   });
 });
 
 // Start server
 app.listen(PORT, () => {
   console.log(` Service Booking Platform API running on port ${PORT}`);
-  console.log(` Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(` Health check: http://localhost:${PORT}/health`);
 });
 
