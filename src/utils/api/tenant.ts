@@ -4,7 +4,7 @@
  */
 
 import { apiClient } from './client';
-import type { Tenant } from '../../types/api.types';
+import type { Tenant } from '../../core/types/tenant.types';
 
 interface TenantResponse {
   success: boolean;

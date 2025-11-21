@@ -14,10 +14,12 @@ export const content: TenantContent = {
   `,
 
   // Contact Information
-  email: 'contact@yourdomain.com',
-  phone: '+1234567890',
-  location: 'Your City, State',
-  website: 'https://yourdomain.com',
+  contact: {
+    email: 'contact@yourdomain.com',
+    phone: '+1234567890',
+    location: 'Your City, State',
+    website: 'https://yourdomain.com',
+  },
 
   // Services (customize these for your business)
   services: [
@@ -91,7 +93,7 @@ export const content: TenantContent = {
   },
 
   // Social Media (optional)
-  social: {
+  socialMedia: {
     linkedin: 'https://linkedin.com/company/yourbusiness',
     twitter: 'https://twitter.com/yourbusiness',
     facebook: 'https://facebook.com/yourbusiness',

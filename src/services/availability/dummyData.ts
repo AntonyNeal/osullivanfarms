@@ -2,7 +2,7 @@ import type {
   AvailabilityFetchParams,
   AvailabilityResponse,
   NextAvailability,
-} from '../types/availability.types';
+} from '../../types/availability.types';
 
 /**
  * Fetch dummy next available slot

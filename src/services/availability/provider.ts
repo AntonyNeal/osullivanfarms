@@ -1,4 +1,4 @@
-import type { AvailabilityFetchParams, AvailabilityResponse } from '../types/availability.types';
+import type { AvailabilityFetchParams, AvailabilityResponse } from '../../types/availability.types';
 import { fetchDummyNextAvailability } from './dummyData';
 
 /**

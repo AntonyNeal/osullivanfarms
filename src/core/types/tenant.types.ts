@@ -39,6 +39,7 @@ export interface Service {
   priceDisplay?: string;
   featured?: boolean;
   icon?: string;
+  category?: string;
 }
 
 /**
@@ -55,6 +56,7 @@ export interface Pricing {
     price: number;
     description?: string;
   }>;
+  [key: string]: unknown; // Allow service-specific pricing
 }
 
 /**
@@ -69,6 +71,8 @@ export interface ContactInfo {
   availableHours?: string;
   responseTime?: string;
   preferredContact?: 'email' | 'phone' | 'whatsapp' | 'telegram' | 'sms';
+  location?: string;
+  website?: string;
 }
 
 /**
@@ -88,11 +92,12 @@ export interface SocialMedia {
  * Availability Information
  */
 export interface Availability {
-  location: string;
+  location?: string;
   willingToTravel?: boolean;
   travelCities?: string[];
   travelCountries?: string[];
   timezone?: string;
+  [key: string]: unknown; // Allow business hours (monday, tuesday, etc.)
 }
 
 /**
@@ -106,6 +111,7 @@ export interface BookingPreferences {
   depositPercentage?: number;
   screeningRequired?: boolean;
   verificationsAccepted?: string[];
+  [key: string]: unknown; // Allow additional preferences
 }
 
 /**
@@ -134,6 +140,7 @@ export interface TenantContent {
   socialMedia?: SocialMedia;
   availability?: Availability;
   preferences?: BookingPreferences;
+  settings?: unknown; // Allow additional settings
   seo: SEOConfig;
   customPages?: Array<{
     slug: string;

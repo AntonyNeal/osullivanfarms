@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 
 // SDK Tests Component
@@ -43,18 +42,6 @@ interface GenericObject {
 }
 
 // Additional interfaces for type safety
-interface SocialMetrics {
-  platform: string;
-  engagement: {
-    likes: number;
-    comments: number;
-    shares: number;
-  };
-  conversions: {
-    bookings: number;
-    inquiries: number;
-  };
-}
 
 export default function SDKTests() {
   const [results, setResults] = useState<TestResult[]>([
