@@ -73,9 +73,15 @@ resource "azurerm_storage_container" "assets" {
   container_access_type = "blob"
 }
 
+resource "random_string" "suffix" {
+  length  = 6
+  special = false
+  upper   = false
+}
+
 # Azure Container Registry for API Docker images
 resource "azurerm_container_registry" "acr" {
-  name                = "${replace(var.project_name, "-", "")}acr"
+  name                = "${replace(var.project_name, "-", "")}acr${random_string.suffix.result}"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "Basic"
