@@ -10,79 +10,6 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  RESOURCE_GROUP: osullivanfarms-rg
-  CONTAINER_APP: osullivanfarms-api
-  IMAGE_NAME: osullivanfarms-api
-
-jobs:
-  # Detect what changed to determine which jobs to run
-  detect_changes:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
-    runs-on: ubuntu-latest
-    outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
-      api: ${{ steps.filter.outputs.api }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            frontend:
-              - 'src/**'
-              - 'public/**'
-              - 'index.html'
-              - 'vite.config.ts'
-              - 'package.json'
-            api:
-              - 'api/**'
-
-  # Quality checks for both frontend and API
-  quality_check:
-    needs: detect_changes
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
-    runs-on: ubuntu-latest
-    name: Quality Check
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install frontend dependencies
-        if: needs.detect_changes.outputs.frontend == 'true'
-        run: npm ci
-
-      - name: Lint frontend code
-        if: needs.detect_changes.outputs.frontend == 'true'
-        run: npm run lint
-
-      - name: Run frontend unit tests
-        if: needs.detect_changes.outputs.frontend == 'true'
-        run: npm run test:unit:run
-
-      - name: Install API dependencies
-        if: needs.detect_changes.outputs.api == 'true'
-        run: npm ci --prefix api
-
-      - name: Run API tests
-        if: needs.detect_changes.outputs.api == 'true'
-        run: npm test --prefix api
-
-  # Deploy frontend to Azure Static Web Apps
-  deploy_frontend:
-    needs: [detect_changes, quality_check]
-    if: (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')) && needs.detect_changes.outputs.frontend == 'true'
-    runs-on: ubuntu-latest
-    name: Deploy Frontend
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
           lfs: false
 
       - name: Setup Node.js
@@ -120,8 +47,8 @@ jobs:
 
   # Deploy API to Azure Container Apps
   deploy_api:
-    needs: [detect_changes, quality_check]
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && needs.detect_changes.outputs.api == 'true'
+    needs: quality_check
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     name: Deploy API
     steps:
