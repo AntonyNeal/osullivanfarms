@@ -1,18 +1,9 @@
-name: Deploy Frontend to Azure
+name: CI/CD - Azure Static Web App
 
 on:
   push:
     branches:
       - main
-    paths:
-      - 'src/**'
-      - 'public/**'
-      - 'index.html'
-      - 'vite.config.ts'
-      - 'package.json'
-      - '.github/workflows/azure-static-web-apps.yml'
-    paths-ignore:
-      - 'api/**'
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
