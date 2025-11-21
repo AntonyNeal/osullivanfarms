@@ -10,6 +10,51 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  RESOURCE_GROUP: osullivanfarms-rg
+  CONTAINER_APP: osullivanfarms-api
+  IMAGE_NAME: osullivanfarms-api
+
+jobs:
+  # Quality checks for both frontend and API
+  quality_check:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    name: Quality Check
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Lint frontend code
+        run: npm run lint
+
+      - name: Run frontend unit tests
+        run: npm run test:unit:run
+
+      - name: Install API dependencies
+        run: npm ci --prefix api
+
+      - name: Run API tests
+        run: npm test --prefix api
+
+  # Deploy frontend to Azure Static Web Apps
+  deploy_frontend:
+    needs: quality_check
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    name: Deploy Frontend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
           lfs: false
 
       - name: Setup Node.js
