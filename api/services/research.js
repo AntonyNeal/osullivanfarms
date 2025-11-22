@@ -90,10 +90,31 @@ The chatbot will have direct access to this content when answering questions.
         });
       } else if (ext === '.pdf') {
         try {
+          const stats = fs.statSync(filePath);
+          const fileSizeMB = stats.size / (1024 * 1024);
+          
+          // Skip PDFs larger than 5MB to avoid memory issues
+          if (fileSizeMB > 5) {
+            console.warn(`[Research] Skipping large PDF: ${file} (${fileSizeMB.toFixed(2)}MB)`);
+            papers.push({
+              filename: file,
+              title: path.basename(file, ext),
+              format: 'pdf',
+              chunks: 0,
+              content: [`[PDF too large for parsing: ${fileSizeMB.toFixed(2)}MB - Please convert to text or markdown]`],
+              loadedAt: new Date().toISOString(),
+              tooLarge: true,
+            });
+            continue;
+          }
+
           const dataBuffer = fs.readFileSync(filePath);
           const pdfData = await pdfParse(dataBuffer);
           const content = pdfData.text;
-          const chunks = chunkText(content, 1000);
+          
+          // Limit content size (max 500KB of text)
+          const limitedContent = content.length > 500000 ? content.slice(0, 500000) : content;
+          const chunks = chunkText(limitedContent, 1000);
 
           papers.push({
             filename: file,
@@ -104,12 +125,13 @@ The chatbot will have direct access to this content when answering questions.
             metadata: {
               pages: pdfData.numpages,
               info: pdfData.info,
+              truncated: content.length > 500000,
             },
             loadedAt: new Date().toISOString(),
           });
 
           console.log(
-            `[Research] Parsed PDF: ${file} (${pdfData.numpages} pages, ${chunks.length} chunks)`
+            `[Research] Parsed PDF: ${file} (${pdfData.numpages} pages, ${chunks.length} chunks${content.length > 500000 ? ', truncated' : ''})`
           );
         } catch (pdfError) {
           console.error(`[Research] Failed to parse PDF ${file}:`, pdfError.message);
