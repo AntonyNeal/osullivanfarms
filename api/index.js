@@ -101,38 +101,64 @@ app.use((err, req, res, next) => {
 
 // Azure Functions v4 handler
 module.exports = async function (context, req) {
-  return new Promise((resolve) => {
-    // Create a mock response object
+  context.log(`Processing ${req.method} ${req.url}`);
+  
+  return new Promise((resolve, reject) => {
+    // Create a mock response object that matches Express expectations
     const res = {
       statusCode: 200,
-      headers: {},
+      headers: { 'Content-Type': 'application/json' },
       body: '',
+      headersSent: false,
+      
       status: function (code) {
         this.statusCode = code;
         return this;
       },
+      
       set: function (key, value) {
         this.headers[key] = value;
         return this;
       },
+      
+      setHeader: function (key, value) {
+        this.headers[key] = value;
+        return this;
+      },
+      
+      getHeader: function (key) {
+        return this.headers[key];
+      },
+      
       json: function (data) {
         this.headers['Content-Type'] = 'application/json';
         this.body = JSON.stringify(data);
+        this.headersSent = true;
         resolve({
           status: this.statusCode,
           headers: this.headers,
           body: this.body,
         });
       },
+      
       send: function (data) {
-        this.body = typeof data === 'object' ? JSON.stringify(data) : data;
+        this.body = typeof data === 'object' ? JSON.stringify(data) : String(data);
+        if (typeof data === 'object') {
+          this.headers['Content-Type'] = 'application/json';
+        }
+        this.headersSent = true;
         resolve({
           status: this.statusCode,
           headers: this.headers,
           body: this.body,
         });
       },
-      end: function () {
+      
+      end: function (data) {
+        if (data) {
+          this.body = String(data);
+        }
+        this.headersSent = true;
         resolve({
           status: this.statusCode,
           headers: this.headers,
@@ -141,16 +167,47 @@ module.exports = async function (context, req) {
       },
     };
 
-    // Create a mock request object
+    // Create a mock request object that matches Express expectations
     const mockReq = {
       method: req.method,
       url: req.url || '/',
+      path: req.url ? req.url.split('?')[0] : '/',
+      originalUrl: req.url || '/',
       headers: req.headers || {},
       body: req.body,
       query: req.query || {},
+      params: req.params || {},
+      get: function (header) {
+        return this.headers[header.toLowerCase()];
+      },
     };
 
     // Handle the request with Express
-    app(mockReq, res);
+    try {
+      app(mockReq, res);
+      
+      // Timeout fallback in case response isn't sent
+      setTimeout(() => {
+        if (!res.headersSent) {
+          context.log.warn('Request timeout - no response sent');
+          resolve({
+            status: 504,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ error: 'Gateway Timeout' }),
+          });
+        }
+      }, 30000); // 30 second timeout
+      
+    } catch (error) {
+      context.log.error('Error processing request:', error);
+      resolve({
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          error: 'Internal Server Error',
+          message: error.message,
+        }),
+      });
+    }
   });
 };
