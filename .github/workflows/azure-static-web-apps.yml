@@ -78,14 +78,14 @@ jobs:
         if: needs.detect_changes.outputs.api == 'true'
         run: npm test --prefix api
 
-  # Deploy frontend to Azure Static Web Apps
-  deploy_frontend:
+  # Deploy to Azure Static Web Apps (Frontend + API together)
+  deploy_static_web_app:
     needs: [detect_changes, quality_check]
     if: |
       github.event_name == 'push' && 
-      needs.detect_changes.outputs.frontend == 'true'
+      (needs.detect_changes.outputs.frontend == 'true' || needs.detect_changes.outputs.api == 'true')
     runs-on: ubuntu-latest
-    name: Deploy Frontend
+    name: Deploy to Azure Static Web Apps
     environment:
       name: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
       url: ${{ github.ref_name == 'main' && 'https://witty-coast-049457e0f.3.azurestaticapps.net' || 'https://kind-smoke-078aaff0f.azurestaticapps.net' }}
