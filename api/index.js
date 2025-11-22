@@ -89,6 +89,15 @@ app.get('/mobs-test', (req, res) => {
   res.json({ message: 'Direct route test works!', timestamp: new Date().toISOString() });
 });
 
+// Direct mobs routes for testing
+app.get('/mobs', (req, res) => {
+  res.json({ success: true, message: 'Mobs list endpoint', data: [] });
+});
+
+app.get('/farm-statistics', (req, res) => {
+  res.json({ success: true, message: 'Farm statistics endpoint', data: {} });
+});
+
 // Stub endpoints for analytics (until database is connected)
 app.post('/sessions/register', (req, res) => {
   res.json({ success: true, sessionId: Date.now().toString() });
