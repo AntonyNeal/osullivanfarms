@@ -1,5 +1,7 @@
-// API configuration
-const API_BASE_URL = '/api'; // Always use Azure Static Web Apps API (works in both dev and prod)
+// API configuration - use environment variable or fallback to relative /api
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
+console.log('[API] Using base URL:', API_BASE_URL);
 
 // API client with error handling
 export const api = {
