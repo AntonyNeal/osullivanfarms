@@ -102,7 +102,7 @@ app.use((err, req, res, next) => {
 // Azure Functions v4 handler
 module.exports = async function (context, req) {
   context.log(`Processing ${req.method} ${req.url}`);
-  
+
   return new Promise((resolve, reject) => {
     // Create a mock response object that matches Express expectations
     const res = {
@@ -110,26 +110,26 @@ module.exports = async function (context, req) {
       headers: { 'Content-Type': 'application/json' },
       body: '',
       headersSent: false,
-      
+
       status: function (code) {
         this.statusCode = code;
         return this;
       },
-      
+
       set: function (key, value) {
         this.headers[key] = value;
         return this;
       },
-      
+
       setHeader: function (key, value) {
         this.headers[key] = value;
         return this;
       },
-      
+
       getHeader: function (key) {
         return this.headers[key];
       },
-      
+
       json: function (data) {
         this.headers['Content-Type'] = 'application/json';
         this.body = JSON.stringify(data);
@@ -140,7 +140,7 @@ module.exports = async function (context, req) {
           body: this.body,
         });
       },
-      
+
       send: function (data) {
         this.body = typeof data === 'object' ? JSON.stringify(data) : String(data);
         if (typeof data === 'object') {
@@ -153,7 +153,7 @@ module.exports = async function (context, req) {
           body: this.body,
         });
       },
-      
+
       end: function (data) {
         if (data) {
           this.body = String(data);
@@ -185,7 +185,7 @@ module.exports = async function (context, req) {
     // Handle the request with Express
     try {
       app(mockReq, res);
-      
+
       // Timeout fallback in case response isn't sent
       setTimeout(() => {
         if (!res.headersSent) {
@@ -197,7 +197,6 @@ module.exports = async function (context, req) {
           });
         }
       }, 30000); // 30 second timeout
-      
     } catch (error) {
       context.log.error('Error processing request:', error);
       resolve({

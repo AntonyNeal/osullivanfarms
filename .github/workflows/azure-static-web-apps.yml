@@ -106,6 +106,17 @@ jobs:
         env:
           VITE_API_BASE_URL: ${{ github.ref_name == 'main' && 'https://witty-coast-049457e0f.3.azurestaticapps.net/api' || 'https://kind-smoke-078aaff0f.azurestaticapps.net/api' }}
 
+      - name: Debug - List API structure
+        run: |
+          echo "=== API Directory Structure ==="
+          ls -la api/
+          echo "=== HttpTrigger Directory ==="
+          ls -la api/HttpTrigger/
+          echo "=== API package.json ==="
+          cat api/package.json
+          echo "=== host.json ==="
+          cat api/host.json
+
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:
