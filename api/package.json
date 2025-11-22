@@ -1,6 +1,6 @@
 {
   "name": "osullivanfarms-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Backend API for O'Sullivan Farms booking platform",
   "main": "server.js",
   "scripts": {
