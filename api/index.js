@@ -84,7 +84,7 @@ app.get('/mobs-test', (req, res) => {
 
 // Database connection
 const db = require('./db');
-const { handleFarmAdvisorQuery } = require('./controllers/farmAdvisorController');
+// const { handleFarmAdvisorQuery } = require('./controllers/farmAdvisorController'); // TEMP: Inline the handler
 // const { testServices } = require('./controllers/testController'); // TEMP: Commented out - causing startup crash
 
 // Direct mobs routes with database integration
@@ -155,7 +155,35 @@ app.get('/', (req, res) => {
 // app.get('/test-services', testServices); // TEMP: Commented out - service causing startup crash
 
 // Farm Advisor endpoints
-app.post('/farm-advisor', handleFarmAdvisorQuery);
+app.post('/farm-advisor', async (req, res) => {
+  try {
+    const { question } = req.body;
+
+    if (!question || typeof question !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: 'Question is required',
+      });
+    }
+
+    console.log('[FarmAdvisor] Processing question:', question);
+
+    // TEMPORARY: Return a simple response to test endpoint
+    res.json({
+      success: true,
+      question,
+      response: 'Farm advisor endpoint is working - inline handler',
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('[FarmAdvisor] Error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to process farm advisor query',
+      message: error.message,
+    });
+  }
+});
 
 // 404 handler
 app.use((req, res) => {
