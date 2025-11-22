@@ -106,22 +106,12 @@ jobs:
         env:
           VITE_API_BASE_URL: ${{ github.ref_name == 'main' && 'https://witty-coast-049457e0f.3.azurestaticapps.net/api' || 'https://kind-smoke-078aaff0f.azurestaticapps.net/api' }}
 
-      - name: Install API production dependencies only
-        working-directory: ./api
-        run: |
-          rm -rf node_modules
-          npm ci --omit=dev
-
-      - name: Debug - Check sizes
+      - name: Debug - Check frontend size
         run: |
           echo "=== Dist folder size ==="
           du -sh dist
-          echo "=== API folder size ==="
-          du -sh api
-          echo "=== API node_modules size ==="
-          du -sh api/node_modules
-          echo "=== Total deployment size ==="
-          du -sh dist api
+          echo "=== Dist contents ==="
+          ls -lh dist/
 
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
@@ -130,10 +120,9 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: 'upload'
           app_location: '/'
-          api_location: 'api'
+          api_location: ''
           output_location: 'dist'
           skip_app_build: true
-          skip_api_build: true
 
   # Deploy API as Azure Functions (fallback standalone deployment)
   deploy_api:
