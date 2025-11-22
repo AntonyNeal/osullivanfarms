@@ -116,4 +116,12 @@ jobs:
               DB_USER="${{ secrets.DB_USER }}" \
               DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
               SENDGRID_API_KEY="${{ secrets.SENDGRID_API_KEY }}" \
-              SENDGRID_FROM_EMAIL="${{ secrets.SENDGRID_FROM_EMAIL }}"
+              SENDGRID_FROM_EMAIL="${{ secrets.SENDGRID_FROM_EMAIL }}" \
+              ALLOWED_ORIGINS="https://witty-coast-049457e0f.3.azurestaticapps.net,https://kind-smoke-078aaff0f.azurestaticapps.net"
+      
+      - name: Configure CORS
+        run: |
+          az functionapp cors add \
+            --name osullivanfarms-api \
+            --resource-group osullivanfarms-rg \
+            --allowed-origins "https://witty-coast-049457e0f.3.azurestaticapps.net" "https://kind-smoke-078aaff0f.azurestaticapps.net"
