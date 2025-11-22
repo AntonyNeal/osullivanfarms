@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureWebJobsStorage": "",
+    "DATABASE_URL": "postgresql://sheepsheetadmin:SheepSheet2025!@osullivanfarms-db.postgres.database.azure.com:5432/sheepsheet"
+  },
+  "ConnectionStrings": {}
+}

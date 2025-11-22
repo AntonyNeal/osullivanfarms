@@ -51,7 +51,6 @@ app.use((req, res, next) => {
 // Import routes
 try {
   const bookingRoutes = require('./routes/bookings');
-  const statusRoutes = require('./routes/status');
   const paymentRoutes = require('./routes/payments');
   const mobRoutes = require('./routes/mobs');
 
@@ -59,7 +58,6 @@ try {
 
   // Routes - no /api prefix as Azure Functions adds it
   app.use('/bookings', bookingRoutes);
-  app.use('/status', statusRoutes);
   app.use('/payments', paymentRoutes);
   app.use('/mobs', mobRoutes);
 
