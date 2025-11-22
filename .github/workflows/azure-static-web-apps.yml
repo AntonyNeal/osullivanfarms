@@ -14,10 +14,8 @@ on:
 
 env:
   NODE_VERSION: '20'
-  REGISTRY: osullivanfarmsacr.azurecr.io
-  IMAGE_NAME: osullivanfarms-api
   RESOURCE_GROUP: osullivanfarms-rg
-  CONTAINER_APP: osullivanfarms-api
+  FUNCTION_APP: osullivanfarms-api
 
 jobs:
   # Detect what changed
@@ -106,7 +104,7 @@ jobs:
       - name: Build application
         run: npm run build
         env:
-          VITE_API_BASE_URL: https://osullivanfarms-api.wonderfulsky-3834edbe.eastus2.azurecontainerapps.io/api
+          VITE_API_BASE_URL: ${{ github.ref_name == 'main' && 'https://witty-coast-049457e0f.3.azurestaticapps.net/api' || 'https://kind-smoke-078aaff0f.azurestaticapps.net/api' }}
 
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
@@ -115,62 +113,41 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: 'upload'
           app_location: '/'
-          api_location: ''
+          api_location: 'api'
           output_location: 'dist'
           skip_app_build: true
 
-  # Deploy API to Azure Container Apps
+  # Deploy API as Azure Functions (fallback standalone deployment)
   deploy_api:
     needs: [detect_changes, quality_check]
     if: |
       github.event_name == 'push' && 
       github.ref_name == 'main' &&
-      needs.detect_changes.outputs.api == 'true'
+      needs.detect_changes.outputs.api == 'true' &&
+      contains(github.event.head_commit.message, '[deploy-functions]')
     runs-on: ubuntu-latest
-    name: Deploy API
+    name: Deploy API Functions
     environment:
       name: production
-      url: https://osullivanfarms-api.wonderfulsky-3834edbe.eastus2.azurecontainerapps.io
+      url: https://osullivanfarms-api.azurewebsites.net
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log in to Azure
-        uses: azure/login@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Build and push container
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ env.REGISTRY }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-
-      - name: Build and push Docker image
+      - name: Install dependencies
         working-directory: ./api
-        run: |
-          docker build . -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+        run: npm ci --production
 
-      - name: Deploy to Container Apps
-        uses: azure/container-apps-deploy-action@v1
+      - name: Deploy to Azure Functions
+        uses: Azure/functions-action@v1
         with:
-          resourceGroup: ${{ env.RESOURCE_GROUP }}
-          containerAppName: ${{ env.CONTAINER_APP }}
-          imageToDeploy: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          environmentVariables: |
-            NODE_ENV=production
-            PORT=8080
-            DB_HOST=${{ secrets.DB_HOST }}
-            DB_PORT=${{ secrets.DB_PORT }}
-            DB_NAME=${{ secrets.DB_NAME }}
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            DB_SSL=require
-            SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
-            SENDGRID_FROM_EMAIL=${{ secrets.SENDGRID_FROM_EMAIL }}
-            ALLOWED_ORIGINS=https://witty-coast-049457e0f.3.azurestaticapps.net,https://kind-smoke-078aaff0f.azurestaticapps.net
+          app-name: ${{ env.FUNCTION_APP }}
+          package: ./api
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
 
   # Close PR deployment
   close_pull_request:
