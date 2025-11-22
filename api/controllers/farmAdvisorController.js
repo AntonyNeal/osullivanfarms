@@ -26,10 +26,14 @@ try {
  * Main endpoint for agentic chatbot with tool execution
  */
 async function handleFarmAdvisorQuery(req, res) {
+  console.log('[FarmAdvisor] === REQUEST START ===');
+  console.log('[FarmAdvisor] Body:', JSON.stringify(req.body));
+
   try {
     const { question, conversationHistory = [] } = req.body;
 
     if (!question || typeof question !== 'string') {
+      console.log('[FarmAdvisor] Bad request - no question');
       return res.status(400).json({
         success: false,
         error: 'Question is required',
