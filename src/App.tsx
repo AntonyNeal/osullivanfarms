@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useTenant } from './core/hooks/useTenant';
@@ -13,7 +13,6 @@ import SheepSheet from './pages/SheepSheet';
 // import ConceptsLanding from './pages/ConceptsLanding';
 // import BookingModal from './components/BookingModal';
 // import MobileCTABar from './components/MobileCTABar';
-import { initializeSession, registerSession, trackConversion } from './utils/utm.service';
 import './styles/neo-australian.css';
 
 function App() {
@@ -35,29 +34,6 @@ function App() {
   //   setIsBookingOpen(false);
   //   window.dispatchEvent(new CustomEvent('modalClosed'));
   // };
-
-  useEffect(() => {
-    // Initialize UTM tracking and session on app load
-    const initTracking = async () => {
-      try {
-        // Initialize local session data (async)
-        const session = await initializeSession();
-        console.debug('Session initialized:', session.userId);
-
-        // Register session with backend (async, non-blocking)
-        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || window.location.origin;
-        await registerSession(apiBaseUrl);
-
-        // Track page view
-        await trackConversion('page_view', { page: 'home' }, apiBaseUrl);
-      } catch (error) {
-        console.debug('Error initializing tracking:', error);
-        // Don't fail the app if tracking fails
-      }
-    };
-
-    initTracking();
-  }, []);
 
   // Show loading state while tenant data is being fetched
   if (loading || !content) {

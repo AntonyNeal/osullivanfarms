@@ -54,20 +54,14 @@ try {
   const statusRoutes = require('./routes/status');
   const paymentRoutes = require('./routes/payments');
   const mobRoutes = require('./routes/mobs');
-  const analyticsRoutes = require('./routes/analytics');
 
   console.log('Routes loaded successfully');
-  console.log('mobRoutes type:', typeof mobRoutes);
-  console.log('mobRoutes:', mobRoutes);
 
   // Routes - no /api prefix as Azure Functions adds it
   app.use('/bookings', bookingRoutes);
   app.use('/status', statusRoutes);
   app.use('/payments', paymentRoutes);
   app.use('/mobs', mobRoutes);
-  app.use('/sessions', analyticsRoutes); // Sessions endpoint
-  app.use('/conversions', analyticsRoutes); // Conversions endpoint
-  app.use('/analytics', analyticsRoutes);
 
   console.log('All routes mounted');
 } catch (error) {
@@ -95,7 +89,9 @@ const db = require('./db');
 // Direct mobs routes with database integration
 app.get('/mobs', async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM mob_kpi_summary ORDER BY last_updated DESC LIMIT 100');
+    const result = await db.query(
+      'SELECT * FROM mob_kpi_summary ORDER BY last_updated DESC LIMIT 100'
+    );
     res.json({
       success: true,
       data: result.rows,
@@ -124,7 +120,7 @@ app.get('/farm-statistics', async (req, res) => {
       FROM mobs
       WHERE is_active = TRUE
     `);
-    
+
     res.json({
       success: true,
       data: result.rows[0] || {
@@ -143,15 +139,6 @@ app.get('/farm-statistics', async (req, res) => {
       message: error.message,
     });
   }
-});
-
-// Stub endpoints for analytics (until database is connected)
-app.post('/sessions/register', (req, res) => {
-  res.json({ success: true, sessionId: Date.now().toString() });
-});
-
-app.post('/conversions/track', (req, res) => {
-  res.json({ success: true, tracked: true });
 });
 
 // Root endpoint
