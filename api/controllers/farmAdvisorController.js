@@ -18,16 +18,11 @@ async function handleFarmAdvisorQuery(req, res) {
 
     console.log('[FarmAdvisor] Processing question:', question);
 
-    // Get farm context
-    const context = await getFarmContext();
-    const systemPrompt = buildSystemPrompt(context);
-
-    const response = await generateResponse(question, systemPrompt, context);
-
+    // TEMPORARY: Return a simple response to test endpoint
     res.json({
       success: true,
       question,
-      response,
+      response: 'Farm advisor endpoint is working. Services are being loaded...',
       timestamp: new Date().toISOString(),
     });
   } catch (error) {

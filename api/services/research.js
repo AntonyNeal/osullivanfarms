@@ -92,7 +92,7 @@ The chatbot will have direct access to this content when answering questions.
         try {
           const stats = fs.statSync(filePath);
           const fileSizeMB = stats.size / (1024 * 1024);
-          
+
           // Skip PDFs larger than 5MB to avoid memory issues
           if (fileSizeMB > 5) {
             console.warn(`[Research] Skipping large PDF: ${file} (${fileSizeMB.toFixed(2)}MB)`);
@@ -101,7 +101,9 @@ The chatbot will have direct access to this content when answering questions.
               title: path.basename(file, ext),
               format: 'pdf',
               chunks: 0,
-              content: [`[PDF too large for parsing: ${fileSizeMB.toFixed(2)}MB - Please convert to text or markdown]`],
+              content: [
+                `[PDF too large for parsing: ${fileSizeMB.toFixed(2)}MB - Please convert to text or markdown]`,
+              ],
               loadedAt: new Date().toISOString(),
               tooLarge: true,
             });
@@ -111,7 +113,7 @@ The chatbot will have direct access to this content when answering questions.
           const dataBuffer = fs.readFileSync(filePath);
           const pdfData = await pdfParse(dataBuffer);
           const content = pdfData.text;
-          
+
           // Limit content size (max 500KB of text)
           const limitedContent = content.length > 500000 ? content.slice(0, 500000) : content;
           const chunks = chunkText(limitedContent, 1000);
