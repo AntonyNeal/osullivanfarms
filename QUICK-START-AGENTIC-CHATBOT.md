@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS agent_memory (
 ## Step 3: Enable OpenAI (Optional but Recommended)
 
 ### For Azure Functions:
+
 1. Go to Azure Portal → Your Function App
 2. Navigate to **Configuration** → **Application Settings**
 3. Add new setting:
@@ -39,7 +40,9 @@ CREATE TABLE IF NOT EXISTS agent_memory (
 4. Click **Save** and **Restart** the function app
 
 ### For Local Development:
+
 Add to `api/local.settings.json`:
+
 ```json
 {
   "IsEncrypted": false,
@@ -58,6 +61,7 @@ npm install openai
 ```
 
 For PDF parsing support:
+
 ```bash
 npm install pdf-parse
 ```
@@ -65,13 +69,17 @@ npm install pdf-parse
 ## Step 5: Test the System
 
 ### With OpenAI Enabled:
+
 Ask the chatbot:
+
 - "What's my best performing mob?" (uses `get_mobs` tool)
 - "Move Mob 2 to Paddock 15" (requests confirmation)
 - "What does the research say about [topic]?" (searches your PDF)
 
 ### Without OpenAI (Pattern Matching):
+
 Basic questions still work:
+
 - "What's my average scanning percentage?"
 - "How many mobs do I have?"
 - "Which mob is struggling?"
@@ -79,6 +87,7 @@ Basic questions still work:
 ## Current System Status
 
 **✅ Deployed:**
+
 - MCP-style tools system (7 database tools)
 - Research paper integration framework
 - Project memory system
@@ -87,11 +96,13 @@ Basic questions still work:
 - Pattern matching fallback
 
 **⚙️ To Enable:**
+
 - OpenAI API key (for full AI capabilities)
 - Database migration (for memory persistence)
 - PDF parsing library (for PDF research papers)
 
 **📄 Current Support:**
+
 - TXT files: ✅ Working now
 - MD files: ✅ Working now
 - PDF files: ⚠️ Needs `pdf-parse` library
@@ -120,6 +131,7 @@ Basic questions still work:
 ## Troubleshooting
 
 ### "OpenAI library not installed"
+
 ```bash
 cd api
 npm install openai
@@ -127,15 +139,19 @@ func start  # Restart local functions
 ```
 
 ### "Agent memory table not found"
+
 Run the migration: `db/migrations/005_add_agent_memory.sql`
 
 ### "PDF parsing not yet implemented"
+
 Add a `.txt` or `.md` version of your research, or install:
+
 ```bash
 npm install pdf-parse
 ```
 
 ### Confirmation dialog not appearing
+
 1. Check browser console for errors
 2. Verify OpenAI API key is set
 3. Test with: "Move Mob 1 to Paddock 5"
