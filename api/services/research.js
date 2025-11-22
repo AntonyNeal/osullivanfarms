@@ -5,7 +5,7 @@ const pdfParse = require('pdf-parse');
 /**
  * Research Paper Service
  * Manages PDF research papers for LLM context injection
- * Automatically loads research papers at startup and creates a knowledge map
+ * Papers are loaded on first use (lazy loading)
  */
 
 // In-memory store for research content (in production, use Redis or vector DB)
@@ -14,14 +14,7 @@ let knowledgeMap = null;
 let lastLoadTime = null;
 const CACHE_TTL = 3600000; // 1 hour
 
-// Auto-load research papers at module initialization
-loadResearchPapers()
-  .then(() => {
-    console.log('[Research] Research papers pre-loaded at startup');
-  })
-  .catch((err) => {
-    console.error('[Research] Failed to pre-load research papers:', err.message);
-  });
+// NOTE: Auto-load removed - papers load on first use to avoid startup crashes
 
 /**
  * Load and parse research papers from the research folder

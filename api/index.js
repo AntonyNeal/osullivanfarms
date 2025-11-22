@@ -85,7 +85,7 @@ app.get('/mobs-test', (req, res) => {
 // Database connection
 const db = require('./db');
 const { handleFarmAdvisorQuery } = require('./controllers/farmAdvisorController');
-const { testServices } = require('./controllers/testController');
+// const { testServices } = require('./controllers/testController'); // TEMP: Commented out - causing startup crash
 
 // Direct mobs routes with database integration
 app.get('/mobs', async (req, res) => {
@@ -147,12 +147,12 @@ app.get('/', (req, res) => {
   res.json({
     message: "O'Sullivan Farms API",
     version: '1.0.0',
-    endpoints: ['/health', '/mobs', '/farm-statistics', '/farm-advisor', '/test-services'],
+    endpoints: ['/health', '/mobs', '/farm-statistics', '/farm-advisor'],
   });
 });
 
 // Test services endpoint
-app.get('/test-services', testServices);
+// app.get('/test-services', testServices); // TEMP: Commented out - service causing startup crash
 
 // Farm Advisor endpoints
 app.post('/farm-advisor', handleFarmAdvisorQuery);
