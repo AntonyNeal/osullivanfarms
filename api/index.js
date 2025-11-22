@@ -101,7 +101,13 @@ app.use((err, req, res, next) => {
 
 // Azure Functions v4 handler
 module.exports = async function (context, req) {
-  context.log(`Processing ${req.method} ${req.url}`);
+  // Strip /api prefix if present (Azure Functions adds it automatically)
+  let url = req.url || '/';
+  if (url.startsWith('/api')) {
+    url = url.substring(4) || '/';
+  }
+  
+  context.log(`Processing ${req.method} ${url}`);
 
   return new Promise((resolve, reject) => {
     // Create a mock response object that matches Express expectations
@@ -170,9 +176,9 @@ module.exports = async function (context, req) {
     // Create a mock request object that matches Express expectations
     const mockReq = {
       method: req.method,
-      url: req.url || '/',
-      path: req.url ? req.url.split('?')[0] : '/',
-      originalUrl: req.url || '/',
+      url: url,
+      path: url.split('?')[0],
+      originalUrl: url,
       headers: req.headers || {},
       body: req.body,
       query: req.query || {},
