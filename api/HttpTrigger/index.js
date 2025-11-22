@@ -3,6 +3,9 @@ const app = require('../index');
 
 module.exports = async function (context, req) {
   context.log('HTTP trigger function processed a request.');
+  context.log('URL:', req.url);
+  context.log('originalUrl:', req.originalUrl);
+  context.log('params:', JSON.stringify(req.params));
 
   try {
     // Get the result from the Express app handler

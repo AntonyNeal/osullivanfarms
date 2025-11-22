@@ -104,7 +104,7 @@ jobs:
       - name: Build application
         run: npm run build
         env:
-          VITE_API_BASE_URL: ${{ github.ref_name == 'main' && 'https://osullivanfarms-api.azurewebsites.net/api' || 'https://kind-smoke-078aaff0f.azurestaticapps.net/api' }}
+          VITE_API_BASE_URL: https://osullivanfarms-api.azurewebsites.net/api/HttpTrigger
 
       - name: Debug - Check frontend size
         run: |

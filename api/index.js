@@ -102,14 +102,22 @@ app.use((err, req, res, next) => {
 
 // Azure Functions v4 handler
 module.exports = async function (context, req) {
-  // Strip /api prefix if present (Azure Functions adds it automatically)
+  // Extract the path - Azure Functions URL will be /api/HttpTrigger/{path}
+  // We need to extract everything after /HttpTrigger/
   let url = req.url || '/';
-  if (url.startsWith('/api')) {
-    url = url.substring(4) || '/';
+
+  // Remove /api/HttpTrigger prefix if present
+  if (url.includes('/HttpTrigger')) {
+    const triggerIndex = url.indexOf('/HttpTrigger');
+    url = url.substring(triggerIndex + 12); // '/HttpTrigger'.length = 12
+  }
+
+  // Default to / if empty
+  if (!url || url === '') {
+    url = '/';
   }
 
   context.log(`Processing ${req.method} ${url}`);
-
   return new Promise((resolve, reject) => {
     // Create a mock response object that matches Express expectations
     const res = {
