@@ -89,13 +89,60 @@ app.get('/mobs-test', (req, res) => {
   res.json({ message: 'Direct route test works!', timestamp: new Date().toISOString() });
 });
 
-// Direct mobs routes for testing
-app.get('/mobs', (req, res) => {
-  res.json({ success: true, message: 'Mobs list endpoint', data: [] });
+// Database connection
+const db = require('./db');
+
+// Direct mobs routes with database integration
+app.get('/mobs', async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM mob_kpi_summary ORDER BY last_updated DESC LIMIT 100');
+    res.json({
+      success: true,
+      data: result.rows,
+      count: result.rows.length,
+    });
+  } catch (error) {
+    console.error('Error fetching mobs:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch mobs',
+      message: error.message,
+    });
+  }
 });
 
-app.get('/farm-statistics', (req, res) => {
-  res.json({ success: true, message: 'Farm statistics endpoint', data: {} });
+app.get('/farm-statistics', async (req, res) => {
+  try {
+    // Query farm_statistics view or calculate from mobs
+    const result = await db.query(`
+      SELECT 
+        COUNT(*) as total_mobs,
+        SUM(ewes_joined) as total_ewes,
+        AVG(scanning_percent) as avg_scanning_percent,
+        AVG(marking_percent) as avg_marking_percent,
+        AVG(weaning_percent) as avg_weaning_percent
+      FROM mobs
+      WHERE is_active = TRUE
+    `);
+    
+    res.json({
+      success: true,
+      data: result.rows[0] || {
+        total_mobs: 0,
+        total_ewes: 0,
+        avg_scanning_percent: 0,
+        avg_marking_percent: 0,
+        avg_weaning_percent: 0,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching farm statistics:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch farm statistics',
+      message: error.message,
+    });
+  }
 });
 
 // Stub endpoints for analytics (until database is connected)
