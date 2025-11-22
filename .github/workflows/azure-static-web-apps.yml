@@ -40,12 +40,12 @@ jobs:
       - name: Run API tests
         run: npm test --prefix api
 
-  # Deploy to Azure Static Web Apps (includes frontend + API)
-  deploy:
+  # Deploy to Azure Static Web Apps (frontend only)
+  deploy_frontend:
     needs: quality_check
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    name: Deploy
+    name: Deploy Frontend
     steps:
       - uses: actions/checkout@v4
         with:
@@ -61,13 +61,33 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: 'upload'
           app_location: '/'
-          api_location: 'api'
+          api_location: ''
           output_location: 'dist'
-        env:
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-          SENDGRID_FROM_EMAIL: ${{ secrets.SENDGRID_FROM_EMAIL }}
+          skip_api_build: true
+
+  # Deploy API to Function App
+  deploy_api:
+    needs: quality_check
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    name: Deploy API
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install API dependencies
+        run: |
+          cd api
+          npm ci --production
+
+      - name: Deploy to Azure Function App
+        uses: Azure/functions-action@v1
+        with:
+          app-name: 'osullivanfarms-api'
+          package: './api'
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+
