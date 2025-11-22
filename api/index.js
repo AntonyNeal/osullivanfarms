@@ -54,12 +54,16 @@ try {
   const statusRoutes = require('./routes/status');
   const paymentRoutes = require('./routes/payments');
   const mobRoutes = require('./routes/mobs');
+  const analyticsRoutes = require('./routes/analytics');
 
   // Routes - no /api prefix as Azure Functions adds it
   app.use('/bookings', bookingRoutes);
   app.use('/status', statusRoutes);
   app.use('/payments', paymentRoutes);
   app.use('/mobs', mobRoutes);
+  app.use('/sessions', analyticsRoutes); // Sessions endpoint
+  app.use('/conversions', analyticsRoutes); // Conversions endpoint
+  app.use('/analytics', analyticsRoutes);
 } catch (error) {
   console.error('Error loading routes:', error);
 }
@@ -71,6 +75,15 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
   });
+});
+
+// Stub endpoints for analytics (until database is connected)
+app.post('/sessions/register', (req, res) => {
+  res.json({ success: true, sessionId: Date.now().toString() });
+});
+
+app.post('/conversions/track', (req, res) => {
+  res.json({ success: true, tracked: true });
 });
 
 // Root endpoint
@@ -104,13 +117,13 @@ app.use((err, req, res, next) => {
 module.exports = async function (context, req) {
   // Get path from route parameter
   let url = '/' + (req.params.restOfPath || '');
-  
+
   // Preserve query string if present
   if (req.url && req.url.includes('?')) {
     const queryString = req.url.substring(req.url.indexOf('?'));
     url += queryString;
   }
-  
+
   context.log(`Processing ${req.method} ${url}`);
   return new Promise((resolve, reject) => {
     // Create a mock response object that matches Express expectations
