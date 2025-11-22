@@ -104,7 +104,7 @@ jobs:
       - name: Build application
         run: npm run build
         env:
-          VITE_API_BASE_URL: ${{ github.ref_name == 'main' && 'https://witty-coast-049457e0f.3.azurestaticapps.net/api' || 'https://kind-smoke-078aaff0f.azurestaticapps.net/api' }}
+          VITE_API_BASE_URL: ${{ github.ref_name == 'main' && 'https://osullivanfarms-api.azurewebsites.net/api' || 'https://kind-smoke-078aaff0f.azurestaticapps.net/api' }}
 
       - name: Debug - Check frontend size
         run: |
@@ -124,16 +124,15 @@ jobs:
           output_location: 'dist'
           skip_app_build: true
 
-  # Deploy API as Azure Functions (fallback standalone deployment)
+  # Deploy API to Azure Functions
   deploy_api:
     needs: [detect_changes, quality_check]
     if: |
       github.event_name == 'push' && 
       github.ref_name == 'main' &&
-      needs.detect_changes.outputs.api == 'true' &&
-      contains(github.event.head_commit.message, '[deploy-functions]')
+      needs.detect_changes.outputs.api == 'true'
     runs-on: ubuntu-latest
-    name: Deploy API Functions
+    name: Deploy API to Azure Functions
     environment:
       name: production
       url: https://osullivanfarms-api.azurewebsites.net
@@ -147,7 +146,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./api
-        run: npm ci --production
+        run: npm ci --omit=dev
 
       - name: Deploy to Azure Functions
         uses: Azure/functions-action@v1
