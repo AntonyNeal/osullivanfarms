@@ -130,6 +130,8 @@ jobs:
           ACR_LOGIN_SERVER=$(az acr show --name $ACR_NAME --resource-group ${{ env.RESOURCE_GROUP }} --query "loginServer" -o tsv)
           echo "acr_name=$ACR_NAME" >> $GITHUB_OUTPUT
           echo "acr_login_server=$ACR_LOGIN_SERVER" >> $GITHUB_OUTPUT
+          echo "ACR Name: $ACR_NAME"
+          echo "ACR Login Server: $ACR_LOGIN_SERVER"
 
       - name: Login to Azure Container Registry
         run: |
@@ -138,28 +140,44 @@ jobs:
       - name: Build and push Docker image
         working-directory: ./api
         run: |
-          docker build . -t ${{ steps.acr.outputs.acr_login_server }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-                         -t ${{ steps.acr.outputs.acr_login_server }}/${{ env.IMAGE_NAME }}:latest
-          docker push ${{ steps.acr.outputs.acr_login_server }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          docker push ${{ steps.acr.outputs.acr_login_server }}/${{ env.IMAGE_NAME }}:latest
+          IMAGE_TAG="${{ steps.acr.outputs.acr_login_server }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          IMAGE_LATEST="${{ steps.acr.outputs.acr_login_server }}/${{ env.IMAGE_NAME }}:latest"
+          echo "Building image: $IMAGE_TAG"
+          docker build . -t "$IMAGE_TAG" -t "$IMAGE_LATEST"
+          echo "Pushing image: $IMAGE_TAG"
+          docker push "$IMAGE_TAG"
+          echo "Pushing image: $IMAGE_LATEST"
+          docker push "$IMAGE_LATEST"
 
-      - name: Deploy to Azure Container Apps
-        uses: azure/container-apps-deploy-action@v1
-        with:
-          resourceGroup: ${{ env.RESOURCE_GROUP }}
-          containerAppName: ${{ env.CONTAINER_APP }}
-          imageToDeploy: ${{ steps.acr.outputs.acr_login_server }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          environmentVariables: |
-            NODE_ENV=production
-            PORT=8080
-            DB_HOST=${{ secrets.DB_HOST }}
-            DB_PORT=${{ secrets.DB_PORT }}
-            DB_NAME=${{ secrets.DB_NAME }}
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            DB_SSL=require
-            SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
-            SENDGRID_FROM_EMAIL=${{ secrets.SENDGRID_FROM_EMAIL }}
+      - name: Update Container App
+        run: |
+          IMAGE_FULL="${{ steps.acr.outputs.acr_login_server }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          echo "Deploying image: $IMAGE_FULL"
+          
+          az containerapp update \
+            --name ${{ env.CONTAINER_APP }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image "$IMAGE_FULL" \
+            --set-env-vars \
+              NODE_ENV=production \
+              PORT=8080 \
+              DB_HOST="${{ secrets.DB_HOST }}" \
+              DB_PORT="${{ secrets.DB_PORT }}" \
+              DB_NAME="${{ secrets.DB_NAME }}" \
+              DB_USER="${{ secrets.DB_USER }}" \
+              DB_PASSWORD=secretref:db-password \
+              DB_SSL=require \
+              SENDGRID_API_KEY=secretref:sendgrid-api-key \
+              SENDGRID_FROM_EMAIL="${{ secrets.SENDGRID_FROM_EMAIL }}"
+      
+      - name: Update Container App Secrets
+        run: |
+          az containerapp secret set \
+            --name ${{ env.CONTAINER_APP }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --secrets \
+              db-password="${{ secrets.DB_PASSWORD }}" \
+              sendgrid-api-key="${{ secrets.SENDGRID_API_KEY }}"
 
       - name: Get API URL
         run: |
