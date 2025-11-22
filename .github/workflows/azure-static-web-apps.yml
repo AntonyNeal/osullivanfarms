@@ -1,15 +1,13 @@
-name: CI/CD - Azure Deployment
+name: CI/CD - Azure Static Web Apps
 
 on:
   push:
     branches:
       - main
-      - staging
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - main
-      - staging
   workflow_dispatch:
 
 jobs:
@@ -42,15 +40,12 @@ jobs:
       - name: Run API tests
         run: npm test --prefix api
 
-  # Deploy frontend to Azure Static Web Apps (Production)
-  deploy_frontend_production:
+  # Deploy to Azure Static Web Apps (frontend only)
+  deploy_frontend:
     needs: quality_check
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    name: Deploy Frontend (Production)
-    environment:
-      name: production
-      url: https://osullivanfarms.azurestaticapps.net
+    name: Deploy Frontend
     steps:
       - uses: actions/checkout@v4
         with:
@@ -59,6 +54,7 @@ jobs:
           persist-credentials: false
 
       - name: Deploy to Azure Static Web Apps
+        id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
@@ -69,42 +65,12 @@ jobs:
           output_location: 'dist'
           skip_api_build: true
 
-  # Deploy frontend to Azure Static Web Apps (Staging)
-  deploy_frontend_staging:
+  # Deploy API to Function App
+  deploy_api:
     needs: quality_check
-    if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    name: Deploy Frontend (Staging)
-    environment:
-      name: staging
-      url: https://osullivanfarms-staging.azurestaticapps.net
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-          lfs: false
-          persist-credentials: false
-
-      - name: Deploy to Azure Static Web Apps
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_STAGING }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action: 'upload'
-          app_location: '/'
-          api_location: ''
-          output_location: 'dist'
-          skip_api_build: true
-
-  # Deploy API to Function App (Production)
-  deploy_api_production:
-    needs: quality_check
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    name: Deploy API (Production)
-    environment:
-      name: production
-      url: https://osullivanfarms-api.azurewebsites.net
+    name: Deploy API
     steps:
       - uses: actions/checkout@v4
 
@@ -118,39 +84,34 @@ jobs:
           cd api
           npm ci --production
 
-      - name: Deploy to Azure Function App
-        uses: Azure/functions-action@v1
-        with:
-          app-name: 'osullivanfarms-api'
-          package: './api'
-          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
-
-  # Deploy API to Function App (Staging)
-  deploy_api_staging:
-    needs: quality_check
-    if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
-    runs-on: ubuntu-latest
-    name: Deploy API (Staging)
-    environment:
-      name: staging
-      url: https://osullivanfarms-api-staging.azurewebsites.net
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install API dependencies
+      - name: Create deployment package
         run: |
           cd api
-          npm ci --production
+          zip -r ../api-deployment.zip . -x "*.git*" -x "*node_modules/.cache*"
 
-      - name: Deploy to Azure Function App
-        uses: Azure/functions-action@v1
+      - name: Azure Login
+        uses: azure/login@v1
         with:
-          app-name: 'osullivanfarms-api-staging'
-          package: './api'
-          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE_STAGING }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Deploy to Function App
+        run: |
+          az functionapp deployment source config-zip \
+            --resource-group osullivanfarms-rg \
+            --name osullivanfarms-api \
+            --src api-deployment.zip
+
+      - name: Configure Function App Settings
+        run: |
+          az functionapp config appsettings set \
+            --name osullivanfarms-api \
+            --resource-group osullivanfarms-rg \
+            --settings \
+              NODE_ENV=production \
+              DB_HOST="${{ secrets.DB_HOST }}" \
+              DB_PORT="${{ secrets.DB_PORT }}" \
+              DB_NAME="${{ secrets.DB_NAME }}" \
+              DB_USER="${{ secrets.DB_USER }}" \
+              DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+              SENDGRID_API_KEY="${{ secrets.SENDGRID_API_KEY }}" \
+              SENDGRID_FROM_EMAIL="${{ secrets.SENDGRID_FROM_EMAIL }}"
