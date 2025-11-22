@@ -48,24 +48,25 @@ app.use((req, res, next) => {
   next();
 });
 
-// Import routes
-try {
-  const bookingRoutes = require('./routes/bookings');
-  const paymentRoutes = require('./routes/payments');
-  const mobRoutes = require('./routes/mobs');
-
-  console.log('Routes loaded successfully');
-
-  // Routes - no /api prefix as Azure Functions adds it
-  app.use('/bookings', bookingRoutes);
-  app.use('/payments', paymentRoutes);
-  app.use('/mobs', mobRoutes);
-
-  console.log('All routes mounted');
-} catch (error) {
-  console.error('Error loading routes:', error);
-  console.error('Stack:', error.stack);
-}
+// Import routes (commented out - using direct routes below for Azure Functions compatibility)
+// The app.use() router mounting doesn't work properly in Azure Functions wrapper
+// try {
+//   const bookingRoutes = require('./routes/bookings');
+//   const paymentRoutes = require('./routes/payments');
+//   const mobRoutes = require('./routes/mobs');
+//
+//   console.log('Routes loaded successfully');
+//
+//   // Routes - no /api prefix as Azure Functions adds it
+//   app.use('/bookings', bookingRoutes);
+//   app.use('/payments', paymentRoutes);
+//   app.use('/mobs', mobRoutes);
+//
+//   console.log('All routes mounted');
+// } catch (error) {
+//   console.error('Error loading routes:', error);
+//   console.error('Stack:', error.stack);
+// }
 
 // Health check endpoint
 app.get('/health', (req, res) => {
