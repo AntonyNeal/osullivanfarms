@@ -38,18 +38,37 @@ async function handleFarmAdvisorQuery(req, res) {
 
     console.log('[FarmAdvisor] Processing question:', question);
 
-    // Save user question to memory
-    await autoSaveMemory('user_question', {
-      question,
-      category: categorizeQuestion(question),
-    });
+    // Save user question to memory (ignore errors if table doesn't exist)
+    try {
+      await autoSaveMemory('user_question', {
+        question,
+        category: categorizeQuestion(question),
+      });
+    } catch (memoryError) {
+      console.log('[FarmAdvisor] Memory save failed (table may not exist):', memoryError.message);
+    }
 
     // Build comprehensive context
     const farmContext = await getFarmContext();
     const farmSummary = buildFarmContextSummary(farmContext);
-    const researchContext = await buildResearchContext();
-    const researchSummary = await getResearchSummary();
-    const memoryContext = await buildMemoryContext();
+    
+    // Load research (ignore errors)
+    let researchContext = null;
+    let researchSummary = 'No research papers currently loaded.';
+    try {
+      researchContext = await buildResearchContext();
+      researchSummary = await getResearchSummary();
+    } catch (researchError) {
+      console.log('[FarmAdvisor] Research loading failed:', researchError.message);
+    }
+    
+    // Load memory (ignore errors)
+    let memoryContext = null;
+    try {
+      memoryContext = await buildMemoryContext();
+    } catch (memoryError) {
+      console.log('[FarmAdvisor] Memory loading failed (table may not exist):', memoryError.message);
+    }
 
     // Build system instructions
     const systemPrompt = buildInstructions(farmSummary, researchSummary, memoryContext);
@@ -158,13 +177,17 @@ async function handleWithOpenAI(question, conversationHistory, systemPrompt, far
 
     const finalResponse = finalCompletion.choices[0].message.content;
 
-    // Save important responses to memory
-    if (finalResponse.includes('performing well') || finalResponse.includes('concern')) {
-      await autoSaveMemory('ai_insight', {
-        question,
-        response: finalResponse,
-        tools_used: responseMessage.tool_calls.map((t) => t.function.name),
-      });
+    // Save important responses to memory (ignore errors)
+    try {
+      if (finalResponse.includes('performing well') || finalResponse.includes('concern')) {
+        await autoSaveMemory('ai_insight', {
+          question,
+          response: finalResponse,
+          tools_used: responseMessage.tool_calls.map((t) => t.function.name),
+        });
+      }
+    } catch (memoryError) {
+      console.log('[FarmAdvisor] Memory save failed:', memoryError.message);
     }
 
     return {
@@ -206,12 +229,16 @@ async function handleConfirmedOperation(req, res) {
     // Execute the confirmed tool
     const result = await executeConfirmedTool(toolCall.name, toolCall.args);
 
-    // Save to memory
-    await autoSaveMemory(`${toolCall.name}_executed`, {
-      tool: toolCall.name,
-      args: toolCall.args,
-      result,
-    });
+    // Save to memory (ignore errors)
+    try {
+      await autoSaveMemory(`${toolCall.name}_executed`, {
+        tool: toolCall.name,
+        args: toolCall.args,
+        result,
+      });
+    } catch (memoryError) {
+      console.log('[FarmAdvisor] Memory save failed:', memoryError.message);
+    }
 
     return res.json({
       success: true,
