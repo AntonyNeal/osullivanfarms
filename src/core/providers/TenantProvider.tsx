@@ -41,30 +41,39 @@ export function TenantProvider({ children }: TenantProviderProps) {
         // For development: localhost always maps to 'osullivanfarms'
         // For Azure Static Web Apps: *.azurestaticapps.net maps to 'osullivanfarms'
         // For Vercel: *.vercel.app maps to 'osullivanfarms'
-        // For production: osullivanfarms.tech maps to 'osullivanfarms'
+        // For production: osullivanfarms.tech and sheepsheet.io map to 'osullivanfarms'
         if (
           hostname === 'localhost' ||
           hostname.startsWith('127.0.0.1') ||
           hostname.endsWith('.azurestaticapps.net') ||
           hostname.endsWith('.vercel.app') ||
           hostname === 'osullivanfarms.tech' ||
-          hostname === 'www.osullivanfarms.tech'
+          hostname === 'www.osullivanfarms.tech' ||
+          hostname === 'sheepsheet.io' ||
+          hostname === 'www.sheepsheet.io'
         ) {
           console.debug('[Tenant] Development/Production mode - loading osullivanfarms tenant');
           const tenantData = await loadLocalTenantConfig('osullivanfarms');
+          console.debug('[Tenant] Loaded tenant data:', tenantData ? 'Success' : 'Failed');
 
           if (!tenantData) {
+            console.error('[Tenant] Failed to load osullivanfarms tenant data');
             throw new Error('Development tenant (osullivanfarms) not found');
           }
 
+          console.debug('[Tenant] Setting tenant, theme, and content...');
           setTenant(tenantData);
           setTheme(tenantData.themeConfig);
           setContent(tenantData.contentConfig);
+          console.debug('[Tenant] Tenant, theme, and content set successfully');
 
+          console.debug('[Tenant] Loading tenant photos...');
           const photosConfig = await loadTenantPhotos('osullivanfarms');
           setPhotos(photosConfig);
+          console.debug('[Tenant] Photos loaded, setting loading=false');
 
           setLoading(false);
+          console.debug('[Tenant] TenantProvider initialization complete');
           return;
         }
 
