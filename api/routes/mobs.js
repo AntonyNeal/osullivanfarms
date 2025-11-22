@@ -1,18 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const mobController = require('../controllers/mobController');
 
-// Mob routes (no /mobs prefix - already mounted at /mobs in index.js)
-router.get('/', mobController.getAllMobs);
-router.get('/:id', mobController.getMobById);
-router.get('/:id/history', mobController.getMobHistory);
-router.post('/', mobController.createMob);
-router.put('/:id', mobController.updateMob);
+// Temporary: Test routes without controller to verify router works
+router.get('/', (req, res) => {
+  res.json({ message: 'Mobs router works!', endpoint: 'GET /' });
+});
 
-// Farm statistics
-router.get('/farm-statistics', mobController.getFarmStatistics);
+router.get('/farm-statistics', (req, res) => {
+  res.json({ message: 'Farm statistics router works!', endpoint: 'GET /farm-statistics' });
+});
 
-// Breeding events
-router.post('/breeding-events', mobController.recordBreedingEvent);
+// TODO: Re-enable controller routes once database is working
+// const mobController = require('../controllers/mobController');
+// router.get('/', mobController.getAllMobs);
+// etc.
 
 module.exports = router;
