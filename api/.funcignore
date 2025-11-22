@@ -1,0 +1,49 @@
+# Exclude development files from Azure Functions deployment
+
+# Development dependencies (will be reinstalled production-only)
+.oryx_*
+
+# Test files and configs
+__tests__/
+*.test.js
+*.spec.js
+jest.config.js
+@types/
+@jest/
+jest*/
+ts-jest*/
+
+# Development tools
+nodemon*/
+
+# Development files
+.env
+.env.example
+.env.*
+.dockerignore
+Dockerfile
+README.md
+EMAIL-SERVICE-README.md
+INTEGRATION-EXAMPLE.js
+test-*.ps1
+test-*.js
+test-*.http
+
+# Source control
+.git/
+.gitignore
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Temporary files
+farm-statistics/
+mobs/
