@@ -84,6 +84,7 @@ app.get('/mobs-test', (req, res) => {
 
 // Database connection
 const db = require('./db');
+const { handleFarmAdvisorQuery } = require('./controllers/farmAdvisorController');
 
 // Direct mobs routes with database integration
 app.get('/mobs', async (req, res) => {
@@ -145,9 +146,12 @@ app.get('/', (req, res) => {
   res.json({
     message: "O'Sullivan Farms API",
     version: '1.0.0',
-    endpoints: ['/health', '/bookings', '/status', '/payments', '/mobs'],
+    endpoints: ['/health', '/mobs', '/farm-statistics', '/farm-advisor'],
   });
 });
+
+// Farm Advisor endpoint
+app.post('/farm-advisor', handleFarmAdvisorQuery);
 
 // 404 handler
 app.use((req, res) => {

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MobKPI, MobFilters, FarmSummary } from './types';
 import { mobsApi } from '../../lib/api';
+import FarmAdvisorChat from '../../components/FarmAdvisorChat';
 
 export default function MobDashboard() {
   const [mobs, setMobs] = useState<MobKPI[]>([]);
@@ -296,39 +297,11 @@ export default function MobDashboard() {
       {/* Farm Advisor Panel - FOURTH PRIORITY: Infrequent use 1-2x/day */}
       {!loading && showAssistant && (
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-5">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-4">
             <h3 className="text-base sm:text-lg font-bold text-gray-900">Farm Advisor</h3>
             <span className="text-xs text-gray-500">AI Assistant</span>
           </div>
-          <div className="space-y-3">
-            <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-              <p className="text-sm text-gray-700">
-                👋 G&apos;day! I&apos;m your Farm Advisor. Ask me about your mobs, breeding
-                statistics, or farm management advice.
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Ask about your flock..."
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-              <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium">
-                Ask
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <button className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-xs transition">
-                What&apos;s my best performing mob?
-              </button>
-              <button className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-xs transition">
-                Show scanning trends
-              </button>
-              <button className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-xs transition">
-                Compare zones
-              </button>
-            </div>
-          </div>
+          <FarmAdvisorChat />
         </div>
       )}
       {/* Scoreboard View - HIGHEST PRIORITY: Quick glance 10-15x/day */}
