@@ -1,8 +1,9 @@
 // Farm Advisor API Controller with Agentic AI capabilities
-const { TOOLS, executeTool, executeConfirmedTool } = require('../services/tools');
-const { buildInstructions, buildFarmContextSummary } = require('../services/instructions');
-const { buildResearchContext, getResearchSummary } = require('../services/research');
-const { buildMemoryContext, autoSaveMemory } = require('../services/memory');
+// TEMP: Commenting out unused imports for debugging
+// const { TOOLS, executeTool, executeConfirmedTool } = require('../services/tools');
+// const { buildInstructions, buildFarmContextSummary } = require('../services/instructions');
+// const { buildResearchContext, getResearchSummary } = require('../services/research');
+// const { buildMemoryContext, autoSaveMemory } = require('../services/memory');
 const { getFarmContext } = require('../services/farmAdvisor');
 
 // OpenAI integration (optional - falls back to pattern matching)
@@ -46,10 +47,10 @@ async function handleFarmAdvisorQuery(req, res) {
     console.log('[FarmAdvisor] Loading farm context...');
     const farmContext = await getFarmContext();
     console.log('[FarmAdvisor] Farm context loaded, mobs:', farmContext.mobs.length);
-    
+
     const response = await generateResponse(question, '', farmContext);
     console.log('[FarmAdvisor] Response generated');
-    
+
     return res.json({
       success: true,
       question,
