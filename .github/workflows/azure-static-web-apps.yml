@@ -1,18 +1,53 @@
-name: CI/CD - Azure Static Web Apps
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
+      - staging
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - main
+      - staging
   workflow_dispatch:
 
+env:
+  NODE_VERSION: '20'
+  REGISTRY: osullivanfarmsacr.azurecr.io
+  IMAGE_NAME: osullivanfarms-api
+  RESOURCE_GROUP: osullivanfarms-rg
+  CONTAINER_APP: osullivanfarms-api
+
 jobs:
+  # Detect what changed
+  detect_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      api: ${{ steps.filter.outputs.api }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'src/**'
+              - 'public/**'
+              - 'index.html'
+              - 'vite.config.ts'
+              - 'package.json'
+              - 'tsconfig.json'
+              - '.github/workflows/azure-static-web-apps.yml'
+            api:
+              - 'api/**'
+              - '.github/workflows/azure-static-web-apps.yml'
+
   # Quality checks for both frontend and API
   quality_check:
+    needs: detect_changes
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Quality Check
@@ -22,40 +57,47 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Install frontend dependencies
+        if: needs.detect_changes.outputs.frontend == 'true'
         run: npm ci
 
       - name: Lint frontend code
+        if: needs.detect_changes.outputs.frontend == 'true'
         run: npm run lint
 
       - name: Run frontend unit tests
+        if: needs.detect_changes.outputs.frontend == 'true'
         run: npm run test:unit:run
 
       - name: Install API dependencies
+        if: needs.detect_changes.outputs.api == 'true'
         run: npm ci --prefix api
 
       - name: Run API tests
+        if: needs.detect_changes.outputs.api == 'true'
         run: npm test --prefix api
 
-  # Deploy to Azure Static Web Apps with managed API
-  build_and_deploy:
-    needs: quality_check
-    if: github.event_name == 'push'
+  # Deploy frontend to Azure Static Web Apps
+  deploy_frontend:
+    needs: [detect_changes, quality_check]
+    if: |
+      github.event_name == 'push' && 
+      needs.detect_changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
-    name: Build and Deploy
+    name: Deploy Frontend
+    environment:
+      name: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+      url: ${{ github.ref_name == 'main' && 'https://witty-coast-049457e0f.3.azurestaticapps.net' || 'https://kind-smoke-078aaff0f.azurestaticapps.net' }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: true
-          lfs: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Install dependencies
@@ -67,13 +109,77 @@ jobs:
           VITE_API_BASE_URL: https://osullivanfarms-api.wonderfulsky-3834edbe.eastus2.azurecontainerapps.io/api
 
       - name: Deploy to Azure Static Web Apps
-        id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          azure_static_web_apps_api_token: ${{ github.ref_name == 'main' && secrets.AZURE_STATIC_WEB_APPS_API_TOKEN || secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_STAGING }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: 'upload'
           app_location: '/'
           api_location: ''
           output_location: 'dist'
           skip_app_build: true
+
+  # Deploy API to Azure Container Apps
+  deploy_api:
+    needs: [detect_changes, quality_check]
+    if: |
+      github.event_name == 'push' && 
+      github.ref_name == 'main' &&
+      needs.detect_changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    name: Deploy API
+    environment:
+      name: production
+      url: https://osullivanfarms-api.wonderfulsky-3834edbe.eastus2.azurecontainerapps.io
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and push container
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build and push Docker image
+        working-directory: ./api
+        run: |
+          docker build . -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Deploy to Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          containerAppName: ${{ env.CONTAINER_APP }}
+          imageToDeploy: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          environmentVariables: |
+            NODE_ENV=production
+            PORT=8080
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_SSL=require
+            SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
+            SENDGRID_FROM_EMAIL=${{ secrets.SENDGRID_FROM_EMAIL }}
+            ALLOWED_ORIGINS=https://witty-coast-049457e0f.3.azurestaticapps.net,https://kind-smoke-078aaff0f.azurestaticapps.net
+
+  # Close PR deployment
+  close_pull_request:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    name: Close Pull Request
+    steps:
+      - name: Close Pull Request
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ github.base_ref == 'main' && secrets.AZURE_STATIC_WEB_APPS_API_TOKEN || secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_STAGING }}
+          action: 'close'
