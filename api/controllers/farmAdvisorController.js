@@ -1,13 +1,33 @@
-// Farm Advisor API Route
-const { getFarmContext, buildSystemPrompt } = require('../services/farmAdvisor');
+// Farm Advisor API Controller with Agentic AI capabilities
+const { TOOLS, executeTool, executeConfirmedTool } = require('../services/tools');
+const { buildInstructions, buildFarmContextSummary } = require('../services/instructions');
+const { buildResearchContext, getResearchSummary } = require('../services/research');
+const { buildMemoryContext, autoSaveMemory } = require('../services/memory');
+const { getFarmContext } = require('../services/farmAdvisor');
+
+// OpenAI integration (optional - falls back to pattern matching)
+let openai = null;
+try {
+  const { OpenAI } = require('openai');
+  if (process.env.OPENAI_API_KEY) {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    console.log('[FarmAdvisor] OpenAI integration enabled');
+  } else {
+    console.log('[FarmAdvisor] OpenAI API key not found, using pattern matching mode');
+  }
+} catch (error) {
+  console.log('[FarmAdvisor] OpenAI library not installed, using pattern matching mode');
+}
 
 /**
  * POST /api/farm-advisor
- * Process user questions and return AI-generated farm advice
+ * Main endpoint for agentic chatbot with tool execution
  */
 async function handleFarmAdvisorQuery(req, res) {
   try {
-    const { question } = req.body;
+    const { question, conversationHistory = [] } = req.body;
 
     if (!question || typeof question !== 'string') {
       return res.status(400).json({
@@ -18,22 +38,35 @@ async function handleFarmAdvisorQuery(req, res) {
 
     console.log('[FarmAdvisor] Processing question:', question);
 
-    // Get farm context
-    const context = await getFarmContext();
-    const systemPrompt = buildSystemPrompt(context);
-
-    // For now, return a structured response without calling OpenAI
-    // This allows the frontend to work immediately
-    // TODO: Integrate OpenAI API for intelligent responses
-
-    const response = await generateResponse(question, systemPrompt, context);
-
-    res.json({
-      success: true,
+    // Save user question to memory
+    await autoSaveMemory('user_question', {
       question,
-      response,
-      timestamp: new Date().toISOString(),
+      category: categorizeQuestion(question),
     });
+
+    // Build comprehensive context
+    const farmContext = await getFarmContext();
+    const farmSummary = buildFarmContextSummary(farmContext);
+    const researchContext = await buildResearchContext();
+    const researchSummary = await getResearchSummary();
+    const memoryContext = await buildMemoryContext();
+
+    // Build system instructions
+    const systemPrompt = buildInstructions(farmSummary, researchSummary, memoryContext);
+
+    // Use OpenAI if available, otherwise fall back to pattern matching
+    if (openai) {
+      const response = await handleWithOpenAI(
+        question,
+        conversationHistory,
+        systemPrompt,
+        farmContext
+      );
+      return res.json(response);
+    } else {
+      const response = await handleWithPatternMatching(question, farmContext);
+      return res.json(response);
+    }
   } catch (error) {
     console.error('[FarmAdvisor] Error:', error);
     res.status(500).json({
@@ -42,6 +75,200 @@ async function handleFarmAdvisorQuery(req, res) {
       message: error.message,
     });
   }
+}
+
+/**
+ * Handle query with OpenAI function calling
+ */
+async function handleWithOpenAI(question, conversationHistory, systemPrompt, farmContext) {
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    ...conversationHistory,
+    { role: 'user', content: question },
+  ];
+
+  // First API call - let AI decide if it needs tools
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4o',
+    messages,
+    tools: TOOLS,
+    tool_choice: 'auto',
+    temperature: 0.7,
+    max_tokens: 1000,
+  });
+
+  const responseMessage = completion.choices[0].message;
+
+  // Check if AI wants to use tools
+  if (responseMessage.tool_calls) {
+    const toolResults = [];
+
+    for (const toolCall of responseMessage.tool_calls) {
+      const functionName = toolCall.function.name;
+      const functionArgs = JSON.parse(toolCall.function.arguments);
+
+      console.log(`[FarmAdvisor] AI calling tool: ${functionName}`, functionArgs);
+
+      // Execute the tool
+      const result = await executeTool(functionName, functionArgs);
+
+      // Check if this tool requires confirmation
+      if (result.requiresConfirmation) {
+        // Return confirmation request to frontend
+        return {
+          success: true,
+          requiresConfirmation: true,
+          toolCall: {
+            id: toolCall.id,
+            name: functionName,
+            args: functionArgs,
+          },
+          confirmationData: result.confirmationData,
+          question,
+          timestamp: new Date().toISOString(),
+        };
+      }
+
+      // For read operations, add result to context
+      toolResults.push({
+        tool_call_id: toolCall.id,
+        role: 'tool',
+        name: functionName,
+        content: JSON.stringify(result),
+      });
+    }
+
+    // Second API call - AI responds with tool results
+    const finalMessages = [
+      ...messages,
+      responseMessage,
+      ...toolResults.map((r) => ({
+        role: 'tool',
+        tool_call_id: r.tool_call_id,
+        content: r.content,
+      })),
+    ];
+
+    const finalCompletion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: finalMessages,
+      temperature: 0.7,
+      max_tokens: 1000,
+    });
+
+    const finalResponse = finalCompletion.choices[0].message.content;
+
+    // Save important responses to memory
+    if (finalResponse.includes('performing well') || finalResponse.includes('concern')) {
+      await autoSaveMemory('ai_insight', {
+        question,
+        response: finalResponse,
+        tools_used: responseMessage.tool_calls.map((t) => t.function.name),
+      });
+    }
+
+    return {
+      success: true,
+      question,
+      response: finalResponse,
+      toolsUsed: responseMessage.tool_calls.map((t) => t.function.name),
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  // No tools needed - direct response
+  return {
+    success: true,
+    question,
+    response: responseMessage.content,
+    timestamp: new Date().toISOString(),
+  };
+}
+
+/**
+ * POST /api/farm-advisor/confirm
+ * Execute a confirmed write operation
+ */
+async function handleConfirmedOperation(req, res) {
+  try {
+    const { toolCall, confirmed } = req.body;
+
+    if (!confirmed) {
+      return res.json({
+        success: true,
+        message: 'Operation cancelled by user',
+        cancelled: true,
+      });
+    }
+
+    console.log('[FarmAdvisor] Executing confirmed operation:', toolCall.name);
+
+    // Execute the confirmed tool
+    const result = await executeConfirmedTool(toolCall.name, toolCall.args);
+
+    // Save to memory
+    await autoSaveMemory(`${toolCall.name}_executed`, {
+      tool: toolCall.name,
+      args: toolCall.args,
+      result,
+    });
+
+    return res.json({
+      success: true,
+      message: result.message,
+      data: result.data,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('[FarmAdvisor] Error executing confirmed operation:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to execute operation',
+      message: error.message,
+    });
+  }
+}
+
+/**
+ * Pattern matching fallback (when OpenAI not available)
+ */
+async function handleWithPatternMatching(question, context) {
+  const questionLower = question.toLowerCase();
+
+  // Check for write operation requests
+  if (questionLower.includes('move') && questionLower.includes('mob')) {
+    return {
+      success: true,
+      response:
+        'I can help you move a mob to a different location. However, I need OpenAI integration to be set up to handle write operations with confirmation. For now, please use the mob management interface to make this change directly.\n\nTo enable full AI capabilities, add your OPENAI_API_KEY to the environment variables.',
+      needsOpenAI: true,
+    };
+  }
+
+  // Delegate to existing pattern matching
+  return {
+    success: true,
+    question,
+    response: await generateResponse(question, '', context),
+    timestamp: new Date().toISOString(),
+  };
+}
+
+/**
+ * Categorize question for memory storage
+ */
+function categorizeQuestion(question) {
+  const q = question.toLowerCase();
+
+  if (q.includes('scan')) return 'scanning';
+  if (q.includes('mark')) return 'marking';
+  if (q.includes('wean')) return 'weaning';
+  if (q.includes('lamb')) return 'lambing';
+  if (q.includes('mob') || q.includes('perform')) return 'mob_performance';
+  if (q.includes('move') || q.includes('paddock')) return 'mob_movement';
+  if (q.includes('best') || q.includes('worst')) return 'comparison';
+
+  return 'general';
 }
 
 /**
@@ -107,4 +334,5 @@ Your current average scanning percentage is ${parseFloat(context.farmStats.avg_s
 
 module.exports = {
   handleFarmAdvisorQuery,
+  handleConfirmedOperation,
 };
