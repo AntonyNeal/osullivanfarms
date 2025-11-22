@@ -3,10 +3,16 @@
  * Comprehensive instruction set for the AI farm advisor agent
  */
 
+const { getKnowledgeMap } = require('./research');
+
 /**
  * Build the complete system instruction set
  */
 function buildInstructions(farmContext, researchSummary, memory) {
+  // Get knowledge map for more structured research access
+  const knowledgeMap = getKnowledgeMap();
+  const knowledgeSection = buildKnowledgeSection(knowledgeMap);
+
   const instructions = `You are an intelligent AI farm advisor agent for O'Sullivan Farms, a sheep farming operation in Echuca, Victoria, Australia.
 
 # YOUR ROLE
@@ -23,9 +29,9 @@ You are a knowledgeable, practical farm advisor with expertise in:
 
 ${farmContext}
 
-# RESEARCH KNOWLEDGE
+${knowledgeSection}
 
-${researchSummary}
+${researchSummary ? `# RESEARCH PAPERS\n\n${researchSummary}\n` : ''}
 
 ${memory ? `# PROJECT MEMORY\n\n${memory}\n` : ''}
 
@@ -200,6 +206,31 @@ ${mobs
   }
 
   return summary;
+}
+
+/**
+ * Build knowledge section from knowledge map
+ */
+function buildKnowledgeSection(knowledgeMap) {
+  if (!knowledgeMap || !knowledgeMap.topics) {
+    return '';
+  }
+
+  let section = '# RESEARCH KNOWLEDGE BASE\n\n';
+  section += `${knowledgeMap.summary}\n\n`;
+  section += '**Key Topics Available:**\n';
+
+  const topTopics = Object.entries(knowledgeMap.topics)
+    .sort((a, b) => b[1].count - a[1].count)
+    .slice(0, 8);
+
+  for (const [topic, data] of topTopics) {
+    section += `- **${topic}**: ${data.count} references (keywords: ${data.keywords.slice(0, 3).join(', ')})\n`;
+  }
+
+  section += '\nYou can reference this research when answering questions about these topics.\n';
+
+  return section;
 }
 
 /**

@@ -1,15 +1,27 @@
 const fs = require('fs');
 const path = require('path');
+const pdfParse = require('pdf-parse');
 
 /**
  * Research Paper Service
  * Manages PDF research papers for LLM context injection
+ * Automatically loads research papers at startup and creates a knowledge map
  */
 
 // In-memory store for research content (in production, use Redis or vector DB)
 let researchCache = null;
+let knowledgeMap = null;
 let lastLoadTime = null;
 const CACHE_TTL = 3600000; // 1 hour
+
+// Auto-load research papers at module initialization
+loadResearchPapers()
+  .then(() => {
+    console.log('[Research] Research papers pre-loaded at startup');
+  })
+  .catch((err) => {
+    console.error('[Research] Failed to pre-load research papers:', err.message);
+  });
 
 /**
  * Load and parse research papers from the research folder
@@ -77,16 +89,40 @@ The chatbot will have direct access to this content when answering questions.
           loadedAt: new Date().toISOString(),
         });
       } else if (ext === '.pdf') {
-        // Placeholder for PDF parsing
-        papers.push({
-          filename: file,
-          title: path.basename(file, ext),
-          format: 'pdf',
-          chunks: 0,
-          content: ['[PDF parsing not yet implemented - add pdf-parse library]'],
-          loadedAt: new Date().toISOString(),
-          needsParser: true,
-        });
+        try {
+          const dataBuffer = fs.readFileSync(filePath);
+          const pdfData = await pdfParse(dataBuffer);
+          const content = pdfData.text;
+          const chunks = chunkText(content, 1000);
+
+          papers.push({
+            filename: file,
+            title: path.basename(file, ext),
+            format: 'pdf',
+            chunks: chunks.length,
+            content: chunks,
+            metadata: {
+              pages: pdfData.numpages,
+              info: pdfData.info,
+            },
+            loadedAt: new Date().toISOString(),
+          });
+
+          console.log(
+            `[Research] Parsed PDF: ${file} (${pdfData.numpages} pages, ${chunks.length} chunks)`
+          );
+        } catch (pdfError) {
+          console.error(`[Research] Failed to parse PDF ${file}:`, pdfError.message);
+          papers.push({
+            filename: file,
+            title: path.basename(file, ext),
+            format: 'pdf',
+            chunks: 0,
+            content: [`[PDF parsing failed: ${pdfError.message}]`],
+            loadedAt: new Date().toISOString(),
+            error: pdfError.message,
+          });
+        }
       }
     }
 
@@ -96,10 +132,16 @@ The chatbot will have direct access to this content when answering questions.
       lastUpdated: new Date().toISOString(),
     };
 
+    // Build knowledge map
+    knowledgeMap = buildKnowledgeMap(papers);
+
     lastLoadTime = Date.now();
 
     console.log(
       `[Research] Loaded ${papers.length} research papers with ${researchCache.totalChunks} total chunks`
+    );
+    console.log(
+      `[Research] Knowledge map created with ${Object.keys(knowledgeMap.topics).length} topics`
     );
 
     return researchCache;
@@ -223,10 +265,91 @@ async function getResearchSummary() {
 }
 
 /**
+ * Build a structured knowledge map from research papers
+ * This creates a topic-based index for faster retrieval
+ */
+function buildKnowledgeMap(papers) {
+  const map = {
+    topics: {},
+    keyPhrases: [],
+    summary: '',
+  };
+
+  // Extract key topics and concepts
+  const allText = papers
+    .filter((p) => !p.error)
+    .map((p) => p.content.join(' '))
+    .join(' ');
+
+  // Simple topic extraction based on common farming terms
+  const farmingTopics = {
+    lambing: ['lamb', 'ewe', 'birth', 'pregnancy', 'gestation'],
+    genetics: ['genetics', 'breeding', 'selection', 'trait', 'heritability'],
+    nutrition: ['feed', 'nutrition', 'pasture', 'supplement', 'diet'],
+    health: ['health', 'disease', 'parasite', 'treatment', 'vaccine'],
+    performance: ['weight', 'growth', 'scanning', 'marking', 'weaning'],
+    management: ['management', 'system', 'practice', 'operation', 'decision'],
+    technology: ['technology', 'AI', 'data', 'sensor', 'automation'],
+    economics: ['cost', 'profit', 'price', 'market', 'economic'],
+  };
+
+  // Count occurrences of topic keywords
+  const textLower = allText.toLowerCase();
+  for (const [topic, keywords] of Object.entries(farmingTopics)) {
+    let count = 0;
+    const relevantChunks = [];
+
+    for (const paper of papers) {
+      if (paper.error) continue;
+
+      for (let i = 0; i < paper.content.length; i++) {
+        const chunk = paper.content[i].toLowerCase();
+        const matches = keywords.filter((kw) => chunk.includes(kw));
+
+        if (matches.length > 0) {
+          count += matches.length;
+          relevantChunks.push({
+            paper: paper.title,
+            chunkIndex: i,
+            preview: paper.content[i].slice(0, 200) + '...',
+          });
+        }
+      }
+    }
+
+    if (count > 0) {
+      map.topics[topic] = {
+        count,
+        keywords,
+        relevantChunks: relevantChunks.slice(0, 5), // Top 5 chunks per topic
+      };
+    }
+  }
+
+  // Generate summary
+  const topTopics = Object.entries(map.topics)
+    .sort((a, b) => b[1].count - a[1].count)
+    .slice(0, 5)
+    .map(([topic, data]) => `${topic} (${data.count} references)`);
+
+  map.summary = `Research covers: ${topTopics.join(', ')}`;
+
+  return map;
+}
+
+/**
+ * Get the knowledge map for system prompt
+ */
+function getKnowledgeMap() {
+  return knowledgeMap;
+}
+
+/**
  * Clear research cache (call when papers are added/removed)
  */
 function clearCache() {
   researchCache = null;
+  knowledgeMap = null;
   lastLoadTime = null;
 }
 
@@ -235,5 +358,6 @@ module.exports = {
   buildResearchContext,
   searchResearch,
   getResearchSummary,
+  getKnowledgeMap,
   clearCache,
 };
