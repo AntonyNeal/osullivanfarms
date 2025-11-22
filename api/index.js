@@ -56,6 +56,10 @@ try {
   const mobRoutes = require('./routes/mobs');
   const analyticsRoutes = require('./routes/analytics');
 
+  console.log('Routes loaded successfully');
+  console.log('mobRoutes type:', typeof mobRoutes);
+  console.log('mobRoutes:', mobRoutes);
+
   // Routes - no /api prefix as Azure Functions adds it
   app.use('/bookings', bookingRoutes);
   app.use('/status', statusRoutes);
@@ -64,8 +68,11 @@ try {
   app.use('/sessions', analyticsRoutes); // Sessions endpoint
   app.use('/conversions', analyticsRoutes); // Conversions endpoint
   app.use('/analytics', analyticsRoutes);
+  
+  console.log('All routes mounted');
 } catch (error) {
   console.error('Error loading routes:', error);
+  console.error('Stack:', error.stack);
 }
 
 // Health check endpoint
