@@ -147,13 +147,7 @@ app.get('/', (req, res) => {
   res.json({
     message: "O'Sullivan Farms API",
     version: '1.0.0',
-    endpoints: [
-      '/health',
-      '/mobs',
-      '/farm-statistics',
-      '/farm-advisor',
-      '/test-services',
-    ],
+    endpoints: ['/health', '/mobs', '/farm-statistics', '/farm-advisor', '/test-services'],
   });
 });
 

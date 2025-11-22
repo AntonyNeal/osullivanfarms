@@ -201,11 +201,16 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(` Service Booking Platform API running on port ${PORT}`);
-  console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(` Health check: http://localhost:${PORT}/health`);
-});
+// Start server only if this file is run directly (not imported as a module)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(` Service Booking Platform API running on port ${PORT}`);
+    console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(` Health check: http://localhost:${PORT}/health`);
+  });
+}
+
+// Export app for testing or Azure Functions (if ever needed)
+module.exports = app;
 
 module.exports = app;
