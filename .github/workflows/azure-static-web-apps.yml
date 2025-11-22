@@ -51,6 +51,7 @@ jobs:
         with:
           submodules: true
           lfs: false
+          persist-credentials: false
 
       - name: Deploy to Azure Static Web Apps
         id: builddeploy
@@ -70,4 +71,3 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
           SENDGRID_FROM_EMAIL: ${{ secrets.SENDGRID_FROM_EMAIL }}
-
