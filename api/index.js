@@ -68,7 +68,7 @@ try {
   app.use('/sessions', analyticsRoutes); // Sessions endpoint
   app.use('/conversions', analyticsRoutes); // Conversions endpoint
   app.use('/analytics', analyticsRoutes);
-  
+
   console.log('All routes mounted');
 } catch (error) {
   console.error('Error loading routes:', error);
@@ -82,6 +82,11 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
   });
+});
+
+// Test direct mob route
+app.get('/mobs-test', (req, res) => {
+  res.json({ message: 'Direct route test works!', timestamp: new Date().toISOString() });
 });
 
 // Stub endpoints for analytics (until database is connected)
