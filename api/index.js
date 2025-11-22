@@ -1,4 +1,4 @@
-// Vercel Serverless Function Handler for Express API
+// Azure Functions Handler for Express API (Static Web Apps compatible)
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
@@ -16,6 +16,7 @@ app.use(
 
       // Define allowed patterns for your domains
       const allowedPatterns = [
+        /^https?:\/\/([a-z0-9-]+\.)?azurestaticapps\.net$/, // Azure Static Web Apps
         /^https?:\/\/([a-z0-9-]+\.)?vercel\.app$/, // Vercel deployments
         /^https?:\/\/([a-z0-9-]+\.)?osullivanfarms\.tech$/, // Your custom domain
         /^http:\/\/localhost(:\d+)?$/, // localhost:*
@@ -51,21 +52,32 @@ try {
   const bookingRoutes = require('./routes/bookings');
   const statusRoutes = require('./routes/status');
   const paymentRoutes = require('./routes/payments');
+  const mobRoutes = require('./routes/mobs');
 
-  // Routes
-  app.use('/api/bookings', bookingRoutes);
-  app.use('/api/status', statusRoutes);
-  app.use('/api/payments', paymentRoutes);
+  // Routes - no /api prefix as Azure Functions adds it
+  app.use('/bookings', bookingRoutes);
+  app.use('/status', statusRoutes);
+  app.use('/payments', paymentRoutes);
+  app.use('/mobs', mobRoutes);
 } catch (error) {
   console.error('Error loading routes:', error);
 }
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
+  });
+});
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    message: "O'Sullivan Farms API",
+    version: '1.0.0',
+    endpoints: ['/health', '/bookings', '/status', '/payments', '/mobs'],
   });
 });
 
@@ -87,5 +99,58 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Export the Express app as a Vercel serverless function
-module.exports = app;
+// Azure Functions v4 handler
+module.exports = async function (context, req) {
+  return new Promise((resolve) => {
+    // Create a mock response object
+    const res = {
+      statusCode: 200,
+      headers: {},
+      body: '',
+      status: function (code) {
+        this.statusCode = code;
+        return this;
+      },
+      set: function (key, value) {
+        this.headers[key] = value;
+        return this;
+      },
+      json: function (data) {
+        this.headers['Content-Type'] = 'application/json';
+        this.body = JSON.stringify(data);
+        resolve({
+          status: this.statusCode,
+          headers: this.headers,
+          body: this.body,
+        });
+      },
+      send: function (data) {
+        this.body = typeof data === 'object' ? JSON.stringify(data) : data;
+        resolve({
+          status: this.statusCode,
+          headers: this.headers,
+          body: this.body,
+        });
+      },
+      end: function () {
+        resolve({
+          status: this.statusCode,
+          headers: this.headers,
+          body: this.body,
+        });
+      },
+    };
+
+    // Create a mock request object
+    const mockReq = {
+      method: req.method,
+      url: req.url || '/',
+      headers: req.headers || {},
+      body: req.body,
+      query: req.query || {},
+    };
+
+    // Handle the request with Express
+    app(mockReq, res);
+  });
+};
