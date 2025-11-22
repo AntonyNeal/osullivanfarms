@@ -17,8 +17,9 @@ app.use(
       // Define allowed patterns for your domains
       const allowedPatterns = [
         /^https?:\/\/([a-z0-9-]+\.)?azurestaticapps\.net$/, // Azure Static Web Apps
+        /^https?:\/\/([a-z0-9-]+\.)?sheepsheet\.io$/, // Custom domain (sheepsheet.io, www.sheepsheet.io, dev.sheepsheet.io)
         /^https?:\/\/([a-z0-9-]+\.)?vercel\.app$/, // Vercel deployments
-        /^https?:\/\/([a-z0-9-]+\.)?osullivanfarms\.tech$/, // Your custom domain
+        /^https?:\/\/([a-z0-9-]+\.)?osullivanfarms\.tech$/, // Legacy custom domain
         /^http:\/\/localhost(:\d+)?$/, // localhost:*
         /^http:\/\/127\.0\.0\.1(:\d+)?$/, // 127.0.0.1:*
       ];
@@ -106,7 +107,7 @@ module.exports = async function (context, req) {
   if (url.startsWith('/api')) {
     url = url.substring(4) || '/';
   }
-  
+
   context.log(`Processing ${req.method} ${url}`);
 
   return new Promise((resolve, reject) => {

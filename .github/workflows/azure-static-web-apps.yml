@@ -88,7 +88,7 @@ jobs:
     name: Deploy to Azure Static Web Apps
     environment:
       name: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
-      url: ${{ github.ref_name == 'main' && 'https://witty-coast-049457e0f.3.azurestaticapps.net' || 'https://kind-smoke-078aaff0f.azurestaticapps.net' }}
+      url: ${{ github.ref_name == 'main' && 'https://sheepsheet.io' || 'https://dev.sheepsheet.io' }}
     steps:
       - uses: actions/checkout@v4
 
