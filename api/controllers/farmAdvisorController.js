@@ -42,57 +42,20 @@ async function handleFarmAdvisorQuery(req, res) {
 
     console.log('[FarmAdvisor] Processing question:', question);
 
-    // Save user question to memory (ignore errors if table doesn't exist)
-    try {
-      await autoSaveMemory('user_question', {
-        question,
-        category: categorizeQuestion(question),
-      });
-    } catch (memoryError) {
-      console.log('[FarmAdvisor] Memory save failed (table may not exist):', memoryError.message);
-    }
-
-    // Build comprehensive context
+    // TEMPORARY: Skip all the new code and just use basic pattern matching
+    console.log('[FarmAdvisor] Loading farm context...');
     const farmContext = await getFarmContext();
-    const farmSummary = buildFarmContextSummary(farmContext);
-
-    // Load research (ignore errors)
-    let researchContext = null;
-    let researchSummary = 'No research papers currently loaded.';
-    try {
-      researchContext = await buildResearchContext();
-      researchSummary = await getResearchSummary();
-    } catch (researchError) {
-      console.log('[FarmAdvisor] Research loading failed:', researchError.message);
-    }
-
-    // Load memory (ignore errors)
-    let memoryContext = null;
-    try {
-      memoryContext = await buildMemoryContext();
-    } catch (memoryError) {
-      console.log(
-        '[FarmAdvisor] Memory loading failed (table may not exist):',
-        memoryError.message
-      );
-    }
-
-    // Build system instructions
-    const systemPrompt = buildInstructions(farmSummary, researchSummary, memoryContext);
-
-    // Use OpenAI if available, otherwise fall back to pattern matching
-    if (openai) {
-      const response = await handleWithOpenAI(
-        question,
-        conversationHistory,
-        systemPrompt,
-        farmContext
-      );
-      return res.json(response);
-    } else {
-      const response = await handleWithPatternMatching(question, farmContext);
-      return res.json(response);
-    }
+    console.log('[FarmAdvisor] Farm context loaded, mobs:', farmContext.mobs.length);
+    
+    const response = await generateResponse(question, '', farmContext);
+    console.log('[FarmAdvisor] Response generated');
+    
+    return res.json({
+      success: true,
+      question,
+      response,
+      timestamp: new Date().toISOString(),
+    });
   } catch (error) {
     console.error('[FarmAdvisor] Error:', error);
     console.error('[FarmAdvisor] Error stack:', error.stack);
