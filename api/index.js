@@ -156,10 +156,16 @@ app.get('/', (req, res) => {
 
 // Farm Advisor endpoints
 app.post('/farm-advisor', async (req, res) => {
+  console.log('[DEBUG] Farm advisor route hit!');
+  console.log('[DEBUG] Request body:', req.body);
+  console.log('[DEBUG] Request method:', req.method);
+  console.log('[DEBUG] Request path:', req.path);
+  
   try {
     const { question } = req.body;
 
     if (!question || typeof question !== 'string') {
+      console.log('[DEBUG] Invalid question:', question);
       return res.status(400).json({
         success: false,
         error: 'Question is required',
@@ -172,11 +178,12 @@ app.post('/farm-advisor', async (req, res) => {
     res.json({
       success: true,
       question,
-      response: 'Farm advisor endpoint is working - inline handler',
+      response: 'Farm advisor endpoint is working - inline handler with debug logging',
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error('[FarmAdvisor] Error:', error);
+    console.error('[FarmAdvisor] Error stack:', error.stack);
     res.status(500).json({
       success: false,
       error: 'Failed to process farm advisor query',
