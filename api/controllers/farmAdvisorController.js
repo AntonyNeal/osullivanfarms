@@ -1,40 +1,15 @@
-// Farm Advisor API Controller with Agentic AI capabilities
-// TEMP: Commenting out unused imports for debugging
-// const { TOOLS, executeTool, executeConfirmedTool } = require('../services/tools');
-// const { buildInstructions, buildFarmContextSummary } = require('../services/instructions');
-// const { buildResearchContext, getResearchSummary } = require('../services/research');
-// const { buildMemoryContext, autoSaveMemory } = require('../services/memory');
-const { getFarmContext } = require('../services/farmAdvisor');
-
-// OpenAI integration (optional - falls back to pattern matching)
-let openai = null;
-try {
-  const { OpenAI } = require('openai');
-  if (process.env.OPENAI_API_KEY) {
-    openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-    console.log('[FarmAdvisor] OpenAI integration enabled');
-  } else {
-    console.log('[FarmAdvisor] OpenAI API key not found, using pattern matching mode');
-  }
-} catch (error) {
-  console.log('[FarmAdvisor] OpenAI library not installed, using pattern matching mode');
-}
+// Farm Advisor API Route
+const { getFarmContext, buildSystemPrompt } = require('../services/farmAdvisor');
 
 /**
  * POST /api/farm-advisor
- * Main endpoint for agentic chatbot with tool execution
+ * Process user questions and return AI-generated farm advice
  */
 async function handleFarmAdvisorQuery(req, res) {
-  console.log('[FarmAdvisor] === REQUEST START ===');
-  console.log('[FarmAdvisor] Body:', JSON.stringify(req.body));
-
   try {
-    const { question, conversationHistory = [] } = req.body;
+    const { question } = req.body;
 
     if (!question || typeof question !== 'string') {
-      console.log('[FarmAdvisor] Bad request - no question');
       return res.status(400).json({
         success: false,
         error: 'Question is required',
@@ -43,15 +18,13 @@ async function handleFarmAdvisorQuery(req, res) {
 
     console.log('[FarmAdvisor] Processing question:', question);
 
-    // TEMPORARY: Skip all the new code and just use basic pattern matching
-    console.log('[FarmAdvisor] Loading farm context...');
-    const farmContext = await getFarmContext();
-    console.log('[FarmAdvisor] Farm context loaded, mobs:', farmContext.mobs.length);
+    // Get farm context
+    const context = await getFarmContext();
+    const systemPrompt = buildSystemPrompt(context);
 
-    const response = await generateResponse(question, '', farmContext);
-    console.log('[FarmAdvisor] Response generated');
+    const response = await generateResponse(question, systemPrompt, context);
 
-    return res.json({
+    res.json({
       success: true,
       question,
       response,
@@ -59,12 +32,10 @@ async function handleFarmAdvisorQuery(req, res) {
     });
   } catch (error) {
     console.error('[FarmAdvisor] Error:', error);
-    console.error('[FarmAdvisor] Error stack:', error.stack);
     res.status(500).json({
       success: false,
       error: 'Failed to process farm advisor query',
       message: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
     });
   }
 }
@@ -334,5 +305,4 @@ Your current average scanning percentage is ${parseFloat(context.farmStats.avg_s
 
 module.exports = {
   handleFarmAdvisorQuery,
-  handleConfirmedOperation,
 };

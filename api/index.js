@@ -84,10 +84,7 @@ app.get('/mobs-test', (req, res) => {
 
 // Database connection
 const db = require('./db');
-const {
-  handleFarmAdvisorQuery,
-  handleConfirmedOperation,
-} = require('./controllers/farmAdvisorController');
+const { handleFarmAdvisorQuery } = require('./controllers/farmAdvisorController');
 const { testServices } = require('./controllers/testController');
 
 // Direct mobs routes with database integration
@@ -155,7 +152,6 @@ app.get('/', (req, res) => {
       '/mobs',
       '/farm-statistics',
       '/farm-advisor',
-      '/farm-advisor/confirm',
       '/test-services',
     ],
   });
@@ -166,7 +162,6 @@ app.get('/test-services', testServices);
 
 // Farm Advisor endpoints
 app.post('/farm-advisor', handleFarmAdvisorQuery);
-app.post('/farm-advisor/confirm', handleConfirmedOperation);
 
 // 404 handler
 app.use((req, res) => {
