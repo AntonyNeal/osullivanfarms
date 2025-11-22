@@ -28,6 +28,10 @@
       "env": {
         "DO_API_TOKEN": "${env:DO_API_TOKEN}"
       }
+    },
+    "buildhub": {
+      "command": "npx",
+      "args": ["-y", "@buildhub/mcp-server"]
     }
   },
   "azureFunctions.deploySubpath": "api",
