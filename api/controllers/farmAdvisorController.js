@@ -51,7 +51,7 @@ async function handleFarmAdvisorQuery(req, res) {
     // Build comprehensive context
     const farmContext = await getFarmContext();
     const farmSummary = buildFarmContextSummary(farmContext);
-    
+
     // Load research (ignore errors)
     let researchContext = null;
     let researchSummary = 'No research papers currently loaded.';
@@ -61,13 +61,16 @@ async function handleFarmAdvisorQuery(req, res) {
     } catch (researchError) {
       console.log('[FarmAdvisor] Research loading failed:', researchError.message);
     }
-    
+
     // Load memory (ignore errors)
     let memoryContext = null;
     try {
       memoryContext = await buildMemoryContext();
     } catch (memoryError) {
-      console.log('[FarmAdvisor] Memory loading failed (table may not exist):', memoryError.message);
+      console.log(
+        '[FarmAdvisor] Memory loading failed (table may not exist):',
+        memoryError.message
+      );
     }
 
     // Build system instructions
@@ -88,10 +91,12 @@ async function handleFarmAdvisorQuery(req, res) {
     }
   } catch (error) {
     console.error('[FarmAdvisor] Error:', error);
+    console.error('[FarmAdvisor] Error stack:', error.stack);
     res.status(500).json({
       success: false,
       error: 'Failed to process farm advisor query',
       message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
     });
   }
 }
