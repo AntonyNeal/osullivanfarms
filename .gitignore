@@ -41,11 +41,5 @@ lerna-debug.log*
 # OS
 Thumbs.db
 
-# Terraform
-*.tfstate
-*.tfstate.*
-.terraform/
-terraform.tfvars
-
 # Build artifacts
 *.tsbuildinfo

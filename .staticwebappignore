@@ -1,33 +1,39 @@
 # This file is kept for reference but not actively used
+
 # The workflow now deploys only the contents of the dist folder
 
 # Dependencies
+
 node_modules/
 api/node_modules/
 mcp-server/node_modules/
 
 # Source files
+
 src/
 
 # Development files
-*.md
+
+\*.md
 .git/
 .github/
 .vscode/
 
 # Environment files
-.env*
+
+.env\*
 
 # Documentation
+
 docs/
 deployment/
-terraform/
 scripts/
 
 # Build config files
-*.config.ts
-*.config.js
-tsconfig*.json
+
+_.config.ts
+_.config.js
+tsconfig\*.json
 eslint.config.js
 playwright.config.ts
 postcss.config.js
@@ -35,22 +41,25 @@ tailwind.config.js
 vite.config.ts
 
 # Other files not needed in deployment
+
 package.json
 package-lock.json
 README.md
-*.sh
-*.ps1
+_.sh
+_.ps1
 Procfile
 vercel.json
 firebase.json
 
 # Database and migration files
+
 db/
 
 # Tests
+
 tests/
-test-*.ps1
+test-\*.ps1
 
 # SDK and templates
-sdk/
 
+sdk/

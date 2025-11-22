@@ -1,51 +1,86 @@
 # Azure API Deployment Guide
 
-This guide walks you through deploying the O'Sullivan Farms API to Azure Container Apps using Terraform and GitHub Actions.
+This guide walks you through deploying the O'Sullivan Farms API to Azure Container Apps using Azure CLI and GitHub Actions.
 
 ## Prerequisites
 
 - Azure CLI installed and logged in (`az login`)
-- Terraform installed (v1.0+)
 - Azure subscription with appropriate permissions
 - GitHub repository with Actions enabled
 
 ## Step 1: Provision Azure Infrastructure
 
-Navigate to the Terraform directory and initialize:
+### Create Resource Group
 
 ```bash
-cd terraform/azure
-terraform init
+az group create \
+  --name osullivanfarms-rg \
+  --location eastus2
 ```
 
-Create a `terraform.tfvars` file with your configuration:
-
-```hcl
-resource_group_name = "osullivanfarms-rg"
-location            = "eastus2"
-project_name        = "osullivanfarms"
-db_admin_username   = "dbadmin"
-db_admin_password   = "YourSecurePassword123!"  # Change this!
-```
-
-Review the plan:
+### Create Container Registry
 
 ```bash
-terraform plan
+az acr create \
+  --resource-group osullivanfarms-rg \
+  --name osullivanfarmsacr \
+  --sku Basic
 ```
 
-Apply the configuration:
+### Create PostgreSQL Database
 
 ```bash
-terraform apply
+az postgres flexible-server create \
+  --resource-group osullivanfarms-rg \
+  --name osullivanfarms-db \
+  --location eastus2 \
+  --admin-user dbadmin \
+  --admin-password 'YourSecurePassword123!' \
+  --sku-name Standard_B1ms \
+  --tier Burstable \
+  --storage-size 32 \
+  --version 14 \
+  --public-access 0.0.0.0
 ```
 
-**Note the outputs** - you'll need these for GitHub Secrets:
+### Create Database
 
-- `container_registry_name`
-- `container_registry_login_server`
-- `database_host`
-- `api_url`
+```bash
+az postgres flexible-server db create \
+  --resource-group osullivanfarms-rg \
+  --server-name osullivanfarms-db \
+  --database-name osullivanfarms
+```
+
+### Create Container App Environment
+
+```bash
+az containerapp env create \
+  --name osullivanfarms-env \
+  --resource-group osullivanfarms-rg \
+  --location eastus2
+```
+
+### Create Container App
+
+```bash
+az containerapp create \
+  --name osullivanfarms-api \
+  --resource-group osullivanfarms-rg \
+  --environment osullivanfarms-env \
+  --image mcr.microsoft.com/azuredocs/containerapps-helloworld:latest \
+  --target-port 8080 \
+  --ingress external \
+  --cpu 0.25 \
+  --memory 0.5Gi
+```
+
+**Note these values** - you'll need them for GitHub Secrets:
+
+- Container Registry: `osullivanfarmsacr.azurecr.io`
+- Database Host: `osullivanfarms-db.postgres.database.azure.com`
+- Database Name: `osullivanfarms`
+- Database User: `dbadmin`
 
 ## Step 2: Configure GitHub Secrets
 
@@ -69,12 +104,14 @@ Push changes to the `api/` directory on the `main` branch, and the workflow will
 ### Check Health Endpoint
 
 ```bash
-# Get the API URL from Terraform
-cd terraform/azure
-API_URL=$(terraform output -raw api_url)
+# Get the API URL
+API_URL=$(az containerapp show \
+  --name osullivanfarms-api \
+  --resource-group osullivanfarms-rg \
+  --query "properties.configuration.ingress.fqdn" -o tsv)
 
 # Test health endpoint
-curl $API_URL/health
+curl https://$API_URL/health
 ```
 
 Expected response:
@@ -100,11 +137,17 @@ az containerapp logs show \
 
 Update `.env.development` to point to your deployed API:
 
-```env
-VITE_API_BASE_URL=<your-api-url-from-terraform-output>
+```bash
+# Get the API URL
+API_URL=$(az containerapp show \
+  --name osullivanfarms-api \
+  --resource-group osullivanfarms-rg \
+  --query "properties.configuration.ingress.fqdn" -o tsv)
+
+echo "VITE_API_BASE_URL=https://$API_URL/api"
 ```
 
-Restart your frontend dev server to pick up the changes.
+Add the output to your `.env.development` file and restart your frontend dev server.
 
 ## Troubleshooting
 
@@ -159,8 +202,7 @@ Estimated monthly cost: ~$50-75 USD
 To destroy all resources:
 
 ```bash
-cd terraform/azure
-terraform destroy
+az group delete --name osullivanfarms-rg --yes
 ```
 
 **Warning**: This will permanently delete all data!

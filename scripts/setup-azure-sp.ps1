@@ -44,10 +44,8 @@ Write-Host "3. Click 'New repository secret'" -ForegroundColor White
 Write-Host "4. Name: AZURE_CREDENTIALS" -ForegroundColor White
 Write-Host "5. Value: Paste the entire JSON output" -ForegroundColor White
 Write-Host "6. Click 'Add secret'" -ForegroundColor White
-Write-Host "`n7. Then run Terraform to provision infrastructure:" -ForegroundColor White
-Write-Host "   cd terraform/azure" -ForegroundColor Gray
-Write-Host "   terraform init" -ForegroundColor Gray
-Write-Host "   terraform apply" -ForegroundColor Gray
+Write-Host "`n7. Then provision infrastructure using Azure CLI" -ForegroundColor White
+Write-Host "   See docs/deployment/AZURE-API-DEPLOYMENT.md for details" -ForegroundColor Gray
 
 # Optional: Open browser to GitHub secrets page
 $response = Read-Host "`nOpen GitHub Secrets page in browser? (y/n)"

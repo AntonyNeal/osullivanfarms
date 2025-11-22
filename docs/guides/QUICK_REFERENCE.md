@@ -3,6 +3,7 @@
 ## Essential Commands
 
 ### Development
+
 ```powershell
 # Install everything
 .\install.ps1
@@ -18,6 +19,7 @@ npm run lint && npm run type-check && npm run test:unit:run
 ```
 
 ### Testing
+
 ```powershell
 npm run test              # E2E tests (Playwright)
 npm run test:unit         # Unit tests watch mode
@@ -25,12 +27,14 @@ npm run test:unit:run     # Unit tests once
 ```
 
 ### Building
+
 ```powershell
 npm run build            # Production build
 npm run preview          # Preview build locally
 ```
 
 ### Code Quality
+
 ```powershell
 npm run lint             # Check for errors
 npm run lint:fix         # Fix errors
@@ -49,27 +53,28 @@ sw_website/
 │   └── services/          # API services
 ├── api/                   # Backend API
 ├── functions/             # Serverless functions
-├── terraform/             # Infrastructure
 └── tests/                 # E2E tests
 ```
 
 ## Important Files
 
-| File | Purpose |
-|------|---------|
-| `.env` | Environment variables (create from .env.example) |
-| `package.json` | Frontend dependencies & scripts |
-| `api/package.json` | Backend dependencies |
-| `vite.config.ts` | Build configuration |
-| `tailwind.config.js` | Styling configuration |
-| `.do/app.yaml` | DigitalOcean deployment |
+| File                 | Purpose                                          |
+| -------------------- | ------------------------------------------------ |
+| `.env`               | Environment variables (create from .env.example) |
+| `package.json`       | Frontend dependencies & scripts                  |
+| `api/package.json`   | Backend dependencies                             |
+| `vite.config.ts`     | Build configuration                              |
+| `tailwind.config.js` | Styling configuration                            |
+| `.do/app.yaml`       | DigitalOcean deployment                          |
 
 ## Environment Variables
 
 **Required for Frontend:**
+
 - `VITE_API_BASE_URL` - API endpoint (default: http://localhost:3001/api)
 
 **Required for Backend:**
+
 - `PORT` - Server port (default: 3001)
 - `ALLOWED_ORIGINS` - CORS origins
 - `DATABASE_URL` - PostgreSQL connection string
@@ -77,6 +82,7 @@ sw_website/
 ## Deployment Quick Steps
 
 ### DigitalOcean App Platform
+
 ```powershell
 # Install CLI
 scoop install doctl
@@ -89,6 +95,7 @@ doctl apps create --spec .do/app.yaml
 ```
 
 ### Functions
+
 ```powershell
 cd functions
 doctl serverless deploy . --remote-build
@@ -114,12 +121,14 @@ git push origin feature/my-feature
 ## Common Issues
 
 **Port in use:**
+
 ```powershell
 netstat -ano | findstr :5173
 taskkill /PID <PID> /F
 ```
 
 **Dependencies issue:**
+
 ```powershell
 rm -rf node_modules
 rm package-lock.json
@@ -127,6 +136,7 @@ npm install
 ```
 
 **Build errors:**
+
 ```powershell
 rm -rf dist
 npm run build

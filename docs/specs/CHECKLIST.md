@@ -13,7 +13,6 @@
 - [x] Testing setup (Playwright, Vitest)
 - [x] Environment configuration
 - [x] DigitalOcean App Platform config (.do/app.yaml)
-- [x] Terraform infrastructure files
 - [x] GitHub Actions CI/CD pipeline
 - [x] Documentation (README, DEVELOPMENT guide)
 
@@ -69,18 +68,10 @@ Go to GitHub repository → Settings → Secrets and variables → Actions
 - [ ] `GA_MEASUREMENT_ID` - Google Analytics measurement ID (optional)
 - [ ] `API_BASE_URL` - Production API URL (optional)
 
-### 7. Deploy Infrastructure (Optional - Terraform)
-
-```powershell
-cd terraform
-terraform init
-terraform plan -var="do_token=YOUR_TOKEN"
-terraform apply -var="do_token=YOUR_TOKEN"
-```
-
-### 8. Deploy to DigitalOcean
+### 7. Deploy to DigitalOcean
 
 **Option A: Web Console**
+
 1. Go to https://cloud.digitalocean.com/apps
 2. Click "Create App"
 3. Connect GitHub repository
@@ -89,11 +80,12 @@ terraform apply -var="do_token=YOUR_TOKEN"
 6. Deploy
 
 **Option B: CLI**
+
 ```powershell
 doctl apps create --spec .do/app.yaml
 ```
 
-### 9. Deploy Functions (Optional)
+### 8. Deploy Functions (Optional)
 
 ```powershell
 cd functions
@@ -169,6 +161,7 @@ npm run build
 ### TypeScript Errors
 
 The TypeScript errors you see are expected until dependencies are installed:
+
 ```powershell
 npm install
 ```

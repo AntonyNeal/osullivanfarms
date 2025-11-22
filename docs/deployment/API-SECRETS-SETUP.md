@@ -37,7 +37,10 @@ The output JSON should be added as the secret value.
 PostgreSQL server hostname
 
 - **Example**: `osullivanfarms-db.postgres.database.azure.com`
-- **Get from**: Terraform output `database_host` or Azure Portal
+- **Get from**: Azure Portal or use:
+  ```bash
+  az postgres flexible-server show --name osullivanfarms-db --resource-group osullivanfarms-rg --query "fullyQualifiedDomainName" -o tsv
+  ```
 
 #### `DB_PORT`
 
@@ -56,14 +59,14 @@ Database name
 Database admin username
 
 - **Example**: `dbadmin`
-- **Match with**: Terraform variable `db_admin_username`
+- **Match with**: The username you used when creating the database
 
 #### `DB_PASSWORD`
 
 Database admin password
 
 - **Security**: Use a strong password
-- **Match with**: Terraform variable `db_admin_password`
+- **Match with**: The password you used when creating the database
 
 ---
 
