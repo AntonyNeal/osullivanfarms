@@ -1,5 +1,5 @@
 // Farm Advisor API Route
-const { getFarmContext, buildSystemPrompt } = require('../services/farmAdvisor');
+// const { getFarmContext, buildSystemPrompt } = require('../services/farmAdvisor');
 
 /**
  * POST /api/farm-advisor
@@ -22,7 +22,7 @@ async function handleFarmAdvisorQuery(req, res) {
     res.json({
       success: true,
       question,
-      response: 'Farm advisor endpoint is working. Services are being loaded...',
+      response: 'Farm advisor endpoint is working. Module imports commented out.',
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
