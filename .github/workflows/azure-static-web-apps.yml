@@ -104,7 +104,7 @@ jobs:
       - name: Build application
         run: npm run build
         env:
-          VITE_API_BASE_URL: https://osullivanfarms-api.azurewebsites.net/api/HttpTrigger
+          VITE_API_BASE_URL: https://osullivanfarms-api.azurewebsites.net/api
 
       - name: Debug - Check frontend size
         run: |
