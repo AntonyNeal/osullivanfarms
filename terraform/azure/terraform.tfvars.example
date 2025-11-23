@@ -1,0 +1,17 @@
+# Copy this file to terraform.tfvars and fill in your sensitive values
+# DO NOT commit terraform.tfvars to git!
+
+# PostgreSQL admin password (must be complex: 8+ chars, uppercase, lowercase, numbers, special chars)
+db_admin_password = "YourSecurePassword123!"
+
+# OpenAI API key from https://platform.openai.com/api-keys
+openai_api_key = "sk-proj-..."
+
+# Optional: Override default values
+# resource_group_name        = "osullivanfarms-rg"
+# location                   = "East US 2"
+# db_location                = "Australia East"
+# storage_account_name       = "osullivanfarmsstorage"
+# postgresql_server_name     = "osullivanfarms-db"
+# function_app_name          = "osullivanfarms-api"
+# static_web_app_name        = "osullivanfarms"

@@ -2,6 +2,26 @@
 
 A comprehensive, multi-tenant service booking platform built with React, TypeScript, and Vite. This template provides a complete foundation for building booking systems across various industries including consulting, coaching, professional services, and more.
 
+## 🏗️ Infrastructure as Code
+
+**New: Complete disaster recovery and infrastructure provisioning!**
+
+👉 **[TERRAFORM IaC SETUP](./terraform/README.md)** 👈
+
+- ✅ Rebuild entire Azure infrastructure in ~15 minutes
+- ✅ Version-controlled infrastructure (main.tf, variables.tf, outputs.tf)
+- ✅ Automated deployment scripts (deploy.ps1)
+- ✅ Disaster recovery ready - delete everything and recreate identically
+
+```powershell
+cd terraform/azure
+.\deploy.ps1  # Complete infrastructure deployment
+```
+
+[Read the Terraform Guide →](./terraform/README.md)
+
+---
+
 ## 🎯 Quick Start for New Users
 
 **Want to create your own booking app?**
