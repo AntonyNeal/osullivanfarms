@@ -2,7 +2,7 @@
   "name": "osullivanfarms-api",
   "version": "1.0.1",
   "description": "Backend API for O'Sullivan Farms booking platform",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",

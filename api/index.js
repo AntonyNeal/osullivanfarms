@@ -208,125 +208,78 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Azure Functions v4 handler
+// Azure Functions handler - bridges Azure Functions to Express
 module.exports = async function (context, req) {
   // Get path from route parameter
-  let url = '/' + (req.params.restOfPath || '');
+  const path = '/' + (req.params.restOfPath || '');
+  
+  context.log(`[AZURE] ${req.method} ${path}`);
 
-  // Preserve query string if present
-  if (req.url && req.url.includes('?')) {
-    const queryString = req.url.substring(req.url.indexOf('?'));
-    url += queryString;
-  }
-
-  context.log(`[AZURE] Processing ${req.method} ${url}`);
-  context.log(`[AZURE] Request body:`, JSON.stringify(req.body));
-  context.log(`[AZURE] Request params:`, JSON.stringify(req.params));
-
-  return new Promise((resolve, reject) => {
-    // Create a mock response object that matches Express expectations
-    const res = {
+  return new Promise((resolve) => {
+    // Create response mock that collects Express response
+    const mockRes = {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: '',
-      headersSent: false,
-
-      status: function (code) {
+      headers: {},
+      body: null,
+      
+      status(code) {
         this.statusCode = code;
         return this;
       },
-
-      set: function (key, value) {
+      
+      set(key, value) {
         this.headers[key] = value;
         return this;
       },
-
-      setHeader: function (key, value) {
-        this.headers[key] = value;
-        return this;
-      },
-
-      getHeader: function (key) {
-        return this.headers[key];
-      },
-
-      json: function (data) {
+      
+      json(data) {
         this.headers['Content-Type'] = 'application/json';
         this.body = JSON.stringify(data);
-        this.headersSent = true;
-        resolve({
-          status: this.statusCode,
-          headers: this.headers,
-          body: this.body,
-        });
+        this.end();
       },
-
-      send: function (data) {
+      
+      send(data) {
         this.body = typeof data === 'object' ? JSON.stringify(data) : String(data);
         if (typeof data === 'object') {
           this.headers['Content-Type'] = 'application/json';
         }
-        this.headersSent = true;
-        resolve({
-          status: this.statusCode,
-          headers: this.headers,
-          body: this.body,
-        });
+        this.end();
       },
-
-      end: function (data) {
-        if (data) {
+      
+      end(data) {
+        if (data && !this.body) {
           this.body = String(data);
         }
-        this.headersSent = true;
         resolve({
           status: this.statusCode,
           headers: this.headers,
-          body: this.body,
+          body: this.body || '',
         });
       },
     };
 
-    // Create a mock request object that matches Express expectations
+    // Create request mock
     const mockReq = {
       method: req.method,
-      url: url,
-      path: url.split('?')[0],
-      originalUrl: url,
+      url: path,
+      path: path.split('?')[0],
       headers: req.headers || {},
-      body: req.body,
+      body: req.body || {},
       query: req.query || {},
       params: req.params || {},
-      get: function (header) {
-        return this.headers[header.toLowerCase()];
+      get(header) {
+        return this.headers[header?.toLowerCase()];
       },
     };
 
-    // Handle the request with Express
-    try {
-      app(mockReq, res);
-
-      // Timeout fallback in case response isn't sent
-      setTimeout(() => {
-        if (!res.headersSent) {
-          context.log.warn('Request timeout - no response sent');
-          resolve({
-            status: 504,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ error: 'Gateway Timeout' }),
-          });
-        }
-      }, 30000); // 30 second timeout
-    } catch (error) {
-      context.log.error('Error processing request:', error);
+    // Process request through Express
+    app(mockReq, mockRes, () => {
+      // 404 fallback if no route handled it
       resolve({
-        status: 500,
+        status: 404,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          error: 'Internal Server Error',
-          message: error.message,
-        }),
+        body: JSON.stringify({ error: 'Not Found' }),
       });
-    }
+    });
   });
 };
