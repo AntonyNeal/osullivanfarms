@@ -63,7 +63,7 @@ export default function AuthGate({ children }: AuthGateProps) {
 
               <div className="space-y-4 text-base">
                 <p className="leading-relaxed">
-                  G&apos;day Hope! Welcome to <strong>SheepSheet</strong> — your digital stockbook
+                  G&apos;day Leigh! Welcome to <strong>SheepSheet</strong> — your digital stockbook
                   for the modern age. This platform was built especially for O&apos;Sullivan Farms
                   to help you track your mobs, monitor breeding performance, and get practical
                   advice from your AI farm advisor.
