@@ -212,44 +212,64 @@ app.use((err, req, res, next) => {
 module.exports = async function (context, req) {
   // Get path from route parameter
   const path = '/' + (req.params.restOfPath || '');
-  
+
   context.log(`[AZURE] ${req.method} ${path}`);
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
+    let responded = false;
+
     // Create response mock that collects Express response
     const mockRes = {
       statusCode: 200,
       headers: {},
       body: null,
-      
+      finished: false,
+
       status(code) {
         this.statusCode = code;
         return this;
       },
-      
+
       set(key, value) {
         this.headers[key] = value;
         return this;
       },
-      
+
       json(data) {
+        if (responded) return;
+        responded = true;
         this.headers['Content-Type'] = 'application/json';
         this.body = JSON.stringify(data);
-        this.end();
+        this.finished = true;
+        resolve({
+          status: this.statusCode,
+          headers: this.headers,
+          body: this.body,
+        });
       },
-      
+
       send(data) {
+        if (responded) return;
+        responded = true;
         this.body = typeof data === 'object' ? JSON.stringify(data) : String(data);
         if (typeof data === 'object') {
           this.headers['Content-Type'] = 'application/json';
         }
-        this.end();
+        this.finished = true;
+        resolve({
+          status: this.statusCode,
+          headers: this.headers,
+          body: this.body,
+        });
       },
-      
+
       end(data) {
+        if (responded) return;
+        responded = true;
         if (data && !this.body) {
           this.body = String(data);
         }
+        this.finished = true;
         resolve({
           status: this.statusCode,
           headers: this.headers,
@@ -272,14 +292,60 @@ module.exports = async function (context, req) {
       },
     };
 
-    // Process request through Express
-    app(mockReq, mockRes, () => {
-      // 404 fallback if no route handled it
-      resolve({
-        status: 404,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'Not Found' }),
+    // Timeout safety
+    const timeout = setTimeout(() => {
+      if (!responded) {
+        responded = true;
+        context.log.error('[AZURE] Request timeout');
+        resolve({
+          status: 504,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Gateway Timeout' }),
+        });
+      }
+    }, 29000);
+
+    try {
+      // Process request through Express
+      app(mockReq, mockRes, (err) => {
+        clearTimeout(timeout);
+        if (responded) return;
+        responded = true;
+
+        if (err) {
+          context.log.error('[AZURE] Express error:', err);
+          resolve({
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              error: 'Internal Server Error',
+              message: err.message,
+            }),
+          });
+        } else {
+          // 404 - no route matched
+          resolve({
+            status: 404,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ error: 'Not Found' }),
+          });
+        }
       });
-    });
+    } catch (error) {
+      clearTimeout(timeout);
+      if (!responded) {
+        responded = true;
+        context.log.error('[AZURE] Catch block error:', error);
+        resolve({
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            error: 'Internal Server Error',
+            message: error.message,
+            stack: error.stack,
+          }),
+        });
+      }
+    }
   });
 };
