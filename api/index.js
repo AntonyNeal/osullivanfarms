@@ -160,7 +160,7 @@ app.post('/farm-advisor', async (req, res) => {
   console.log('[DEBUG] Request body:', req.body);
   console.log('[DEBUG] Request method:', req.method);
   console.log('[DEBUG] Request path:', req.path);
-  
+
   try {
     const { question } = req.body;
 

@@ -3,7 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8080; // Changed from 3001 to 8080 for Azure Container Apps
 
 // Import routes
 const mobRoutes = require('./routes/mobs');
