@@ -221,7 +221,10 @@ module.exports = async function (context, req) {
     url += queryString;
   }
 
-  context.log(`Processing ${req.method} ${url}`);
+  context.log(`[AZURE] Processing ${req.method} ${url}`);
+  context.log(`[AZURE] Request body:`, JSON.stringify(req.body));
+  context.log(`[AZURE] Request params:`, JSON.stringify(req.params));
+
   return new Promise((resolve, reject) => {
     // Create a mock response object that matches Express expectations
     const res = {
