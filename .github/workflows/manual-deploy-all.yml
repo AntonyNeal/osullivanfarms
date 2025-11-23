@@ -1,15 +1,6 @@
-name: CI/CD Pipeline
+name: Manual Deploy All (No Skips)
 
 on:
-  push:
-    branches:
-      - main
-      - staging
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-    branches:
-      - main
-      - staging
   workflow_dispatch:
 
 env:
@@ -18,35 +9,8 @@ env:
   FUNCTION_APP: osullivanfarms-api
 
 jobs:
-  # Detect what changed
-  detect_changes:
-    runs-on: ubuntu-latest
-    outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
-      api: ${{ steps.filter.outputs.api }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            frontend:
-              - 'src/**'
-              - 'public/**'
-              - 'index.html'
-              - 'vite.config.ts'
-              - 'package.json'
-              - 'tsconfig.json'
-              - '.github/workflows/azure-static-web-apps.yml'
-            api:
-              - 'api/**'
-              - '.github/workflows/azure-static-web-apps.yml'
-
-  # Quality checks for both frontend and API
+  # Quality checks for both frontend and API - always run
   quality_check:
-    needs: detect_changes
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Quality Check
     steps:
@@ -59,31 +23,23 @@ jobs:
           cache: 'npm'
 
       - name: Install frontend dependencies
-        if: needs.detect_changes.outputs.frontend == 'true'
         run: npm ci
 
       - name: Lint frontend code
-        if: needs.detect_changes.outputs.frontend == 'true'
         run: npm run lint
 
       - name: Run frontend unit tests
-        if: needs.detect_changes.outputs.frontend == 'true'
         run: npm run test:unit:run
 
       - name: Install API dependencies
-        if: needs.detect_changes.outputs.api == 'true'
         run: npm ci --prefix api
 
       - name: Run API tests
-        if: needs.detect_changes.outputs.api == 'true'
         run: npm test --prefix api
 
-  # Deploy to Azure Static Web Apps (Frontend + API together)
+  # Deploy to Azure Static Web Apps (Frontend + API together) - always run
   deploy_static_web_app:
-    needs: [detect_changes, quality_check]
-    if: |
-      github.event_name == 'push' && 
-      (needs.detect_changes.outputs.frontend == 'true' || needs.detect_changes.outputs.api == 'true')
+    needs: quality_check
     runs-on: ubuntu-latest
     name: Deploy to Azure Static Web Apps
     environment:
@@ -124,13 +80,9 @@ jobs:
           output_location: '.'
           skip_app_build: true
 
-  # Deploy API to Azure Functions
+  # Deploy API to Azure Functions - always run
   deploy_api:
-    needs: [detect_changes, quality_check]
-    if: |
-      github.event_name == 'push' && 
-      github.ref_name == 'main' &&
-      needs.detect_changes.outputs.api == 'true'
+    needs: quality_check
     runs-on: ubuntu-latest
     name: Deploy API to Azure Functions
     environment:
