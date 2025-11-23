@@ -361,4 +361,5 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 This template provides everything you need to get started. Customize the demo tenant, deploy to your preferred platform, and start accepting bookings today!
 
 For questions or support, please [open an issue](https://github.com/AntonyNeal/service-booking-platform-template/issues) or contact us directly.
+
 # Build 2025-11-22 21:02
