@@ -1,28 +1,54 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- Sheep body (fluffy cloud shape) -->
-  <ellipse cx="50" cy="55" rx="35" ry="28" fill="#E8E8E8" stroke="#333" stroke-width="2"/>
+  <!-- Fluffy cloud-like body (front view) -->
+  <ellipse cx="50" cy="58" rx="35" ry="28" fill="#E8E8E8" stroke="#333" stroke-width="2"/>
   
-  <!-- Sheep head -->
-  <circle cx="65" cy="40" r="15" fill="#F5F5F5" stroke="#333" stroke-width="2"/>
+  <!-- LOTS of fluffy wool puffs all over body -->
+  <circle cx="28" cy="50" r="11" fill="#F5F5F5" opacity="0.95"/>
+  <circle cx="38" cy="45" r="10" fill="#F5F5F5" opacity="0.95"/>
+  <circle cx="50" cy="42" r="11" fill="#F5F5F5" opacity="0.95"/>
+  <circle cx="62" cy="45" r="10" fill="#F5F5F5" opacity="0.95"/>
+  <circle cx="72" cy="50" r="11" fill="#F5F5F5" opacity="0.95"/>
   
-  <!-- Ears -->
-  <ellipse cx="60" cy="32" rx="4" ry="8" fill="#D0D0D0" stroke="#333" stroke-width="1.5"/>
-  <ellipse cx="70" cy="32" rx="4" ry="8" fill="#D0D0D0" stroke="#333" stroke-width="1.5"/>
+  <circle cx="25" cy="60" r="10" fill="#F5F5F5" opacity="0.95"/>
+  <circle cx="38" cy="58" r="9" fill="#F5F5F5" opacity="0.95"/>
+  <circle cx="50" cy="56" r="10" fill="#F5F5F5" opacity="0.95"/>
+  <circle cx="62" cy="58" r="9" fill="#F5F5F5" opacity="0.95"/>
+  <circle cx="75" cy="60" r="10" fill="#F5F5F5" opacity="0.95"/>
   
-  <!-- Face details -->
-  <circle cx="62" cy="38" r="2" fill="#333"/>
-  <circle cx="68" cy="38" r="2" fill="#333"/>
-  <path d="M 63 43 Q 65 45 67 43" stroke="#333" stroke-width="1.5" fill="none"/>
+  <circle cx="32" cy="68" r="9" fill="#F5F5F5" opacity="0.95"/>
+  <circle cx="44" cy="68" r="8" fill="#F5F5F5" opacity="0.95"/>
+  <circle cx="56" cy="68" r="8" fill="#F5F5F5" opacity="0.95"/>
+  <circle cx="68" cy="68" r="9" fill="#F5F5F5" opacity="0.95"/>
   
-  <!-- Legs -->
-  <rect x="35" y="75" width="5" height="15" rx="2" fill="#333"/>
-  <rect x="45" y="75" width="5" height="15" rx="2" fill="#333"/>
-  <rect x="55" y="75" width="5" height="15" rx="2" fill="#333"/>
-  <rect x="65" y="75" width="5" height="15" rx="2" fill="#333"/>
+  <!-- Front-facing head -->
+  <ellipse cx="50" cy="35" rx="16" ry="18" fill="#ECECEC" stroke="#333" stroke-width="2"/>
   
-  <!-- Fluffy texture details -->
-  <circle cx="35" cy="50" r="8" fill="#F0F0F0" opacity="0.8"/>
-  <circle cx="45" cy="60" r="7" fill="#F0F0F0" opacity="0.8"/>
-  <circle cx="55" cy="50" r="6" fill="#F0F0F0" opacity="0.8"/>
-  <circle cx="38" cy="62" r="7" fill="#F0F0F0" opacity="0.8"/>
+  <!-- Super fluffy head wool -->
+  <circle cx="50" cy="22" r="8" fill="#F5F5F5" opacity="0.95"/>
+  <circle cx="42" cy="26" r="7" fill="#F5F5F5" opacity="0.95"/>
+  <circle cx="58" cy="26" r="7" fill="#F5F5F5" opacity="0.95"/>
+  <circle cx="36" cy="32" r="6" fill="#F5F5F5" opacity="0.95"/>
+  <circle cx="64" cy="32" r="6" fill="#F5F5F5" opacity="0.95"/>
+  
+  <!-- Cute ears on sides -->
+  <ellipse cx="36" cy="32" rx="4" ry="8" fill="#D8D8D8" stroke="#333" stroke-width="1.5"/>
+  <ellipse cx="64" cy="32" rx="4" ry="8" fill="#D8D8D8" stroke="#333" stroke-width="1.5"/>
+  
+  <!-- Two cute eyes (front view) -->
+  <circle cx="44" cy="36" r="2" fill="#333"/>
+  <circle cx="56" cy="36" r="2" fill="#333"/>
+  
+  <!-- Nose/snout -->
+  <ellipse cx="50" cy="42" rx="5" ry="4" fill="#F0E5D8" stroke="#333" stroke-width="1.5"/>
+  <circle cx="48" cy="41.5" r="1" fill="#333"/>
+  <circle cx="52" cy="41.5" r="1" fill="#333"/>
+  
+  <!-- Separate smiling mouth below -->
+  <path d="M 45 47 Q 50 49.5 55 47" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  
+  <!-- Four legs (front view) -->
+  <rect x="36" y="78" width="6" height="15" rx="3" fill="#333"/>
+  <rect x="46" y="78" width="6" height="15" rx="3" fill="#333"/>
+  <rect x="54" y="78" width="6" height="15" rx="3" fill="#333"/>
+  <rect x="64" y="78" width="6" height="15" rx="3" fill="#333"/>
 </svg>
