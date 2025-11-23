@@ -84,8 +84,6 @@ app.get('/mobs-test', (req, res) => {
 
 // Database connection
 const db = require('./db');
-// const { handleFarmAdvisorQuery } = require('./controllers/farmAdvisorController'); // TEMP: Inline the handler
-// const { testServices } = require('./controllers/testController'); // TEMP: Commented out - causing startup crash
 
 // Direct mobs routes with database integration
 app.get('/mobs', async (req, res) => {
