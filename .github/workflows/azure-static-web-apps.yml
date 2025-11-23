@@ -59,31 +59,24 @@ jobs:
           cache: 'npm'
 
       - name: Install frontend dependencies
-        if: needs.detect_changes.outputs.frontend == 'true'
         run: npm ci
 
       - name: Lint frontend code
-        if: needs.detect_changes.outputs.frontend == 'true'
         run: npm run lint
 
       - name: Run frontend unit tests
-        if: needs.detect_changes.outputs.frontend == 'true'
         run: npm run test:unit:run
 
       - name: Install API dependencies
-        if: needs.detect_changes.outputs.api == 'true'
         run: npm ci --prefix api
 
       - name: Run API tests
-        if: needs.detect_changes.outputs.api == 'true'
         run: npm test --prefix api
 
   # Deploy to Azure Static Web Apps (Frontend + API together)
   deploy_static_web_app:
     needs: [detect_changes, quality_check]
-    if: |
-      github.event_name == 'push' && 
-      (needs.detect_changes.outputs.frontend == 'true' || needs.detect_changes.outputs.api == 'true')
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     name: Deploy to Azure Static Web Apps
     environment:
@@ -129,8 +122,7 @@ jobs:
     needs: [detect_changes, quality_check]
     if: |
       github.event_name == 'push' && 
-      github.ref_name == 'main' &&
-      needs.detect_changes.outputs.api == 'true'
+      github.ref_name == 'main'
     runs-on: ubuntu-latest
     name: Deploy API to Azure Functions
     environment:
