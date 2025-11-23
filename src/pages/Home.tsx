@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTenant } from '../core/hooks/useTenant';
 import BookingModal from '../components/BookingModal';
 import MatrixRain from '../components/MatrixRain';
@@ -12,6 +12,11 @@ import '../styles/neo-australian.css';
 export default function Home() {
   const { content } = useTenant();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+
+  // Scroll to top when home page loads
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, []);
 
   return (
     <>

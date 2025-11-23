@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface AuthGateProps {
   children: React.ReactNode;
@@ -10,6 +10,13 @@ export default function AuthGate({ children }: AuthGateProps) {
     return sessionStorage.getItem('sheepsheet_auth') === 'true';
   });
   const [error, setError] = useState('');
+
+  // Scroll to top when login page loads
+  useEffect(() => {
+    if (!isAuthenticated) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  }, [isAuthenticated]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
