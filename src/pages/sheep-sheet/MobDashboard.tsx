@@ -1,58 +1,93 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { MobKPI, MobFilters, FarmSummary } from './types';
-import { mobsApi } from '../../lib/api';
+import { MobKPI } from './types';
+import { useFarmData } from '../../core/context/FarmDataContext';
 import FarmAdvisorChat from '../../components/FarmAdvisorChat';
 
+// Local filter type for display filtering
+interface DisplayFilters {
+  breed: string;
+  zone: string;
+  team: string;
+  stage: string;
+}
+
 export default function MobDashboard() {
-  const [mobs, setMobs] = useState<MobKPI[]>([]);
-  const [summary, setSummary] = useState<FarmSummary>({
-    total_mobs: 0,
-    total_ewes: 0,
-    avg_scanning_percent: 0,
-    avg_marking_percent: 0,
-    avg_weaning_percent: 0,
+  // Get all data from centralized store (loaded once at app init)
+  const {
+    mobs: allMobs,
+    summary,
+    isLoading: loading,
+    error,
+    isOnline,
+    pendingCount,
+    lastSyncTime,
+    refreshData,
+    isSyncing,
+    syncPendingChanges,
+  } = useFarmData();
+
+  // Filter state - pending filters (user selections before applying)
+  const [pendingFilters, setPendingFilters] = useState<DisplayFilters>({
+    breed: '',
+    zone: '',
+    team: '',
+    stage: '',
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [_filters, _setFilters] = useState<MobFilters>({});
+
+  // Active filters (applied filters that affect the display)
+  const [activeFilters, setActiveFilters] = useState<DisplayFilters>({
+    breed: '',
+    zone: '',
+    team: '',
+    stage: '',
+  });
+
   const [showFilters, setShowFilters] = useState(false);
   const [showAssistant, setShowAssistant] = useState(false);
   const [showScoreboard, setShowScoreboard] = useState(true);
   const [showListView, setShowListView] = useState(true);
 
-  // Fetch data on component mount
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      setError(null);
+  // Derive unique filter options from the data
+  const filterOptions = useMemo(() => {
+    const breeds = [...new Set(allMobs.map((m) => m.breed_name).filter(Boolean))];
+    const zones = [...new Set(allMobs.map((m) => m.zone_name).filter(Boolean))];
+    const teams = [...new Set(allMobs.map((m) => m.team_name).filter(Boolean))];
+    const stages = [...new Set(allMobs.map((m) => m.current_stage).filter(Boolean))];
+    return { breeds, zones, teams, stages };
+  }, [allMobs]);
 
-      try {
-        // Fetch mobs and statistics in parallel
-        const [mobsResponse, statsResponse] = await Promise.all([
-          mobsApi.getAllMobs(),
-          mobsApi.getFarmStatistics(),
-        ]);
+  // Filter mobs based on active filters
+  const filteredMobs = useMemo(() => {
+    return allMobs.filter((mob) => {
+      if (activeFilters.breed && mob.breed_name !== activeFilters.breed) return false;
+      if (activeFilters.zone && mob.zone_name !== activeFilters.zone) return false;
+      if (activeFilters.team && mob.team_name !== activeFilters.team) return false;
+      if (activeFilters.stage && mob.current_stage !== activeFilters.stage) return false;
+      return true;
+    });
+  }, [allMobs, activeFilters]);
 
-        setMobs(mobsResponse.data || []);
-        setSummary({
-          total_mobs: parseInt(statsResponse.data.total_mobs) || 0,
-          total_ewes: parseInt(statsResponse.data.total_ewes) || 0,
-          avg_scanning_percent: parseFloat(statsResponse.data.avg_scanning_percent) || 0,
-          avg_marking_percent: parseFloat(statsResponse.data.avg_marking_percent) || 0,
-          avg_weaning_percent: parseFloat(statsResponse.data.avg_weaning_percent) || 0,
-        });
-      } catch (err) {
-        console.warn('API unavailable, continuing with empty data:', err);
-        setError('Unable to connect to database. Showing empty form.');
-        // Continue with empty data - don't block the UI
-      } finally {
-        setLoading(false);
-      }
-    }
+  // Check if any filters are active
+  const hasActiveFilters =
+    activeFilters.breed || activeFilters.zone || activeFilters.team || activeFilters.stage;
 
-    fetchData();
-  }, []);
+  // Handle filter changes
+  const handleFilterChange = (filterName: keyof DisplayFilters, value: string) => {
+    setPendingFilters((prev) => ({ ...prev, [filterName]: value }));
+  };
+
+  // Apply filters
+  const applyFilters = () => {
+    setActiveFilters(pendingFilters);
+  };
+
+  // Clear filters
+  const clearFilters = () => {
+    const emptyFilters = { breed: '', zone: '', team: '', stage: '' };
+    setPendingFilters(emptyFilters);
+    setActiveFilters(emptyFilters);
+  };
 
   // KPI Card Component
   const KPICard = ({
@@ -136,8 +171,94 @@ export default function MobDashboard() {
 
   return (
     <div className="space-y-6 pb-20 md:pb-6">
+      {/* Sync Status Bar - Shows connectivity and pending changes */}
+      <div
+        className={`rounded-lg p-3 flex items-center justify-between ${
+          !isOnline
+            ? 'bg-red-50 border border-red-200'
+            : pendingCount > 0
+              ? 'bg-amber-50 border border-amber-200'
+              : 'bg-green-50 border border-green-200'
+        }`}
+      >
+        <div className="flex items-center gap-3">
+          {/* Connection Status */}
+          <div className="flex items-center">
+            <div
+              className={`w-3 h-3 rounded-full mr-2 ${
+                !isOnline
+                  ? 'bg-red-500'
+                  : pendingCount > 0
+                    ? 'bg-amber-500 animate-pulse'
+                    : 'bg-green-500'
+              }`}
+            ></div>
+            <span
+              className={`text-sm font-medium ${
+                !isOnline ? 'text-red-700' : pendingCount > 0 ? 'text-amber-700' : 'text-green-700'
+              }`}
+            >
+              {!isOnline
+                ? '📴 Offline Mode'
+                : pendingCount > 0
+                  ? `⏳ ${pendingCount} change${pendingCount > 1 ? 's' : ''} pending`
+                  : '✅ All synced'}
+            </span>
+          </div>
+
+          {/* Last Sync Time */}
+          {lastSyncTime && (
+            <span className="text-xs text-gray-500 hidden sm:inline">
+              Last sync: {lastSyncTime.toLocaleTimeString()}
+            </span>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2">
+          {isOnline && pendingCount > 0 && (
+            <button
+              onClick={() => syncPendingChanges()}
+              disabled={isSyncing}
+              className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-sm font-medium hover:bg-amber-700 disabled:opacity-50 flex items-center gap-1"
+            >
+              {isSyncing ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Syncing...
+                </>
+              ) : (
+                'Sync Now'
+              )}
+            </button>
+          )}
+          {isOnline && (
+            <button
+              onClick={() => refreshData()}
+              disabled={loading}
+              className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center gap-1"
+              title="Refresh all data from server"
+            >
+              <svg
+                className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+              <span className="hidden sm:inline">Refresh</span>
+            </button>
+          )}
+        </div>
+      </div>
       {/* Loading State */}
-      {loading && (
+      {loading && allMobs.length === 0 && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
           <div className="animate-pulse">
             <div className="text-lg font-semibold text-blue-900 mb-2">Loading farm data...</div>
@@ -145,8 +266,8 @@ export default function MobDashboard() {
           </div>
         </div>
       )}
-      {/* Error State */}
-      {error && (
+      {/* Error State - only show if no cached data */}
+      {error && allMobs.length === 0 && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-6">
           <div className="flex items-start space-x-3">
             <svg
@@ -184,7 +305,7 @@ export default function MobDashboard() {
             📊 Scoreboard
           </button>
 
-          {/* SECOND PRIORITY: List View - Large, Green */}
+          {/* SECOND PRIORITY: Mob List - Large, Green */}
           <button
             onClick={() => setShowListView(!showListView)}
             className={`px-5 sm:px-7 py-2.5 sm:py-3 text-base sm:text-lg rounded-xl font-bold transition-all transform hover:scale-105 shadow-md ${
@@ -193,7 +314,7 @@ export default function MobDashboard() {
                 : 'bg-green-100 text-green-700 hover:bg-green-200'
             }`}
           >
-            📋 List View
+            🐑 Mob List
           </button>
 
           {/* THIRD PRIORITY: Filters - Medium, Amber */}
@@ -254,43 +375,83 @@ export default function MobDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Breed</label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+              <select
+                value={pendingFilters.breed}
+                onChange={(e) => handleFilterChange('breed', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              >
                 <option value="">All Breeds</option>
-                <option>Merinos</option>
-                <option>Dohnes</option>
+                {filterOptions.breeds.map((breed) => (
+                  <option key={breed} value={breed}>
+                    {breed}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Zone</label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+              <select
+                value={pendingFilters.zone}
+                onChange={(e) => handleFilterChange('zone', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              >
                 <option value="">All Zones</option>
-                <option>Deni</option>
-                <option>Elmore</option>
-                <option>Goolgowi</option>
+                {filterOptions.zones.map((zone) => (
+                  <option key={zone} value={zone}>
+                    {zone}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Team</label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+              <select
+                value={pendingFilters.team}
+                onChange={(e) => handleFilterChange('team', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              >
                 <option value="">All Teams</option>
-                <option>Self Replacing</option>
-                <option>Terminal</option>
+                {filterOptions.teams.map((team) => (
+                  <option key={team} value={team}>
+                    {team}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Stage</label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+              <select
+                value={pendingFilters.stage}
+                onChange={(e) => handleFilterChange('stage', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              >
                 <option value="">All Stages</option>
-                <option>Joining</option>
-                <option>Scanning</option>
-                <option>Lambing</option>
-                <option>Marking</option>
-                <option>Weaning</option>
+                {filterOptions.stages.map((stage) => (
+                  <option key={stage} value={stage}>
+                    {stage}
+                  </option>
+                ))}
               </select>
             </div>
+          </div>
+          <div className="flex justify-end gap-3 mt-4">
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Clear
+            </button>
+            <button
+              type="button"
+              onClick={applyFilters}
+              className="px-6 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-md"
+            >
+              Apply Filters
+            </button>
           </div>
         </div>
       )}
@@ -357,13 +518,45 @@ export default function MobDashboard() {
       {/* Mob List - SECOND PRIORITY: Main working view 5-10x/day */}
       {!loading && showListView && (
         <div className="space-y-3 sm:space-y-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">All Mobs ({mobs.length})</h2>
-          {mobs.map((mob) => (
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+              {hasActiveFilters
+                ? `Filtered Mobs (${filteredMobs.length})`
+                : `All Mobs (${allMobs.length})`}
+            </h2>
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="text-sm text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+                Clear filters
+              </button>
+            )}
+          </div>
+          {filteredMobs.map((mob) => (
             <MobRow key={mob.mob_id} mob={mob} />
           ))}
-          {mobs.length === 0 && (
+          {filteredMobs.length === 0 && (
             <div className="text-center py-10 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-              <p className="text-gray-500">No mobs found.</p>
+              <p className="text-gray-500">
+                {hasActiveFilters ? 'No mobs match the current filters.' : 'No mobs found.'}
+              </p>
+              {hasActiveFilters && (
+                <button
+                  onClick={clearFilters}
+                  className="mt-2 text-sm text-green-600 hover:text-green-700 font-medium"
+                >
+                  Clear filters to see all mobs
+                </button>
+              )}
             </div>
           )}
         </div>

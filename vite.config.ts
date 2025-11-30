@@ -21,6 +21,13 @@ export default defineConfig({
     fs: {
       strict: true,
     },
+    proxy: {
+      '/api': {
+        target: 'https://osullivanfarms-api.azurewebsites.net',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
   },
   envPrefix: 'VITE_',
   envDir: './',

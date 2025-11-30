@@ -1,10 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { MobKPI, MobDetailTab, MobEditableData } from './types';
-import { mobsApi } from '../../lib/api';
+import { useFarmData } from '../../core/context/FarmDataContext';
 import { calculateDerivedFields } from './calculations';
 import MobEditPanel from './MobEditPanel';
-import { getPendingCount, syncOfflineEdits, setupOnlineListener, isOnline } from './offlineQueue';
 
 // Convert MobKPI to MobEditableData for editing
 function mobKpiToEditable(mob: MobKPI): MobEditableData {
@@ -38,77 +37,39 @@ function mobKpiToEditable(mob: MobKPI): MobEditableData {
 export default function MobDetail() {
   const { mobId } = useParams();
   const [activeTab, setActiveTab] = useState<MobDetailTab>('overview');
-  const [mob, setMob] = useState<MobKPI | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
-  const [pendingChanges, setPendingChanges] = useState(getPendingCount());
-  const [online, setOnline] = useState(isOnline());
 
-  // Fetch mob data
-  useEffect(() => {
-    async function fetchMob() {
-      if (!mobId) return;
+  // Get data and actions from centralized store
+  const {
+    getMobById,
+    updateMob,
+    isOnline: online,
+    pendingCount,
+    syncPendingChanges,
+    isLoading,
+    isInitialized,
+  } = useFarmData();
 
-      setLoading(true);
-      setError(null);
+  // Get mob from in-memory store (no API call needed!)
+  const mob = mobId ? getMobById(parseInt(mobId)) : undefined;
 
-      try {
-        const response = await mobsApi.getMobById(parseInt(mobId));
-        setMob(response.data);
-      } catch (err) {
-        console.error('Error fetching mob:', err);
-        setError('Failed to load mob data');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchMob();
-  }, [mobId]);
-
-  // Sync offline edits
+  // Handle sync
   const handleSync = useCallback(async () => {
-    if (!isOnline()) return;
+    if (!online) return;
+    await syncPendingChanges();
+  }, [online, syncPendingChanges]);
 
-    const result = await syncOfflineEdits(async (mob_id, changes) => {
-      await mobsApi.updateMob(mob_id, changes);
-    });
-
-    setPendingChanges(getPendingCount());
-
-    if (result.success > 0 && mobId) {
-      // Refresh mob data after sync
-      const response = await mobsApi.getMobById(parseInt(mobId));
-      setMob(response.data);
-    }
-  }, [mobId]);
-
-  // Online/offline listener
+  // Try to sync when coming online
   useEffect(() => {
-    const cleanup = setupOnlineListener(
-      () => {
-        setOnline(true);
-        // Try to sync when back online
-        handleSync();
-      },
-      () => {
-        setOnline(false);
-      }
-    );
-    return cleanup;
-  }, [handleSync]);
+    if (online && pendingCount > 0) {
+      handleSync();
+    }
+  }, [online, pendingCount, handleSync]);
 
-  // Handle save from edit panel
+  // Handle save from edit panel - uses store's updateMob (queues if offline)
   const handleSave = async (data: MobEditableData) => {
     if (!mobId) return;
-
-    await mobsApi.updateMob(parseInt(mobId), data);
-
-    // Refresh mob data
-    const response = await mobsApi.getMobById(parseInt(mobId));
-    setMob(response.data);
-    setPendingChanges(getPendingCount());
+    await updateMob(parseInt(mobId), data);
   };
 
   // Calculate derived fields for display
@@ -321,24 +282,29 @@ export default function MobDetail() {
     }
   };
 
-  // Loading state
-  if (loading) {
+  // Loading state - only show if store isn't initialized yet
+  if (isLoading && !isInitialized) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading mob data...</p>
+          <p className="text-gray-600">Loading farm data...</p>
         </div>
       </div>
     );
   }
 
-  // Error state
-  if (error || !mob) {
+  // Mob not found state
+  if (!mob) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-red-900 mb-2">Error Loading Mob</h3>
-        <p className="text-red-700">{error || 'Mob not found'}</p>
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-amber-900 mb-2">Mob Not Found</h3>
+        <p className="text-amber-700">
+          {mobId ? `Mob #${mobId} was not found in the cached data.` : 'No mob ID provided.'}
+        </p>
+        <p className="text-amber-600 text-sm mt-2">
+          This may happen if the data has not been synced yet. Try refreshing from the dashboard.
+        </p>
         <Link to="/" className="mt-4 inline-block text-green-600 hover:text-green-700 font-medium">
           ← Back to Dashboard
         </Link>
@@ -349,7 +315,7 @@ export default function MobDetail() {
   return (
     <div className="space-y-6 pb-20 md:pb-6">
       {/* Offline/Sync indicator */}
-      {(!online || pendingChanges > 0) && (
+      {(!online || pendingCount > 0) && (
         <div
           className={`rounded-lg p-3 flex items-center justify-between ${
             online ? 'bg-amber-50 border border-amber-200' : 'bg-red-50 border border-red-200'
@@ -357,15 +323,15 @@ export default function MobDetail() {
         >
           <div className="flex items-center">
             <div
-              className={`w-2 h-2 rounded-full mr-2 ${online ? 'bg-amber-500' : 'bg-red-500'}`}
+              className={`w-2 h-2 rounded-full mr-2 ${online ? 'bg-amber-500 animate-pulse' : 'bg-red-500'}`}
             ></div>
             <span className={online ? 'text-amber-700' : 'text-red-700'}>
               {online
-                ? `${pendingChanges} change(s) pending sync`
-                : 'You are offline - changes will sync later'}
+                ? `${pendingCount} change${pendingCount > 1 ? 's' : ''} pending sync`
+                : '📴 Offline mode - changes saved locally'}
             </span>
           </div>
-          {online && pendingChanges > 0 && (
+          {online && pendingCount > 0 && (
             <button
               onClick={handleSync}
               className="px-3 py-1 bg-amber-600 text-white rounded-lg text-sm font-medium hover:bg-amber-700"
