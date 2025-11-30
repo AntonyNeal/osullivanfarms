@@ -1,14 +1,7 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  ReactNode,
-} from 'react';
+import { useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import { MobKPI, FarmSummary } from '../../pages/sheep-sheet/types';
 import { mobsApi } from '../../lib/api';
+import { FarmDataContext, FarmDataContextType, PendingChange } from './FarmDataTypes';
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -18,40 +11,6 @@ const STORAGE_KEYS = {
   LAST_SYNC: 'farmData_lastSync',
 };
 
-// Pending change type for offline edits
-interface PendingChange {
-  id: string;
-  mobId: number;
-  changes: Partial<MobKPI>;
-  timestamp: number;
-  retryCount: number;
-}
-
-// Context state type
-interface FarmDataContextType {
-  // Data
-  mobs: MobKPI[];
-  summary: FarmSummary;
-
-  // Status
-  isLoading: boolean;
-  isInitialized: boolean;
-  isOnline: boolean;
-  isSyncing: boolean;
-  lastSyncTime: Date | null;
-  error: string | null;
-
-  // Pending changes
-  pendingChanges: PendingChange[];
-  pendingCount: number;
-
-  // Actions
-  getMobById: (id: number) => MobKPI | undefined;
-  updateMob: (id: number, changes: Partial<MobKPI>) => Promise<void>;
-  refreshData: () => Promise<void>;
-  syncPendingChanges: () => Promise<{ success: number; failed: number }>;
-}
-
 const defaultSummary: FarmSummary = {
   total_mobs: 0,
   total_ewes: 0,
@@ -59,8 +18,6 @@ const defaultSummary: FarmSummary = {
   avg_marking_percent: 0,
   avg_weaning_percent: 0,
 };
-
-const FarmDataContext = createContext<FarmDataContextType | null>(null);
 
 // Load data from localStorage
 function loadFromStorage<T>(key: string, defaultValue: T): T {
@@ -357,12 +314,4 @@ export function FarmDataProvider({ children }: { children: ReactNode }) {
   };
 
   return <FarmDataContext.Provider value={value}>{children}</FarmDataContext.Provider>;
-}
-
-export function useFarmData() {
-  const context = useContext(FarmDataContext);
-  if (!context) {
-    throw new Error('useFarmData must be used within a FarmDataProvider');
-  }
-  return context;
 }

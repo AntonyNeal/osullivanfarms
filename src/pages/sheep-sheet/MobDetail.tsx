@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { MobKPI, MobDetailTab, MobEditableData } from './types';
-import { useFarmData } from '../../core/context/FarmDataContext';
+import { useFarmData } from '../../core/hooks/useFarmData';
 import { calculateDerivedFields } from './calculations';
 import MobEditPanel from './MobEditPanel';
 

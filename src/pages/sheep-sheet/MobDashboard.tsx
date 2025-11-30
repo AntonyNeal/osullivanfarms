@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { MobKPI } from './types';
-import { useFarmData } from '../../core/context/FarmDataContext';
+import { useFarmData } from '../../core/hooks/useFarmData';
 import FarmAdvisorChat from '../../components/FarmAdvisorChat';
 
 // Local filter type for display filtering

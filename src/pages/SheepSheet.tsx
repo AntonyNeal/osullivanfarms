@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { Link, Routes, Route } from 'react-router-dom';
-import { useFarmData } from '../core/context/FarmDataContext';
+import { useFarmData } from '../core/hooks/useFarmData';
 import '../styles/neo-australian.css';
 
 // Import child components
