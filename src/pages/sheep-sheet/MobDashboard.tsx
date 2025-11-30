@@ -14,18 +14,7 @@ interface DisplayFilters {
 
 export default function MobDashboard() {
   // Get all data from centralized store (loaded once at app init)
-  const {
-    mobs: allMobs,
-    summary,
-    isLoading: loading,
-    error,
-    isOnline,
-    pendingCount,
-    lastSyncTime,
-    refreshData,
-    isSyncing,
-    syncPendingChanges,
-  } = useFarmData();
+  const { mobs: allMobs, summary, isLoading: loading, error } = useFarmData();
 
   // Filter state - pending filters (user selections before applying)
   const [pendingFilters, setPendingFilters] = useState<DisplayFilters>({
@@ -171,92 +160,6 @@ export default function MobDashboard() {
 
   return (
     <div className="space-y-6 pb-20 md:pb-6">
-      {/* Sync Status Bar - Shows connectivity and pending changes */}
-      <div
-        className={`rounded-lg p-3 flex items-center justify-between ${
-          !isOnline
-            ? 'bg-red-50 border border-red-200'
-            : pendingCount > 0
-              ? 'bg-amber-50 border border-amber-200'
-              : 'bg-green-50 border border-green-200'
-        }`}
-      >
-        <div className="flex items-center gap-3">
-          {/* Connection Status */}
-          <div className="flex items-center">
-            <div
-              className={`w-3 h-3 rounded-full mr-2 ${
-                !isOnline
-                  ? 'bg-red-500'
-                  : pendingCount > 0
-                    ? 'bg-amber-500 animate-pulse'
-                    : 'bg-green-500'
-              }`}
-            ></div>
-            <span
-              className={`text-sm font-medium ${
-                !isOnline ? 'text-red-700' : pendingCount > 0 ? 'text-amber-700' : 'text-green-700'
-              }`}
-            >
-              {!isOnline
-                ? '📴 Offline Mode'
-                : pendingCount > 0
-                  ? `⏳ ${pendingCount} change${pendingCount > 1 ? 's' : ''} pending`
-                  : '✅ All synced'}
-            </span>
-          </div>
-
-          {/* Last Sync Time */}
-          {lastSyncTime && (
-            <span className="text-xs text-gray-500 hidden sm:inline">
-              Last sync: {lastSyncTime.toLocaleTimeString()}
-            </span>
-          )}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2">
-          {isOnline && pendingCount > 0 && (
-            <button
-              onClick={() => syncPendingChanges()}
-              disabled={isSyncing}
-              className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-sm font-medium hover:bg-amber-700 disabled:opacity-50 flex items-center gap-1"
-            >
-              {isSyncing ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Syncing...
-                </>
-              ) : (
-                'Sync Now'
-              )}
-            </button>
-          )}
-          {isOnline && (
-            <button
-              onClick={() => refreshData()}
-              disabled={loading}
-              className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center gap-1"
-              title="Refresh all data from server"
-            >
-              <svg
-                className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
-              <span className="hidden sm:inline">Refresh</span>
-            </button>
-          )}
-        </div>
-      </div>
       {/* Loading State */}
       {loading && allMobs.length === 0 && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">

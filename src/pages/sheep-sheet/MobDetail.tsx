@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { MobKPI, MobDetailTab, MobEditableData } from './types';
 import { useFarmData } from '../../core/context/FarmDataContext';
@@ -40,31 +40,10 @@ export default function MobDetail() {
   const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
 
   // Get data and actions from centralized store
-  const {
-    getMobById,
-    updateMob,
-    isOnline: online,
-    pendingCount,
-    syncPendingChanges,
-    isLoading,
-    isInitialized,
-  } = useFarmData();
+  const { getMobById, updateMob, isLoading, isInitialized } = useFarmData();
 
   // Get mob from in-memory store (no API call needed!)
   const mob = mobId ? getMobById(parseInt(mobId)) : undefined;
-
-  // Handle sync
-  const handleSync = useCallback(async () => {
-    if (!online) return;
-    await syncPendingChanges();
-  }, [online, syncPendingChanges]);
-
-  // Try to sync when coming online
-  useEffect(() => {
-    if (online && pendingCount > 0) {
-      handleSync();
-    }
-  }, [online, pendingCount, handleSync]);
 
   // Handle save from edit panel - uses store's updateMob (queues if offline)
   const handleSave = async (data: MobEditableData) => {
@@ -314,34 +293,6 @@ export default function MobDetail() {
 
   return (
     <div className="space-y-6 pb-20 md:pb-6">
-      {/* Offline/Sync indicator */}
-      {(!online || pendingCount > 0) && (
-        <div
-          className={`rounded-lg p-3 flex items-center justify-between ${
-            online ? 'bg-amber-50 border border-amber-200' : 'bg-red-50 border border-red-200'
-          }`}
-        >
-          <div className="flex items-center">
-            <div
-              className={`w-2 h-2 rounded-full mr-2 ${online ? 'bg-amber-500 animate-pulse' : 'bg-red-500'}`}
-            ></div>
-            <span className={online ? 'text-amber-700' : 'text-red-700'}>
-              {online
-                ? `${pendingCount} change${pendingCount > 1 ? 's' : ''} pending sync`
-                : '📴 Offline mode - changes saved locally'}
-            </span>
-          </div>
-          {online && pendingCount > 0 && (
-            <button
-              onClick={handleSync}
-              className="px-3 py-1 bg-amber-600 text-white rounded-lg text-sm font-medium hover:bg-amber-700"
-            >
-              Sync Now
-            </button>
-          )}
-        </div>
-      )}
-
       {/* Header with Tabs */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-6 pb-4">

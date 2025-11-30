@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { Link, Routes, Route } from 'react-router-dom';
-import { useState } from 'react';
+import { useFarmData } from '../core/context/FarmDataContext';
 import '../styles/neo-australian.css';
 
 // Import child components
@@ -8,7 +8,15 @@ import MobDashboard from './sheep-sheet/MobDashboard';
 import MobDetail from './sheep-sheet/MobDetail';
 
 export default function SheepSheet() {
-  const [syncStatus] = useState({ is_online: true, pending_changes: 0 });
+  const {
+    isOnline,
+    pendingCount,
+    lastSyncTime,
+    refreshData,
+    isLoading,
+    isSyncing,
+    syncPendingChanges,
+  } = useFarmData();
 
   return (
     <>
@@ -40,21 +48,79 @@ export default function SheepSheet() {
                 </div>
               </Link>
 
-              {/* Sync Status Indicator */}
-              <div className="flex items-center space-x-2 sm:space-x-3">
-                <div className="flex items-center space-x-1.5 sm:space-x-2 text-xs sm:text-sm bg-white/20 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg backdrop-blur-sm">
+              {/* Sync Status & Actions */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                {/* Sync Status Indicator */}
+                <div
+                  className={`flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg backdrop-blur-sm ${
+                    !isOnline
+                      ? 'bg-red-500/30'
+                      : pendingCount > 0
+                        ? 'bg-amber-400/30'
+                        : 'bg-white/20'
+                  }`}
+                >
                   <div
-                    className={`w-2 h-2 rounded-full ${syncStatus.is_online ? 'bg-green-300' : 'bg-red-400'}`}
+                    className={`w-2 h-2 rounded-full ${
+                      !isOnline
+                        ? 'bg-red-400'
+                        : pendingCount > 0
+                          ? 'bg-amber-300 animate-pulse'
+                          : 'bg-green-300'
+                    }`}
                   ></div>
                   <span className="text-white font-medium">
-                    {syncStatus.is_online ? 'Online' : 'Offline'}
+                    {!isOnline
+                      ? 'Offline'
+                      : pendingCount > 0
+                        ? `${pendingCount} pending`
+                        : 'Synced'}
                   </span>
-                  {syncStatus.pending_changes > 0 && (
-                    <span className="px-2 py-0.5 bg-amber-400 text-amber-900 rounded-full text-xs font-semibold">
-                      {syncStatus.pending_changes}
+                  {lastSyncTime && isOnline && pendingCount === 0 && (
+                    <span className="text-green-200 text-xs hidden md:inline">
+                      {lastSyncTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   )}
                 </div>
+
+                {/* Sync Now Button (when pending) */}
+                {isOnline && pendingCount > 0 && (
+                  <button
+                    onClick={() => syncPendingChanges()}
+                    disabled={isSyncing}
+                    className="px-2 sm:px-3 py-1 sm:py-1.5 bg-amber-500 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-amber-600 disabled:opacity-50 flex items-center gap-1 shadow-md"
+                  >
+                    {isSyncing ? (
+                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <span>Sync</span>
+                    )}
+                  </button>
+                )}
+
+                {/* Refresh Button */}
+                {isOnline && (
+                  <button
+                    onClick={() => refreshData()}
+                    disabled={isLoading}
+                    className="p-1.5 sm:p-2 bg-white/20 hover:bg-white/30 text-white rounded-lg disabled:opacity-50 transition"
+                    title="Refresh data"
+                  >
+                    <svg
+                      className={`w-4 h-4 sm:w-5 sm:h-5 ${isLoading ? 'animate-spin' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                  </button>
+                )}
               </div>
             </div>
           </div>
