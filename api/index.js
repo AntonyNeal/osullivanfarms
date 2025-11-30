@@ -106,6 +106,155 @@ app.get('/mobs', async (req, res) => {
   }
 });
 
+// Get single mob by ID
+app.get('/mobs/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await db.query('SELECT * FROM mob_kpi_summary WHERE mob_id = $1', [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Mob not found',
+      });
+    }
+
+    res.json({
+      success: true,
+      data: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Error fetching mob:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch mob',
+      message: error.message,
+    });
+  }
+});
+
+// Update mob (PATCH - partial update)
+app.patch('/mobs/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    // Build dynamic update query based on provided fields
+    const allowedFields = [
+      'mob_name',
+      'breed_name',
+      'status_name',
+      'zone_name',
+      'team_name',
+      'current_location',
+      'current_stage',
+      'ewes_joined',
+      'rams_in',
+      'joining_start',
+      'joining_finish',
+      'scanning_date',
+      'in_lamb',
+      'dry',
+      'twins',
+      'singles',
+      'scanning_percent',
+      'marking_date',
+      'total_ewe_count',
+      'wet_ewes',
+      'dry_ewes',
+      'wethers',
+      'ewe_lambs',
+      'weaning_date',
+      'final_ewe_count_staying',
+      'cull_ewe_count',
+      'lambs_sold',
+      'pre_lamber_complete',
+      'lamb_booster_complete',
+      'shearing_date',
+      'ram_breed',
+      'rams_out',
+      'wethers_terminals',
+    ];
+
+    // Map frontend field names to database column names
+    const fieldMapping = {
+      ewe_breed: 'breed_name',
+      status: 'status_name',
+      zone: 'zone_name',
+      team: 'team_name',
+      ewe_count: 'ewes_joined',
+      actual_scanning_date: 'scanning_date',
+      actual_marking_date: 'marking_date',
+    };
+
+    const setClauses = [];
+    const values = [];
+    let paramIndex = 1;
+
+    for (const [key, value] of Object.entries(updates)) {
+      // Map field name if needed
+      const dbField = fieldMapping[key] || key;
+
+      // Skip if field is not allowed or value is undefined
+      if (!allowedFields.includes(dbField) || value === undefined) {
+        continue;
+      }
+
+      setClauses.push(`${dbField} = $${paramIndex}`);
+      values.push(value);
+      paramIndex++;
+    }
+
+    if (setClauses.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'No valid fields to update',
+      });
+    }
+
+    // Add updated_at
+    setClauses.push(`updated_at = NOW()`);
+
+    // Add mob_id for WHERE clause
+    values.push(id);
+
+    const query = `
+      UPDATE mobs 
+      SET ${setClauses.join(', ')}
+      WHERE mob_id = $${paramIndex}
+      RETURNING *
+    `;
+
+    console.log('[MOBS] Update query:', query);
+    console.log('[MOBS] Update values:', values);
+
+    const result = await db.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Mob not found',
+      });
+    }
+
+    // Fetch the updated mob from the view
+    const mobResult = await db.query('SELECT * FROM mob_kpi_summary WHERE mob_id = $1', [id]);
+
+    res.json({
+      success: true,
+      data: mobResult.rows[0] || result.rows[0],
+      message: 'Mob updated successfully',
+    });
+  } catch (error) {
+    console.error('Error updating mob:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update mob',
+      message: error.message,
+    });
+  }
+});
+
 app.get('/farm-statistics', async (req, res) => {
   try {
     // Query farm_statistics view or calculate from mobs

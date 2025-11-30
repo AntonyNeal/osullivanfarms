@@ -1,35 +1,120 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { MobKPI, MobDetailTab } from './types';
+import { MobKPI, MobDetailTab, MobEditableData } from './types';
+import { mobsApi } from '../../lib/api';
+import { calculateDerivedFields } from './calculations';
+import MobEditPanel from './MobEditPanel';
+import { getPendingCount, syncOfflineEdits, setupOnlineListener, isOnline } from './offlineQueue';
 
-// Mock mob data
-const mockMob: MobKPI = {
-  mob_id: 1,
-  mob_name: 'Mob 1 - Merino Ewes',
-  breed_name: 'Merinos',
-  status_name: 'ewe',
-  zone_name: 'Deni',
-  team_name: 'Self Replacing',
-  current_stage: 'Scanning',
-  current_location: 'home paddock',
-  ewes_joined: 545,
-  rams_in: 11,
-  joining_date: '2024-11-01',
-  scanning_date: '2025-02-06',
-  in_lamb: 465,
-  dry: 25,
-  twins: 200,
-  singles: 265,
-  scanning_percent: 158.0,
-  is_active: true,
-  last_updated: '2025-02-06T10:30:00Z',
-};
+// Convert MobKPI to MobEditableData for editing
+function mobKpiToEditable(mob: MobKPI): MobEditableData {
+  return {
+    mob_id: mob.mob_id,
+    mob_name: mob.mob_name,
+    ewe_breed: mob.breed_name as MobEditableData['ewe_breed'],
+    status: mob.status_name as MobEditableData['status'],
+    zone: mob.zone_name as MobEditableData['zone'],
+    current_location: mob.current_location,
+    team: mob.team_name as MobEditableData['team'],
+    joining_start: mob.joining_date,
+    ewe_count: mob.ewes_joined,
+    rams_in: mob.rams_in,
+    actual_scanning_date: mob.scanning_date,
+    twins: mob.twins,
+    singles: mob.singles,
+    in_lamb: mob.in_lamb,
+    dry: mob.dry,
+    scanning_percent:
+      typeof mob.scanning_percent === 'string'
+        ? parseFloat(mob.scanning_percent)
+        : mob.scanning_percent,
+    actual_marking_date: mob.marking_date,
+    wethers_terminals: mob.wethers,
+    ewe_lambs: mob.ewe_lambs,
+    weaning_date: mob.weaning_date,
+  };
+}
 
 export default function MobDetail() {
-  const { mobId: _mobId } = useParams();
+  const { mobId } = useParams();
   const [activeTab, setActiveTab] = useState<MobDetailTab>('overview');
-  const [mob] = useState<MobKPI>(mockMob);
-  const [_isEditing, _setIsEditing] = useState(false);
+  const [mob, setMob] = useState<MobKPI | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
+  const [pendingChanges, setPendingChanges] = useState(getPendingCount());
+  const [online, setOnline] = useState(isOnline());
+
+  // Fetch mob data
+  useEffect(() => {
+    async function fetchMob() {
+      if (!mobId) return;
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await mobsApi.getMobById(parseInt(mobId));
+        setMob(response.data);
+      } catch (err) {
+        console.error('Error fetching mob:', err);
+        setError('Failed to load mob data');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchMob();
+  }, [mobId]);
+
+  // Sync offline edits
+  const handleSync = useCallback(async () => {
+    if (!isOnline()) return;
+
+    const result = await syncOfflineEdits(async (mob_id, changes) => {
+      await mobsApi.updateMob(mob_id, changes);
+    });
+
+    setPendingChanges(getPendingCount());
+
+    if (result.success > 0 && mobId) {
+      // Refresh mob data after sync
+      const response = await mobsApi.getMobById(parseInt(mobId));
+      setMob(response.data);
+    }
+  }, [mobId]);
+
+  // Online/offline listener
+  useEffect(() => {
+    const cleanup = setupOnlineListener(
+      () => {
+        setOnline(true);
+        // Try to sync when back online
+        handleSync();
+      },
+      () => {
+        setOnline(false);
+      }
+    );
+    return cleanup;
+  }, [handleSync]);
+
+  // Handle save from edit panel
+  const handleSave = async (data: MobEditableData) => {
+    if (!mobId) return;
+
+    await mobsApi.updateMob(parseInt(mobId), data);
+
+    // Refresh mob data
+    const response = await mobsApi.getMobById(parseInt(mobId));
+    setMob(response.data);
+    setPendingChanges(getPendingCount());
+  };
+
+  // Calculate derived fields for display
+  const editableData = mob ? mobKpiToEditable(mob) : ({} as MobEditableData);
+  // Note: calculatedData can be used in future to display projected dates/KPIs
+  const _calculatedData = calculateDerivedFields(editableData);
 
   const tabs: { id: MobDetailTab; label: string; icon: string }[] = [
     { id: 'overview', label: 'Overview', icon: '📊' },
@@ -236,8 +321,61 @@ export default function MobDetail() {
     }
   };
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading mob data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !mob) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-red-900 mb-2">Error Loading Mob</h3>
+        <p className="text-red-700">{error || 'Mob not found'}</p>
+        <Link to="/" className="mt-4 inline-block text-green-600 hover:text-green-700 font-medium">
+          ← Back to Dashboard
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 pb-20 md:pb-6">
+      {/* Offline/Sync indicator */}
+      {(!online || pendingChanges > 0) && (
+        <div
+          className={`rounded-lg p-3 flex items-center justify-between ${
+            online ? 'bg-amber-50 border border-amber-200' : 'bg-red-50 border border-red-200'
+          }`}
+        >
+          <div className="flex items-center">
+            <div
+              className={`w-2 h-2 rounded-full mr-2 ${online ? 'bg-amber-500' : 'bg-red-500'}`}
+            ></div>
+            <span className={online ? 'text-amber-700' : 'text-red-700'}>
+              {online
+                ? `${pendingChanges} change(s) pending sync`
+                : 'You are offline - changes will sync later'}
+            </span>
+          </div>
+          {online && pendingChanges > 0 && (
+            <button
+              onClick={handleSync}
+              className="px-3 py-1 bg-amber-600 text-white rounded-lg text-sm font-medium hover:bg-amber-700"
+            >
+              Sync Now
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Header with Tabs */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-6 pb-4">
@@ -262,6 +400,22 @@ export default function MobDetail() {
                 </span>
               </div>
             </div>
+
+            {/* Edit Button */}
+            <button
+              onClick={() => setIsEditPanelOpen(true)}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition flex items-center space-x-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+              <span>Edit</span>
+            </button>
           </div>
         </div>
 
@@ -288,6 +442,15 @@ export default function MobDetail() {
 
       {/* Tab Content */}
       {renderTabContent()}
+
+      {/* Edit Panel */}
+      <MobEditPanel
+        isOpen={isEditPanelOpen}
+        onClose={() => setIsEditPanelOpen(false)}
+        initialData={editableData}
+        onSave={handleSave}
+        mobId={mob.mob_id}
+      />
     </div>
   );
 }

@@ -4,10 +4,134 @@
 // =====================================================
 
 // =====================================================
+// DROPDOWN OPTIONS (for edit forms)
+// =====================================================
+
+export const EWE_BREED_OPTIONS = ['Merinos', 'Dohnes'] as const;
+export const STATUS_OPTIONS = ['ewe', 'maidens', 'ewe lamb'] as const;
+export const ZONE_OPTIONS = ['Deni', 'Elmore', 'Goolgowi'] as const;
+export const TEAM_OPTIONS = ['Self Replacing', 'Terminal'] as const;
+export const RAM_BREED_OPTIONS = ['Dohne', 'Merino', 'White Suffolk'] as const;
+
+export type EweBreed = (typeof EWE_BREED_OPTIONS)[number];
+export type Status = (typeof STATUS_OPTIONS)[number];
+export type Zone = (typeof ZONE_OPTIONS)[number];
+export type Team = (typeof TEAM_OPTIONS)[number];
+export type RamBreed = (typeof RAM_BREED_OPTIONS)[number];
+
+// =====================================================
+// EDITABLE MOB DATA (user can modify these)
+// =====================================================
+
+export interface MobEditableData {
+  // Mob Setup
+  mob_id?: number;
+  mob_name?: string;
+  ewe_breed?: EweBreed;
+  status?: Status;
+  zone?: Zone;
+  current_location?: string;
+  team?: Team;
+  shearing_date?: string | null;
+
+  // Joining Stage
+  joining_start?: string | null;
+  ewe_count?: number | null;
+  rams_in?: number | null;
+  ram_breed?: RamBreed;
+  rams_out?: number | null;
+  joining_finish?: string | null;
+
+  // Scanning Stage
+  actual_scanning_date?: string | null;
+  twins?: number | null;
+  singles?: number | null;
+  in_lamb?: number | null;
+  dry?: number | null;
+  scanning_percent?: number | null;
+  pre_lamber_complete?: boolean;
+
+  // Marking Stage
+  actual_marking_date?: string | null;
+  total_ewe_count?: number | null;
+  wet_ewes?: number | null;
+  dry_ewes?: number | null;
+  wethers_terminals?: number | null;
+  ewe_lambs?: number | null;
+
+  // Weaning & Year End
+  weaning_date?: string | null;
+  final_ewe_count_staying?: number | null;
+  cull_ewe_count?: number | null;
+  lamb_booster_complete?: boolean;
+  lambs_sold?: number | null;
+}
+
+// =====================================================
+// CALCULATED FIELDS (read-only, auto-computed)
+// =====================================================
+
+export interface MobCalculatedData {
+  // Projected Dates
+  joining_days?: number | null;
+  prescribed_scanning_date?: string | null;
+  pre_lamber_vaccine_date?: string | null;
+  lambing_start?: string | null;
+  lambing_end?: string | null;
+  prescribed_marking_date?: string | null;
+  prescribed_weaning_date?: string | null;
+
+  // Performance KPIs
+  percent_marked?: number | null;
+  percent_marked_to_joined?: number | null;
+  percent_marked_to_scanned?: number | null;
+  ewes_lost_scanning_to_marking?: number | null;
+  gross_annual_culls?: number | null;
+  sale_lambs_remaining?: number | null;
+}
+
+// Combined type for full mob data
+export interface MobFullData extends MobEditableData, MobCalculatedData {
+  // Metadata
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  last_updated?: string;
+}
+
+// =====================================================
+// VALIDATION TYPES
+// =====================================================
+
+export interface ValidationError {
+  field: string;
+  message: string;
+}
+
+export interface ValidationResult {
+  isValid: boolean;
+  errors: ValidationError[];
+}
+
+// =====================================================
+// OFFLINE SYNC TYPES (enhanced)
+// =====================================================
+
+export interface OfflineEdit {
+  id: string;
+  mob_id: number;
+  changes: Partial<MobEditableData>;
+  timestamp: string;
+  synced: boolean;
+  retryCount: number;
+  lastError?: string;
+}
+
+// =====================================================
 // LOOKUP/REFERENCE TYPES
 // =====================================================
 
-export interface Breed {
+export interface BreedRecord {
   breed_id: number;
   breed_name: string;
   description?: string;
@@ -16,7 +140,7 @@ export interface Breed {
   updated_at: string;
 }
 
-export interface Zone {
+export interface ZoneRecord {
   zone_id: number;
   zone_name: string;
   region?: string;
@@ -25,7 +149,7 @@ export interface Zone {
   updated_at: string;
 }
 
-export interface Team {
+export interface TeamRecord {
   team_id: number;
   team_name: string;
   description?: string;

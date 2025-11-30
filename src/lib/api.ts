@@ -41,6 +41,20 @@ export const api = {
     return response.json();
   },
 
+  async patch(endpoint: string, data: unknown) {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.statusText}`);
+    }
+    return response.json();
+  },
+
   async delete(endpoint: string) {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'DELETE',
@@ -58,7 +72,7 @@ export const mobsApi = {
   getMobById: (id: number) => api.get(`/mobs/${id}`),
   getMobHistory: (id: number) => api.get(`/mobs/${id}/history`),
   createMob: (data: unknown) => api.post('/mobs', data),
-  updateMob: (id: number, data: unknown) => api.put(`/mobs/${id}`, data),
+  updateMob: (id: number, data: unknown) => api.patch(`/mobs/${id}`, data),
   getFarmStatistics: () => api.get('/farm-statistics'),
   recordBreedingEvent: (data: unknown) => api.post('/breeding-events', data),
 };
